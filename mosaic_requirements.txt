@@ -1,0 +1,16 @@
+gym 
+opencv-python 
+h5py 
+pyquaternion 
+pyyaml 
+matplotlib 
+hydra-core 
+einops 
+numpy
+# ??
+imageio 
+Cython 
+wandb 
+pycparser
+scipy 
+learn2learn
