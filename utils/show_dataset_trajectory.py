@@ -50,7 +50,7 @@ if __name__ == "__main__":
         logger.info("Waiting for debugger attach")
         debugpy.wait_for_client()
     
-    logger.info(f"Trajectory path: {args.task_path}")
+    logger.info(f"Task path: {args.task_path}")
     i = 0
     fourcc = cv2.VideoWriter_fourcc('M','J','P','G')
     for dir in os.listdir(args.task_path):

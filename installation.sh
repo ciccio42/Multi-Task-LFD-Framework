@@ -22,7 +22,7 @@ source /home/$USER/.bashrc
 cd tasks
 pip3 install --user .
 
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=0,1,2,3
 
 cd /
 ./bin/bash
