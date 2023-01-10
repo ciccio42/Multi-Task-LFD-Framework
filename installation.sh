@@ -4,7 +4,7 @@ whoami
 echo ----- Installing mujoco-py -----
 # install mujoco-py
 sudo mkdir /usr/lib/nvidia-000
-echo export LD_LIBRARY_PATH=/root/.mujoco/mujoco210/bin:/usr/lib/nvidia-000:/root/.mujoco/bin:/home/frosa/.mujoco/mujoco210/bin:${LD_LIBRARY_PATH} >> /home/$USER/.bashrc
+echo export LD_LIBRARY_PATH=/root/.mujoco/mujoco210/bin:/usr/lib/nvidia-000:/root/.mujoco/bin:/home/$USER/.mujoco/mujoco210/bin:${LD_LIBRARY_PATH} >> /home/$USER/.bashrc
 source /home/$USER/.bashrc
 pip3 install --user mujoco-py
 
