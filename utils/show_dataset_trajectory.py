@@ -81,12 +81,6 @@ if __name__ == "__main__":
                             # get elements
                             time_step_dict = trajectory_obj[t]
                             obs_t = time_step_dict['obs']
-                            if i==0:
-                                print(obs_t.keys())
-                                print(f"Target bin id {obs_t['target-box-id']}")
-                                print(f"Target object {obs_t['target-object']}")
-                                print("---")
-                                i+=1
                             write_frame(front_video_rgb, front_video_depth, "camera_front", obs_t)
                             write_frame(right_video_rgb, right_video_depth, "camera_lateral_right", obs_t)
                             write_frame(left_video_rgb, left_video_depth, "camera_lateral_left", obs_t)

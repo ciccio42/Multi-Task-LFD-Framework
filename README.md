@@ -32,5 +32,5 @@ export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
 
 If you use **offline rendering**
 ``` bash
-unset LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
+unset LD_PRELOAD
 ```
