@@ -13,12 +13,12 @@ echo "---- Start to collect dataset ----"
 
 
 TASK_name=nut_assembly 
-for ROBOT in panda ur5e
+for ROBOT in ur5e
 do
 echo "Robot ${ROBOT} - Task ${TASK_name}" 
-N_VARS=9 # number of variations
-NUM=180 # number of trajectories to collect
-PER_TASK_GROUP=20 # Number of trajectories of same task in row 
+N_VARS=1 # number of variations
+NUM=1 # number of trajectories to collect
+PER_TASK_GROUP=1 # Number of trajectories of same task in row 
 python3 tasks/collect_data/collect_task.py ${SUITE}/${TASK_name}/${ROBOT}_${TASK_name} \
     -tsk ${TASK_name} -ro ${ROBOT} \
     --n_tasks ${N_VARS} \
@@ -28,7 +28,6 @@ python3 tasks/collect_data/collect_task.py ${SUITE}/${TASK_name}/${ROBOT}_${TASK
     --overwrite \
     --gpu_id_indx ${GPU_ID_INDX} \
     --collect_cam
-    #--renderer
     #--collect_cam
     #
     # 
@@ -36,12 +35,12 @@ python3 tasks/collect_data/collect_task.py ${SUITE}/${TASK_name}/${ROBOT}_${TASK
 done 
 
 TASK_name=pick_place 
-for ROBOT in panda ur5e
+for ROBOT in ur5e
 do
 echo "Robot ${ROBOT} - Task ${TASK_name}" 
-N_VARS=16 # number of variations
-NUM=320 # number of trajectories to collect
-PER_TASK_GROUP=20 # Number of trajectories of same task in row 
+N_VARS=1 # number of variations
+NUM=1 # number of trajectories to collect
+PER_TASK_GROUP=1 # Number of trajectories of same task in row 
 python3 tasks/collect_data/collect_task.py ${SUITE}/${TASK_name}/${ROBOT}_${TASK_name} \
     -tsk ${TASK_name} -ro ${ROBOT} \
     --n_tasks ${N_VARS} \
@@ -51,7 +50,7 @@ python3 tasks/collect_data/collect_task.py ${SUITE}/${TASK_name}/${ROBOT}_${TASK
     --overwrite \
     --gpu_id_indx ${GPU_ID_INDX} \
     --collect_cam
-    #--renderer
+    #
     #--collect_cam
     #
     # 
