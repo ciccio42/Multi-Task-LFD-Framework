@@ -67,12 +67,18 @@ if __name__ == "__main__":
                     right_video_rgb, right_video_depth = create_video_writer(saving_dir, "camera_lateral_right") 
                     left_video_rgb, left_video_depth = create_video_writer(saving_dir, "camera_lateral_left") 
                     eye_in_hand_rgb, eye_in_hand_depth = create_video_writer(saving_dir, "eye_in_hand")
-
+                    i = 0 
                     pickle_file_path = os.path.join(args.task_path, dir, trj)
                     with open(pickle_file_path, "rb") as f:
                         sample = pickle.load(f)
                         logger.info(f"Sample keys {sample.keys()}")
                         logger.debug(sample)
+                        if i == 0:
+                            i += 1
+                            logger.info(sample)
+                            logger.info(f"Observation keys: {sample['traj'][0]['obs'].keys()}")
+
+
                         # take the Trajectory obj from the trajectory
                         trajectory_obj = sample['traj']
                         i = 0

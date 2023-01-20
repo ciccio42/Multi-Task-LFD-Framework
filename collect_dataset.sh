@@ -12,36 +12,13 @@ GPU_ID_INDX=0
 echo "---- Start to collect dataset ----"
 
 
-#TASK_name=nut_assembly 
-#for ROBOT in ur5e
-#do
-#echo "Robot ${ROBOT} - Task ${TASK_name}" 
-#N_VARS=3 # number of variations
-#NUM=30 # number of trajectories to collect
-#PER_TASK_GROUP=10 # Number of trajectories of same task in row 
-#python3 tasks/collect_data/collect_task.py ${SUITE}/${TASK_name}/${ROBOT}_${TASK_name} \
-#    -tsk ${TASK_name} -ro ${ROBOT} \
-#    --n_tasks ${N_VARS} \
-#    --N ${NUM} --per_task_group ${PER_TASK_GROUP} \
-#    --num_workers ${NUM_WORKERS} \
-#    --ctrl_config ${PATH_TO_CONTROL_CONFIG} \
-#    --overwrite \
-#    --gpu_id_indx ${GPU_ID_INDX} \
-#    --collect_cam
-#    #--renderer
-#    #--collect_cam
-#    #
-#    # 
-#    #--debugger
-#done 
-
-TASK_name=pick_place 
+TASK_name=nut_assembly 
 for ROBOT in ur5e
 do
 echo "Robot ${ROBOT} - Task ${TASK_name}" 
-N_VARS=6 # number of variations
-NUM=60 # number of trajectories to collect
-PER_TASK_GROUP=10 # Number of trajectories of same task in row 
+N_VARS=1 # number of variations
+NUM=1 # number of trajectories to collect
+PER_TASK_GROUP=1 # Number of trajectories of same task in row 
 python3 tasks/collect_data/collect_task.py ${SUITE}/${TASK_name}/${ROBOT}_${TASK_name} \
     -tsk ${TASK_name} -ro ${ROBOT} \
     --n_tasks ${N_VARS} \
@@ -51,7 +28,29 @@ python3 tasks/collect_data/collect_task.py ${SUITE}/${TASK_name}/${ROBOT}_${TASK
     --overwrite \
     --gpu_id_indx ${GPU_ID_INDX} \
     --collect_cam
-    #--renderer
+    #--collect_cam
+    #
+    # 
+    #--debugger
+done 
+
+TASK_name=pick_place 
+for ROBOT in ur5e
+do
+echo "Robot ${ROBOT} - Task ${TASK_name}" 
+N_VARS=1 # number of variations
+NUM=1 # number of trajectories to collect
+PER_TASK_GROUP=1 # Number of trajectories of same task in row 
+python3 tasks/collect_data/collect_task.py ${SUITE}/${TASK_name}/${ROBOT}_${TASK_name} \
+    -tsk ${TASK_name} -ro ${ROBOT} \
+    --n_tasks ${N_VARS} \
+    --N ${NUM} --per_task_group ${PER_TASK_GROUP} \
+    --num_workers ${NUM_WORKERS} \
+    --ctrl_config ${PATH_TO_CONTROL_CONFIG} \
+    --overwrite \
+    --gpu_id_indx ${GPU_ID_INDX} \
+    --collect_cam
+    #
     #--collect_cam
     #
     # 
