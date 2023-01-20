@@ -22,7 +22,7 @@ docker build -t multitask_lfd --build-arg USER_UID=$UID --build-arg USERNAME=$US
 # Run docker
 docker run  --name multitask_lfd -it --user frosa --rm --gpus all multitask_lfd
 docker exec -it multitask_lfd /bin/bash
-docker run --name multitask_lfd -v /user/frosa/robotic/multitask_lfd:/home/multitask_lfd -v /mnt/sdc1/frosa/multitask_dataset:/home/multitask_dataset -p 5678:5678 -it --gpus '"device=0"' --rm multitask_lfd
+docker run --name multitask_lfd -v /user/frosa/robotic/multitask_lfd:/home/multitask_lfd -v /mnt/sdc1/frosa/multitask_dataset:/home/multitask_dataset -p 5678:5678 -it --gpus '"device=3"' --rm multitask_lfd
 ```
 # Note
 If you use **online rendering**
