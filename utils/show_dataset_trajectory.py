@@ -93,7 +93,7 @@ if __name__ == "__main__":
                             write_frame(eye_in_hand_rgb, eye_in_hand_depth, "robot0_eye_in_hand", obs_t)
                             # get action
                             try:
-                                action_t = time_step_dict['action']
+                                action_t = trajectory_obj[t]['action']
                                 logger.debug(f"Action at time-step {t}: {action_t}")
                             except KeyError:
                                 pass
