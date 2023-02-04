@@ -14,3 +14,8 @@ wandb
 pycparser
 scipy 
 learn2learn
+pybullet==2.6.9
+pygame
+open3d
+imageio[ffmpeg]
+imageio[pyav]

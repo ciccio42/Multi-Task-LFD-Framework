@@ -9,6 +9,7 @@ git clone https://github.com/ciccio42/robosuite.git
 cd robosuite
 git checkout ur5e_ik
 cd ../
+git clone git@github.com:ciccio42/Multi-Task-LFD-Training-Framework.git
 ```
 
 ``` bash
@@ -26,7 +27,7 @@ docker exec -it multitask_lfd /bin/bash
 # docker run --name multitask_lfd -v [PATH-TO-CLONED-REPOSITORY]:/home/multitask_lfd -v [PATH-TO-DATASET-FOLDER]:/home/multitask_dataset -p 5678:5678 -it --gpus '"device=[GPU TO MAKE AVAILABLE]"' --shm-size 8G --rm multitask_lfd
 
 #---- Command Example ----#
-docker run --name multitask_lfd -v /user/frosa/robotic/multitask_lfd:/home/multitask_lfd -v /mnt/sdc1/frosa/multitask_dataset:/home/multitask_dataset -p 5678:5678 -it --gpus '"device=3"' --rm multitask_lfd
+docker run --name multitask_lfd -v /user/frosa/robotic/multitask_lfd:/home/multitask_lfd -v /mnt/sdc1/frosa/multitask_dataset:/home/multitask_dataset -p 5678:5678 -it --gpus '"device=3"' --rm --pid=host multitask_lfd
 ```
 # Note
 If you use **online rendering**

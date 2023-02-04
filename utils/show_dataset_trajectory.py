@@ -28,6 +28,7 @@ def normalize_depth(depth_img, obs):
 def write_frame(rgb_video_writer, depth_video_writer, camera_name, obs):
     # get robot agent view
     image_rgb = obs[f'{camera_name}_image'][...,::-1]
+    print(image_rgb.shape)
     image_depth = obs[f'{camera_name}_depth']
     image_depth_norm = obs[f'{camera_name}_depth_norm']
     rgb_video_writer.write(image_rgb)
@@ -64,8 +65,8 @@ if __name__ == "__main__":
                     logger.info(f"Trajectory name: {dir}/{trj}")
                     saving_dir = os.path.join(args.task_path, dir, trj.split(".")[0], trj)
                     front_video_rgb, front_video_depth = create_video_writer(saving_dir, "camera_front") 
-                    right_video_rgb, right_video_depth = create_video_writer(saving_dir, "camera_lateral_right") 
-                    left_video_rgb, left_video_depth = create_video_writer(saving_dir, "camera_lateral_left") 
+                    #right_video_rgb, right_video_depth = create_video_writer(saving_dir, "camera_lateral_right") 
+                    #left_video_rgb, left_video_depth = create_video_writer(saving_dir, "camera_lateral_left") 
                     eye_in_hand_rgb, eye_in_hand_depth = create_video_writer(saving_dir, "eye_in_hand")
                     i = 0 
                     pickle_file_path = os.path.join(args.task_path, dir, trj)
@@ -88,8 +89,8 @@ if __name__ == "__main__":
                             time_step_dict = trajectory_obj[t]
                             obs_t = time_step_dict['obs']
                             write_frame(front_video_rgb, front_video_depth, "camera_front", obs_t)
-                            write_frame(right_video_rgb, right_video_depth, "camera_lateral_right", obs_t)
-                            write_frame(left_video_rgb, left_video_depth, "camera_lateral_left", obs_t)
+                            #write_frame(right_video_rgb, right_video_depth, "camera_lateral_right", obs_t)
+                            #write_frame(left_video_rgb, left_video_depth, "camera_lateral_left", obs_t)
                             write_frame(eye_in_hand_rgb, eye_in_hand_depth, "robot0_eye_in_hand", obs_t)
                             # get action
                             try:

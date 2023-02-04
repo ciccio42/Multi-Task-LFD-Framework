@@ -53,16 +53,11 @@ RUN sudo mkdir -p /home/$USERNAME/.mujoco/ \
     && sudo  tar -xf mujoco.tar.gz -C /home/$USERNAME/.mujoco/ \
     && sudo rm mujoco.tar.gz
 
-# ---- install robosuite requirement ----
-COPY robosuite_requirements.txt /home/robosuite_requirements.txt
-RUN pip3 install -r  /home/robosuite_requirements.txt
-
-# ---- install mosaic requirement ----
-COPY mosaic_requirements.txt /home/mosaic_requirements.txt
-RUN pip3 install -r  /home/mosaic_requirements.txt 
-
+# ---- install requirements for training framework ----
+COPY requirements.txt /home/requirements.txt
+RUN pip3 install -r  /home/requirements.txt 
 
 # Install
 WORKDIR / 
 ENV USER=$USERNAME
-CMD ["/bin/bash", "/home/multitask_lfd/installation.sh"]
+CMD ["/bin/bash", "/home/Multi-Task-LFD-Framework/installation.sh"]

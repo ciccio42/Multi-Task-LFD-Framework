@@ -1,8 +1,0 @@
-pybullet==2.6.9
-gym
-h5py
-pygame
-open3d
-imageio
-imageio[ffmpeg]
-imageio[pyav]
