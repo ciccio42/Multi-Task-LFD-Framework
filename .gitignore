@@ -1,7 +1,7 @@
 repo/*
 training_log/*
 mosaic/bashes2/outputs/*
-nohup.out
+nohup*
 wandb/*
 outputs/*
 mosaic-baseline-sav-folder/*

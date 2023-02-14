@@ -57,6 +57,7 @@ RUN sudo mkdir -p /home/$USERNAME/.mujoco/ \
 COPY requirements.txt /home/requirements.txt
 RUN pip3 install -r  /home/requirements.txt 
 
+
 # Install
 WORKDIR / 
 ENV USER=$USERNAME

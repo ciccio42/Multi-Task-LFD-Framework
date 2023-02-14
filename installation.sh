@@ -2,10 +2,12 @@
 echo ----- User -----
 whoami
 sudo apt-get install htop
+pip install torch==1.8.1+cu101 torchvision==0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
 echo ----- Installing mujoco-py -----
+
 # install mujoco-py
 unset LD_LIBRARY_PATH
-echo export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/frosa/.mujoco/mujoco210/bin:/usr/local/cuda-10.1/lib64/:/usr/lib/nvidia-000 >> /home/$USER/.bashrc
+echo export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/$USER/.mujoco/mujoco210/bin:/usr/local/cuda-10.1/lib64/:/usr/lib/nvidia-000 >> /home/$USER/.bashrc
 source /home/$USER/.bashrc
 pip3 install --user mujoco-py
 

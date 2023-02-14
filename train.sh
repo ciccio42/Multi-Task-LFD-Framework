@@ -1,6 +1,6 @@
 #!/bin/sh
 # 1 - BASELINE - mosaic experiment
-EXP_NAME=2Task-NutAssembly
+EXP_NAME=2Task-NutAssembly-Debug
 TASK_str=nut_assembly
 EPOCH=20
 BSIZE=45
