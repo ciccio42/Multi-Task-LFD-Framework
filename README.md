@@ -21,8 +21,8 @@ export GID=$(id -g frosa)
 docker build -t multitask_lfd --build-arg USER_UID=$UID --build-arg USERNAME=$USER --build-arg USER_GID=$GID .
 
 # Run docker
-docker run  --name multitask_lfd -it --user frosa --rm --gpus all multitask_lfd
-docker exec -it multitask_lfd /bin/bash
+docker run  --name multitask_lfd -it --user frosa --rm --gpus all  multitask_lfd
+docker exec -it --detach-keys 'ctrl-p'  multitask_lfd /bin/bash
 #---- Command Tamplate ----#
 # docker run --name multitask_lfd -v [PATH-TO-CLONED-REPOSITORY]:/home/multitask_lfd -v [PATH-TO-DATASET-FOLDER]:/home/multitask_dataset -p 5678:5678 -it --gpus '"device=[GPU TO MAKE AVAILABLE]"' --shm-size 8G --rm multitask_lfd
 

@@ -14,14 +14,14 @@ SCRIPT=/home/Multi-Task-LFD-Framework/repo/mosaic/tasks/collect_data/collect_any
 echo "---- Start to collect dataset ----"
 
 cd /home/Multi-Task-LFD-Framework/repo/mosaic
-TASK_name=nut_assembly
-N_tasks=9
+TASK_name=stack_block
+N_tasks=6
 NUM=100
 N_env=800
 per_task=100
 HEIGHT=100
 WIDTH=180
-for ROBOT in panda
+for ROBOT in panda sawyer
 do
  python3 ${SCRIPT} ${SUITE}/${TASK_name}/${ROBOT}_${TASK_name} \
          -tsk ${TASK_name} -ro ${ROBOT} --n_tasks ${N_tasks}  --n_env ${N_env} \
