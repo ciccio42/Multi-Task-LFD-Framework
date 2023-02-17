@@ -43,14 +43,12 @@ unset LD_PRELOAD
 # Training
 ```bash
 conda create -n multi_task_lfd python=3.7
-pip install -r mosaic_requirements.txt
-pip install -r robosuite_requirements.txt
+pip install -r requirements.txt
 pip install torch==1.9.1+cu111 torchvision==0.10.1+cu111 torchaudio==0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
 # Dldev1
 ```bash
 conda create -n multi_task_lfd python=3.7 pytorch==1.8.1 torchvision==0.9.1 cudatoolkit=10.1 -c pytorch 
-```
-
 export MUJOCO_PY_MUJOCO_PATH=/user/frosa/robotic/.mujoco/mujoco210
+```

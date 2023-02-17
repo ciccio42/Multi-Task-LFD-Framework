@@ -5,9 +5,9 @@
 
 cd repo/Multi-Task-LFD-Training-Framework
 # path to folder where save trajectories
-PATH_TO_DATA="/home/multitask_dataset" #"/home/ciccio/Desktop/multitask_dataset"
+PATH_TO_DATA='/home/ciccio/Desktop/multitask_dataset' #"/home/multitask_dataset" #
 # path to the controller configuration file
-PATH_TO_CONTROL_CONFIG="/home/Multi-Task-LFD-Framework/repo/Multi-Task-LFD-Training-Framework/tasks/robosuite_env/controllers/config/osc_pose.json" #"/home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework/repo/Multi-Task-LFD-Training-Framework/tasks/robosuite_env/controllers/config/osc_pose.json"
+PATH_TO_CONTROL_CONFIG="/home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework/repo/Multi-Task-LFD-Training-Framework/tasks/robosuite_env/controllers/config/osc_pose.json" #"/home/Multi-Task-LFD-Framework/repo/Multi-Task-LFD-Training-Framework/tasks/robosuite_env/controllers/config/osc_pose.json" 
 SUITE=${PATH_TO_DATA}/multitask_dataset
 echo ${SUITE}
 NUM_WORKERS=1 # number of workers

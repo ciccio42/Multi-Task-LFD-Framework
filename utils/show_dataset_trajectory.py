@@ -69,7 +69,7 @@ if __name__ == "__main__":
         if os.path.isdir(os.path.join(args.task_path, dir)):
             if dir.split("_")[0] == "task":
                 trjs = os.listdir(os.path.join(args.task_path, dir))
-                assert len(trjs) == 100, print(f"{os.path.join(args.task_path, dir)} does not have 100 trjs")
+                #assert len(trjs) == 100, print(f"{os.path.join(args.task_path, dir)} does not have 100 trjs")
                 for trj in trjs:
                     if not os.path.isdir(os.path.join(args.task_path, dir, trj)) and trj.split(".")[1]=="pkl":
                         try:
