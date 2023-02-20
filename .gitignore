@@ -5,3 +5,4 @@ nohup*
 wandb/*
 outputs/*
 mosaic-baseline-sav-folder/*
+*.out

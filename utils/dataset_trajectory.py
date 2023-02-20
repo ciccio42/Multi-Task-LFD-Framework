@@ -31,10 +31,15 @@ def normalize_depth(depth_img, obs):
     depth_norm = (depth_img-near)/(far-near)
     return depth_norm
 
-def write_frame(rgb_video_writer, depth_video_writer, camera_name, obs):
+def write_frame(rgb_video_writer, depth_video_writer, camera_name, obs, str):
     # get robot agent view
     if camera_name == "image":
-        image_rgb = obs[f'image'][...,::-1]
+        image_rgb = np.array(obs[f'image'][...,::-1])
+        if str:
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            font_scale = 0.25
+            thickness = 1
+            cv2.putText(image_rgb, str, (0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
     else:
         image_rgb = obs[f'{camera_name}_image'][...,::-1]
     rgb_video_writer.write(image_rgb)
@@ -99,10 +104,14 @@ if __name__ == "__main__":
                             i = 0
                             for t in range(sample['len']):
                                 logger.debug(f"Time-step {t}")
+                                # task description
+                                task_name = args.task_path.split('/')[-2]
+                                sub_task =  dir.split("_")[-1]
+                                task_description = f"Task: {task_name} - Sub-task id: {sub_task}"
                                 # get elements
                                 time_step_dict = trajectory_obj[t]
                                 obs_t = time_step_dict['obs']
-                                write_frame(front_video_rgb, front_video_depth, "image", obs_t)
+                                write_frame(front_video_rgb, front_video_depth, "image", obs_t, task_description)
                                 #write_frame(right_video_rgb, right_video_depth, "camera_lateral_right", obs_t)
                                 #write_frame(left_video_rgb, left_video_depth, "camera_lateral_left", obs_t)
                                 #write_frame(eye_in_hand_rgb, eye_in_hand_depth, "robot0_eye_in_hand", obs_t)
