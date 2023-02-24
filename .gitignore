@@ -6,3 +6,4 @@ wandb/*
 outputs/*
 mosaic-baseline-sav-folder/*
 *.out
+.vscode/*

@@ -5,16 +5,16 @@ import re
 import glob
 from PIL import Image
 import numpy as np
-img=cv2.imread('/home/ciccio/Pictures/conf_1_v3.png')
-cv2.imshow('Window',img)
-cv2.destroyAllWindows()
+# img=cv2.imread('/home/ciccio/Pictures/conf_1_v3.png')
+# cv2.imshow('Window',img)
+# cv2.destroyAllWindows()
 import torch
 from torchvision.transforms import Normalize
 import json
 
-base_path = "/home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline/Task-NutAssembly-Batch27-1gpu-Attn2ly128-Act2ly256mix4-headCat-simclr128x512"
+base_path = "/user/frosa/robotic/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-1/Task-Stack-Block-Batch30-1gpu-Attn2ly128-Act2ly256mix4-headCat-simclr128x512"
 
-task_name = "nut_assembly"  # replace with the desired task name
+task_name = "stack_block"  # replace with the desired task name
 
 results_folder = f"results_{task_name}"
 step_pattern = os.path.join(base_path, results_folder, "step-*")
