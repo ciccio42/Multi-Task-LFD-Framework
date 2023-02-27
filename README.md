@@ -45,6 +45,7 @@ unset LD_PRELOAD
 conda create -n multi_task_lfd python=3.7
 pip install -r requirements.txt
 pip install torch==1.9.1+cu111 torchvision==0.10.1+cu111 torchaudio==0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
+pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
 # Dldev1

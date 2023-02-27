@@ -12,13 +12,6 @@ import torch
 from torchvision.transforms import Normalize
 import json
 
-base_path = "/user/frosa/robotic/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-1/Task-Stack-Block-Batch30-1gpu-Attn2ly128-Act2ly256mix4-headCat-simclr128x512"
-
-task_name = "stack_block"  # replace with the desired task name
-
-results_folder = f"results_{task_name}"
-step_pattern = os.path.join(base_path, results_folder, "step-*")
-
 def find_number(name):
     return int(re.search(r"\d+", name).group())
 
@@ -41,8 +34,11 @@ def torch_to_numpy(tensor):
     numpy_array_transposed = np.transpose(numpy_array, (1, 3, 4, 2, 0))[:,:,:,:,0]
     return numpy_array_transposed
 
-def create_video_for_each_trj():
-
+def create_video_for_each_trj(base_path="/", task_name="pick_place"):
+    
+    results_folder = f"results_{task_name}"
+    step_pattern = os.path.join(base_path, results_folder, "step-*")
+    
     for step_path in glob.glob(step_pattern):
         
         step = step_path.split("-")[-1]
@@ -118,6 +114,12 @@ def create_video_for_each_trj():
             out.release()
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--base_path', type=str, default="/", help="Path to checkpoint folder")
+    parser.add_argument('--task', type=str, default="pick_place", help="Task name")        
+    args = parser.parse_args()
+    
     # 1. create video
-    create_video_for_each_trj()
+    create_video_for_each_trj(base_path=args.base_path, task_name=args.task)
     
