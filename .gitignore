@@ -7,3 +7,4 @@ outputs/*
 mosaic-baseline-sav-folder/*
 *.out
 .vscode/*
+dataset_analysis_results/results_*

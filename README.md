@@ -53,3 +53,7 @@ pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 -f https://download.py
 conda create -n multi_task_lfd python=3.7 pytorch==1.8.1 torchvision==0.9.1 cudatoolkit=10.1 -c pytorch 
 export MUJOCO_PY_MUJOCO_PATH=/user/frosa/robotic/.mujoco/mujoco210
 ```
+
+## Dataset Collector
+This folder contains the code used to collect the dataset in real-world application.
+It depends dependens on the 

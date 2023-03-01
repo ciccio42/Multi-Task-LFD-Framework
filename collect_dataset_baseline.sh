@@ -4,9 +4,9 @@
 #                              stack_new_color, stack_new_shape]
 
 # path to folder where save trajectories
-BASEPATH=/home/
+BASEPATH=/home/ciccio/Desktop/multi_task_lfd
 PATH_TO_DATA=$BASEPATH/multitask_dataset
-SUITE=${PATH_TO_DATA}/multitask_dataset_baseline
+SUITE=${PATH_TO_DATA}/multitask_dataset_baseline_1
 echo ${SUITE}
 WORKERS=5 # number of workers
 GPU_ID_INDX=0
@@ -35,10 +35,10 @@ echo "---- Start to collect dataset ----"
 
 # ---- Pick-place ----
 TASK_name=pick_place  ## NOTE different size
-N_tasks=1
-NUM=10
+N_tasks=16
+NUM=1600
 N_env=800
-per_task=10
+per_task=100
 HEIGHT=100
 WIDTH=180
 for ROBOT in panda sawyer
