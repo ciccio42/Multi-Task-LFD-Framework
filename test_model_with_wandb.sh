@@ -29,7 +29,8 @@ do
 for TASK in pick_place
 do
 
-python3 $BASE_PATH/repo/mosaic/tasks/test_models/test_any_task.py $MODEL --env $TASK --saved_step $S --eval_each_task 10 --num_workers 1 --variation 12 --debug --seed 3878389150
+# python3 $BASE_PATH/repo/mosaic/tasks/test_models/test_any_task.py $MODEL --wandb_log --env $TASK --saved_step $S --eval_each_task 10 --num_workers 5 --project_name 'mosaic_baseline_1_stable_policy'
+python3 $BASE_PATH/repo/mosaic/tasks/test_models/test_any_task.py $MODEL --env $TASK --saved_step $S --eval_each_task 10 --num_workers 1 --project_name 'mosaic_baseline_1_stable_policy' --debug --variation 12
 done
 
 done
