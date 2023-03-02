@@ -27,7 +27,7 @@ docker exec -it --detach-keys 'ctrl-p'  multitask_lfd /bin/bash
 # docker run --name multitask_lfd -v [PATH-TO-CLONED-REPOSITORY]:/home/multitask_lfd -v [PATH-TO-DATASET-FOLDER]:/home/multitask_dataset -p 5678:5678 -it --gpus '"device=[GPU TO MAKE AVAILABLE]"' --shm-size 8G --rm multitask_lfd
 
 #---- Command Example ----#
-docker run --name multitask_lfd -v /user/frosa/robotic/Multi-Task-LFD-Framework:/home/Multi-Task-LFD-Framework -v /mnt/sdc1/frosa/multitask_dataset:/home/multitask_dataset -v /usr/lib/nvidia:/usr/lib/nvidia-000 -p 5678:5678 -it --gpus all --rm --pid=host --detach-keys 'ctrl-p' multitask_lfd
+docker run --name multitask_lfd -v /user/frosa/robotic/Multi-Task-LFD-Framework:/home/Multi-Task-LFD-Framework -v /mnt/sdc1/frosa/multitask_dataset:/home/multitask_dataset -v /usr/lib/nvidia:/usr/lib/nvidia-000 --shm-size 8G -p 5678:5678 -it --gpus all --rm --pid=host --detach-keys 'ctrl-p' multitask_lfd 
 ```
 # Note
 If you use **online rendering**

@@ -1,8 +1,5 @@
 import cv2
 import numpy as np
-cv2.imshow("debug", np.zeros((128,128,3), dtype=np.uint8))   # Frezzes at this line if torchvision is imported
-cv2.waitKey(1)
-cv2.destroyAllWindows()
 import torch
 from omegaconf import DictConfig, OmegaConf
 import hydra, os
@@ -39,8 +36,8 @@ from robosuite_env.controllers.expert_door import \
 import sys
 import pickle as pkl
 import json
-torch.multiprocessing.set_sharing_strategy('file_system')
-sys.path.append('/home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework/repo/mosaic/tasks/test_models')
+set_start_method('forkserver', force=True)
+sys.path.append('/home/Multi-Task-LFD-Framework/repo/mosaic/tasks/test_models')
 from eval_functions import *
 import warnings
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
@@ -99,7 +96,8 @@ TASK_MAP = {
     },
 }
 
-def torch_to_numpy(tensor):
+def torch_to_numpy(original_tensor):
+    tensor = copy.deepcopy(original_tensor)
     tensor = Normalize([-0.485/0.229, -0.456/0.224, -0.406/0.225], std=[1/0.229, 1/0.224, 1/0.225])(tensor)
     tensor = torch.mul(tensor, 255)
     # convert the tensor to a numpy array
@@ -139,7 +137,8 @@ def build_tvf_formatter(config, env_name='stack'):
         assert img_h != 3 and img_w != 3, img.shape 
         box_h, box_w = img_h - top - crop_params[1], img_w - left - crop_params[3]
         
-        obs = ToTensor()(img.copy())
+        img = img.copy()
+        obs = ToTensor()(img)
         obs = resized_crop(obs, top=top, left=left, height=box_h, width=box_w,
                         size=(height, width))
  
@@ -228,7 +227,7 @@ def get_action(model, states, images, context, gpu_id, n_steps, max_T=80, baseli
     action[-1] = 1 if action[-1] > 0 and n_steps < max_T - 1 else -1
     return action 
 
-def pick_place(model, env, context, gpu_id, variation_id, img_formatter, max_T=85, baseline=False, seed=None, agent_traj=None, model_act=False, show_img=False):
+def pick_place(model, env, context, gpu_id, variation_id, img_formatter, max_T=85, baseline=None, seed=None, agent_traj=None, model_act=False, show_img=False):
 
     done, states, images, context, obs, traj, tasks = \
         startup_env(model, env, context, gpu_id, variation_id, baseline=baseline, seed=seed)
@@ -236,7 +235,10 @@ def pick_place(model, env, context, gpu_id, variation_id, img_formatter, max_T=8
     
     if agent_traj is not None:
         # change object position
+        print("Set object position based on training sample")
         init_env(env=env, traj=agent_traj)
+    else:
+        print("Set object position randomly")
 
     object_name = env.objects[env.object_id].name
     obj_delta_key = object_name + '_to_robot0_eef_pos'
@@ -301,10 +303,10 @@ def pick_place(model, env, context, gpu_id, variation_id, img_formatter, max_T=8
     return traj, tasks, context
 
 
-def run_inference(model, conf_file, task_name, task_indx, results_dir_path, file_pair):
+def run_inference(model, conf_file, task_name, task_indx, results_dir_path, training_trj, show_image, file_pair):
     model.cuda(0)
     indx = file_pair[1]
-    print(indx)
+    print(f"Index {indx}")
     demo_file = file_pair[0][2]
     demo_file_name = demo_file.split('/')[-1]
     agent_file = file_pair[0][3]
@@ -343,15 +345,28 @@ def run_inference(model, conf_file, task_name, task_indx, results_dir_path, file
         context = torch.from_numpy(np.concatenate(context, 0))[None]
     else:
         context = torch.cat(context, dim=0)[None]
-
-    with torch.no_grad():
-        traj, info, context =  pick_place(model=model, env=agent_env, context=context, gpu_id=0, variation_id=variation, img_formatter=img_formatter, max_T=60, agent_traj=agent_data['traj'], model_act=True, show_img=False)
-        print("Evaluated traj #{}, task#{}, reached? {} picked? {} success? {} ".format(indx, args.task_indx, info['reached'], info['picked'], info['success']))
     
-    # save results
+    if training_trj:
+        agent_trj = agent_data['traj']
+    else:
+        agent_trj = None
+
+    start, end = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+    with torch.no_grad():
+        start.record()
+        traj, info, context =  pick_place(model=model, env=agent_env, context=context, gpu_id=0, variation_id=variation, img_formatter=img_formatter, max_T=60, agent_traj=agent_trj, model_act=True, show_img=show_image)
+        print("Evaluated traj #{}, task#{}, reached? {} picked? {} success? {} ".format(indx, variation, info['reached'], info['picked'], info['success']))
+        end.record()
+        # WAIT FOR GPU SYNC
+        torch.cuda.synchronize()
+        curr_time = start.elapsed_time(end)
+        print(f"Elapsed time {curr_time}")
+
+    # save results  
     results_analysis.append(info)
     pkl.dump(traj, open(results_dir_path+'/traj{}.pkl'.format(indx), 'wb'))
     pkl.dump(context, open(results_dir_path+'/context{}.pkl'.format(indx), 'wb'))
+    json.dump({k: int(v) for k, v in info.items()}, open(results_dir_path+'/traj{}.json'.format(indx), 'w'))
 
     del model
     return results_analysis
@@ -363,8 +378,10 @@ if __name__ == '__main__':
     parser.add_argument('--step', type=int)
     parser.add_argument('--task_indx', type=int)
     parser.add_argument('--results_dir', type=str, default="/")
-    parser.add_argument('--num_workers', type=int, default=2)
+    parser.add_argument('--num_workers', type=int, default=1)
     parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--training_trj', action='store_true')
+    parser.add_argument('--show_img', action='store_true')
     
     args = parser.parse_args()
 
@@ -383,7 +400,11 @@ if __name__ == '__main__':
     model.eval()
     # get the sample indices for the desired subtask
     task_name = 'pick_place' #dataset.subtask_to_idx.keys()
-    subtask_indices = dataset.subtask_to_idx[task_name][f"task_{args.task_indx}"][:4]
+    if args.task_indx < 10:
+        variation_str = f"0{args.task_indx}"
+    else:
+        variation_str = str(args.task_indx)
+    subtask_indices = dataset.subtask_to_idx[task_name][f"task_{variation_str}"]
     
     file_pairs = [(dataset.all_file_pairs[indx], indx) for indx in subtask_indices]
     
@@ -393,7 +414,8 @@ if __name__ == '__main__':
     except:
         pass
 
-    f =  functools.partial(run_inference, model, conf_file, task_name, args.task_indx, results_dir_path)
+    # model, conf_file, task_name, task_indx, results_dir_path, training_trj, show_image, file_pair
+    f =  functools.partial(run_inference, model, conf_file, task_name, args.task_indx, results_dir_path, args.training_trj, args.show_img)
 
     if args.num_workers > 1:
         with Pool(args.num_workers) as p:

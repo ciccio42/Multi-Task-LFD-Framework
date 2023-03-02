@@ -36,9 +36,8 @@ def torch_to_numpy(tensor):
 
 def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     
-    results_folder = f"results_{task_name}_*"
-    step_pattern = os.path.join(base_path, results_folder, "task_*")
-    print(step_pattern)
+    results_folder = f"results_{task_name}*"
+    step_pattern = os.path.join(base_path, results_folder, "task-*")
     for step_path in glob.glob(step_pattern):
                 
         step = step_path.split("-")[-1]
@@ -57,16 +56,20 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
             pass
 
         for context_file, traj_file in zip(context_files, traj_files):
-
+            print(context_file, traj_file)
             with open(context_file, "rb") as f:
                 context_data = pickle.load(f)
             with open(traj_file, "rb") as f:
                 traj_data = pickle.load(f)
             # open json file
-            json_file = traj_file.split('.')[-2]
-            with open(f"{json_file}.json", "rb") as f:
-                traj_result = json.load(f)
-                
+            traj_result=None
+            try:
+                json_file = traj_file.split('.')[-2]
+                with open(f"{json_file}.json", "rb") as f:
+                    traj_result = json.load(f)
+            except:
+                pass
+
             # convert context from torch tensor to numpy
             context_frames = torch_to_numpy(context_data)
 
@@ -102,7 +105,10 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
             out = cv2.VideoWriter(os.path.join(video_path,out_path), fourcc, 30, (output_width, output_height))
             
             # create the string to put on each frame
-            res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+            if traj_result:
+                res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+            else:
+                res_string = f"Sample index {step}"
             font = cv2.FONT_HERSHEY_SIMPLEX
             font_scale = 0.35
             thickness = 1
