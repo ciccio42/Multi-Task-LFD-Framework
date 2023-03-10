@@ -338,7 +338,7 @@ def create_env(env_fn, agent_name, variation, ret_env, seed=None, heights=100, w
         create_seed = create_seed.getrandbits(32)
     else:
         create_seed = seed
-
+    print(f"Creating environment with variation {variation}")
     controller = load_controller_config(default_controller='IK_POSE')
     return env_fn( agent_name, controller_type=controller, task=variation, ret_env=True, seed=create_seed, heights=heights, widths=widths, gpu_id=gpu_id)
 
