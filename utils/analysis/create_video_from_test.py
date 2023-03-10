@@ -13,7 +13,11 @@ from torchvision.transforms import Normalize
 import json
 
 def find_number(name):
-    return int(re.search(r"\d+", name).group())
+    #return int(re.search(r"\d+", name).group())
+    #regex = r'(\d+)_(\d+)'
+    regex = r'(\d+)'
+    res = re.search(regex, name)
+    return res.group()
 
 # Define a custom sorting key function
 def sort_key(file_name):
@@ -36,8 +40,8 @@ def torch_to_numpy(tensor):
 
 def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     
-    results_folder = f"results_{task_name}*"
-    step_pattern = os.path.join(base_path, results_folder, "task-*")
+    results_folder = f"results_{task_name}"
+    step_pattern = os.path.join(base_path, results_folder, "step-*")
     for step_path in glob.glob(step_pattern):
                 
         step = step_path.split("-")[-1]
@@ -46,7 +50,6 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
         context_files.sort(key=sort_key)
         traj_files = glob.glob(os.path.join(step_path, "traj*.pkl"))
         traj_files.sort(key=sort_key)
-
         
         try:
             print("Creating folder {}".format(os.path.join(step_path, "video")))

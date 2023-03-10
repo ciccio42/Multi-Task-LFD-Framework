@@ -28,11 +28,11 @@ pip3 install --user .
 # install code for running scripted policies
 #echo ----- Installing Training Framework -----
 # 1. Install training 
-#cd $BASEPATH/repo/Multi-Task-LFD-Training-Framework/training
-#pip3 install --user .
+cd $BASEPATH/repo/Multi-Task-LFD-Training-Framework/training
+pip3 install --user .
 ## 2. Install tasks
-#cd $BASEPATH/repo/Multi-Task-LFD-Training-Framework/tasks
-#pip3 install --user .
+cd $BASEPATH/repo/Multi-Task-LFD-Training-Framework/tasks
+pip3 install --user .
 
 export CUDA_VISIBLE_DEVICES=0
 
