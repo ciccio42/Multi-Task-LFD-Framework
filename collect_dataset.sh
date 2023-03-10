@@ -30,7 +30,7 @@ python3 tasks/collect_data/collect_task.py ${SUITE}/${TASK_name}/${ROBOT}_${TASK
     --ctrl_config ${PATH_TO_CONTROL_CONFIG} \
     --overwrite \
     --gpu_id_indx ${GPU_ID_INDX} \
-    --collect_cam
+    #--collect_cam
     #--debugger
     #--renderer 
     
