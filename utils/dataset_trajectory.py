@@ -97,9 +97,15 @@ if __name__ == "__main__":
                             if i == 0:
                                 i += 1
                                 logger.debug(sample)
-                                logger.info(f"Observation keys: {sample['traj'][0]['obs'].keys()}")
-                                logger.info(f"{sample['traj'][0]['obs']['ee_aa']}")
-
+                                logger.debug(f"Observation keys: {sample['traj'][0]['obs'].keys()}")
+                                logger.debug(f"{sample['traj'][1]['obs']['ee_aa']}")
+                                obs = sample['traj'][0]['obs']['image']
+                                try:
+                                    os.makedirs(saving_dir_img)
+                                except:
+                                    pass
+                                img_name = os.path.join(saving_dir_img, f"{0}.png")
+                                cv2.imwrite(img_name, obs)
 
                             # take the Trajectory obj from the trajectory
                             trajectory_obj = sample['traj']
@@ -121,28 +127,30 @@ if __name__ == "__main__":
                                 #write_frame(left_video_rgb, left_video_depth, "camera_lateral_left", obs_t)
                                 #write_frame(eye_in_hand_rgb, eye_in_hand_depth, "robot0_eye_in_hand", obs_t)
                                 # get action
-                                try:
-                                    action_t = trajectory_obj.get(t)['action']
-                                    logger.info(f"Action at time-step {t}: {action_t}")
-                                except KeyError:
-                                    pass
+                                # try:
+                                #     action_t = trajectory_obj.get(t)['action']
+                                #     logger.info(f"Action at time-step {t}: {action_t}")
+                                # except KeyError:
+                                #     pass
                                 
-                                if trajectory_obj.get(t)['info']['status'] == 'obj_in_hand' and obj_in_hand == 0:
-                                    obj_in_hand = 1
-                                    obs = trajectory_obj[t]['obs']['image']
-                                    try:
-                                        os.makedirs(saving_dir_img)
-                                    except:
-                                        pass
-                                    img_name = os.path.join(saving_dir_img, f"{t}.png")
-                                    cv2.imwrite(img_name, obs)
-                                if trajectory_obj.get(t)['info']['status'] == 'moving' and start_moving == 0:
-                                    start_moving = t
-                                elif trajectory_obj.get(t)['info']['status'] != 'moving' and start_moving != 0 and end_moving == 0:
-                                    end_moving = t
-                                    middle_moving_t = start_moving + int((end_moving-start_moving)/2)
-                                    obs = trajectory_obj.get(middle_moving_t)['obs']['image']
-                                    img_name = os.path.join(saving_dir_img, f"{middle_moving_t}.png")
-                                    cv2.imwrite(img_name, obs)
+                                    
+
+                                # if trajectory_obj.get(t)['info']['status'] == 'obj_in_hand' and obj_in_hand == 0:
+                                #     obj_in_hand = 1
+                                #     obs = trajectory_obj[t]['obs']['image']
+                                #     try:
+                                #         os.makedirs(saving_dir_img)
+                                #     except:
+                                #         pass
+                                #     img_name = os.path.join(saving_dir_img, f"{t}.png")
+                                #     cv2.imwrite(img_name, obs)
+                                # if trajectory_obj.get(t)['info']['status'] == 'moving' and start_moving == 0:
+                                #     start_moving = t
+                                # elif trajectory_obj.get(t)['info']['status'] != 'moving' and start_moving != 0 and end_moving == 0:
+                                #     end_moving = t
+                                #     middle_moving_t = start_moving + int((end_moving-start_moving)/2)
+                                #     obs = trajectory_obj.get(middle_moving_t)['obs']['image']
+                                #     img_name = os.path.join(saving_dir_img, f"{middle_moving_t}.png")
+                                #     cv2.imwrite(img_name, obs)
 
                         cv2.destroyAllWindows()

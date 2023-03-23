@@ -36,6 +36,7 @@ from robosuite_env.controllers.expert_door import \
 import sys
 import pickle as pkl
 import json
+from utils import *
 import wandb
 set_start_method('forkserver', force=True)
 sys.path.append('/home/Multi-Task-LFD-Framework/repo/mosaic/tasks/test_models')
@@ -44,158 +45,6 @@ import warnings
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
 
 # python dataset_analysis.py --model /home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Stable-Policy-Batch32-1gpu-Attn2ly128-Act2ly256mix4-headCat-simclr128x512 --step 72900 --task_indx 12 --debug
-
-def pick_place_eval(model, env, context, gpu_id, variation_id, img_formatter, max_T=85, baseline=None, seed=None, agent_traj=None, model_act=False, show_img=False, experiment_number=1):
-
-    done, states, images, context, obs, traj, tasks = \
-        startup_env(model, env, context, gpu_id, variation_id, baseline=baseline, seed=seed)
-    n_steps = 0
-    
-    if agent_traj is not None:
-        # change object position
-        print("Set object position based on training sample")
-        init_env(env=env, traj=agent_traj)
-    else:
-        print("Set object position randomly")
-
-    object_name = env.objects[env.object_id].name
-    obj_delta_key = object_name + '_to_robot0_eef_pos'
-    obj_key = object_name + '_pos'
-
-    start_z = obs[obj_key][2]
-    t = 0
-    while not done:
-        tasks['reached'] =  tasks['reached'] or np.linalg.norm(obs[obj_delta_key][:2]) < 0.03
-        tasks['picked'] = tasks['picked'] or (tasks['reached'] and obs[obj_key][2] - start_z > 0.05)
-        if baseline and len(states) >= 5:
-            states, images = [], []
-        states.append(np.concatenate((obs['ee_aa'], obs['gripper_qpos'])).astype(np.float32)[None])
-        
-        if show_img:
-            # convert context from torch tensor to numpy
-            context_frames = torch_to_numpy(context)
-            number_of_context_frames = len(context_frames)
-            demo_height, demo_width, _ = context_frames[0].shape
-            # Determine the number of columns and rows to create the grid of frames
-            num_cols = 2  # Example value, adjust as needed
-            num_rows = (number_of_context_frames + num_cols - 1) // num_cols
-            # Create the grid of frames
-            frames = []
-            for i in range(num_rows):
-                row_frames = []
-                for j in range(num_cols):
-                    index = i * num_cols + j
-                    if index < number_of_context_frames:
-                        frame = context_frames[index][:,:,::-1]
-                        row_frames.append(frame)
-                row = cv2.hconcat(row_frames)
-                frames.append(row)
-            new_image = np.array(cv2.resize(cv2.vconcat(frames), (demo_width, demo_height)), np.uint8)
-            output_frame = cv2.hconcat([new_image, obs['image'][:,:,::-1]])
-            # showing the image
-            cv2.imshow(f'Frame {t}', output_frame)
-            t += 1
-            # waiting using waitKey method
-            cv2.waitKey(1000)
-            cv2.destroyAllWindows()
-
-        images.append(img_formatter(obs['image'])[None])
-        if model_act:
-            action = get_action(model, states, images, context, gpu_id, n_steps, max_T, baseline)
-        else:
-            action = agent_traj[t]['action']
-
-        obs, reward, env_done, info = env.step(action)
-        traj.append(obs, reward, done, info, action)
-
-        tasks['success'] = reward or tasks['success']
-        n_steps += 1
-        if env_done or reward or n_steps > max_T:
-            done = True
-    env.close()
-    del env
-    del states
-    del images
-    del model
-    torch.cuda.empty_cache()
-    return traj, tasks, context
-
-def nut_assembly_eval(model, env, context, gpu_id, variation_id, img_formatter, max_T=85, baseline=None, seed=None, agent_traj=None, model_act=False, show_img=False):
-
-    done, states, images, context, obs, traj, tasks = \
-        startup_env(model, env, context, gpu_id, variation_id, baseline=baseline, seed=seed)
-    n_steps = 0
-    
-    if agent_traj is not None:
-        # change object position
-        print("Set object position based on training sample")
-        init_env(env=env, traj=agent_traj)
-    else:
-        print("Set object position randomly")
-
-
-    object_name = env.nuts[env.nut_id].name
-    if env.nut_id == 0:
-        handle_loc = env.sim.data.site_xpos[env.sim.model.site_name2id('round-nut_handle_site')]
-    elif env.nut_id == 1:
-        handle_loc = env.sim.data.site_xpos[env.sim.model.site_name2id('round-nut-2_handle_site')]
-    else:
-        handle_loc = env.sim.data.site_xpos[env.sim.model.site_name2id('round-nut-3_handle_site')]
-
-    obj_key = object_name + '_pos'
-    start_z = obs[obj_key][2]
-    n_steps = 0
-    while not done:
-        tasks['reached'] = tasks['reached'] or np.linalg.norm(handle_loc - obs['eef_pos']) < 0.045
-        tasks['picked'] = tasks['picked'] or (tasks['reached'] and obs[obj_key][2] - start_z > 0.05)
-        if baseline and len(states) >= 5:
-            states, images = [], []
-
-        if show_img:
-            # convert context from torch tensor to numpy
-            context_frames = torch_to_numpy(context)
-            number_of_context_frames = len(context_frames)
-            demo_height, demo_width, _ = context_frames[0].shape
-            # Determine the number of columns and rows to create the grid of frames
-            num_cols = 2  # Example value, adjust as needed
-            num_rows = (number_of_context_frames + num_cols - 1) // num_cols
-            # Create the grid of frames
-            frames = []
-            for i in range(num_rows):
-                row_frames = []
-                for j in range(num_cols):
-                    index = i * num_cols + j
-                    if index < number_of_context_frames:
-                        frame = context_frames[index][:,:,::-1]
-                        row_frames.append(frame)
-                row = cv2.hconcat(row_frames)
-                frames.append(row)
-            new_image = np.array(cv2.resize(cv2.vconcat(frames), (demo_width, demo_height)), np.uint8)
-            output_frame = cv2.hconcat([new_image, obs['image'][:,:,::-1]])
-            # showing the image
-            cv2.imshow(f'Frame {t}', output_frame)
-            t += 1
-            # waiting using waitKey method
-            cv2.waitKey(1000)
-            cv2.destroyAllWindows()
-
-        states.append(np.concatenate((obs['ee_aa'], obs['gripper_qpos'])).astype(np.float32)[None])
-        images.append(img_formatter(obs['image'])[None])
-        action = get_action(model, states, images, context, gpu_id, n_steps, max_T, baseline)
-        
-        obs, reward, env_done, info = env.step(action)
-        traj.append(obs, reward, done, info, action)
-        tasks['success'] = ( reward and tasks['reached'] ) or tasks['success']
-        n_steps += 1
-        if env_done or reward or n_steps > max_T:
-            done = True
-    env.close()
-    del env
-    del states
-    del images
-    del model
-    torch.cuda.empty_cache()
-    return traj, tasks, context
 
 TASK_MAP = {
     'basketball': {
@@ -250,8 +99,8 @@ TASK_MAP = {
 }
 
 # pick-place
-# agent_target = ["traj039", "traj051", "traj085", "traj092"]
-# demo_target = ["traj027", "traj051", "traj039"]
+#agent_target = ["traj039", "traj051", "traj085", "traj092"]
+#demo_target = ["traj027", "traj051", "traj039"]
 # target object on the center right [97200, 97201, 97224, 97204]
 # target object on the right [97290, 97291, 97294, 97314]
 # target object on the left [97470, 97471, 97474, 97494]
@@ -278,33 +127,6 @@ OBJECT_DISTRIBUTION = {
         'ranges': [[0.10, 0.31], [-0.10, 0.10], [-0.31, -0.10]]
     }
 }
-
-TASK_NAME='pick_place'
-
-def torch_to_numpy(original_tensor):
-    tensor = copy.deepcopy(original_tensor)
-    tensor = Normalize([-0.485/0.229, -0.456/0.224, -0.406/0.225], std=[1/0.229, 1/0.224, 1/0.225])(tensor)
-    tensor = torch.mul(tensor, 255)
-    # convert the tensor to a numpy array
-    numpy_array = tensor.cpu().numpy()
-    # transpose the numpy array to [y,h,w,c]
-    numpy_array_transposed = np.transpose(numpy_array, (1, 3, 4, 2, 0))[:,:,:,:,0]
-    return numpy_array_transposed
-
-def load_trajectories(conf_file):
-    conf_file.dataset_cfg.mode='train'
-    return hydra.utils.instantiate(conf_file.dataset_cfg)
-
-def load_model(model_path=None, step=0, conf_file=None):
-    if model_path:
-        # 1. Create the model starting from configuration
-        model = hydra.utils.instantiate(conf_file.policy)
-        # 2. Load weights
-        weights = torch.load(os.path.join(model_path, f"model_save-{step}.pt"),map_location=torch.device('cpu'))
-        model.load_state_dict(weights)
-        return model
-    else:
-        raise ValueError("Model path cannot be None")
 
 def build_tvf_formatter(config, env_name='stack'):
     """Use this for torchvision.transforms in multi-task dataset, 
@@ -395,73 +217,10 @@ def select_random_frames(frames, n_select, sample_sides=True, experiment_number=
         #return [frames[i]['obs']['image-state'] for i in selected_frames]
     return frames[selected_frames]
 
-def startup_env(model, env, context, gpu_id, variation_id, baseline=None, seed=None):
-    done, states, images = False, [], []
-    if baseline is None:
-        states = deque(states, maxlen=1)
-        images = deque(images, maxlen=1) # NOTE: always use only one frame
-    context = context.cuda(gpu_id)
-    # np.random.seed(seed)
-    while True:
-        try:
-            obs = env.reset()
-            break
-        except:
-            pass
-    traj = Trajectory()
-    traj.append(obs)
-    tasks = {'success': False, 'reached': False, 'picked': False, 'variation_id': variation_id}
-    return done, states, images, context, obs, traj, tasks
 
-def init_env(env, traj):
-    # get objects id
-    if task_name == 'pick_place':
-        for obj_name in env.object_to_id.keys():
-            obj = env.objects[env.object_to_id[obj_name]]
-            # set object position based on trajectory file
-            obj_pos = traj[1]['obs'][f"{obj_name}_pos"]
-            obj_quat = traj[1]['obs'][f"{obj_name}_quat"]
-            env.sim.data.set_joint_qpos(obj.joints[0], np.concatenate([obj_pos, obj_quat]))
-    elif task_name == 'nut_assembly':
-        for obj_name in env.env.nut_to_id.keys():
-            obj = env.env.nuts[env.env.nut_to_id[obj_name]]
-            obj_id = env.env.nut_to_id[obj_name]
-            if obj_id == 0:
-                obj_pos = traj[1]['obs']['round-nut_pos']
-                obj_quat = traj[1]['obs']['round-nut_quat']
-            else:
-                obj_pos = traj[1]['obs'][f'round-nut-{obj_id+1}_pos']
-                obj_quat = traj[1]['obs'][f'round-nut-{obj_id+1}_quat']
-            # set object position based on trajectory file
-            env.sim.data.set_joint_qpos(obj.joints[0], np.concatenate([obj_pos, obj_quat]))
-
-def get_action(model, states, images, context, gpu_id, n_steps, max_T=80, baseline=None):
-    s_t = torch.from_numpy(np.concatenate(states, 0).astype(np.float32))[None] 
-    if isinstance(images[-1], np.ndarray):
-        i_t = torch.from_numpy(np.concatenate(images, 0).astype(np.float32))[None] 
-    else:
-        i_t = images[0][None]
-    s_t, i_t = s_t.cuda(gpu_id), i_t.cuda(gpu_id)
-    
-    if baseline == 'maml':
-        learner = model.clone()
-        learner.adapt(\
-            learner(None, context[0], learned_loss=True)['learned_loss'], allow_nograd=True, allow_unused=True)
-        out = learner(states=s_t[0], images=i_t[0], ret_dist=True)
-        action = out['action_dist'].sample()[-1].cpu().detach().numpy()
-        
-    else:
-        with torch.no_grad():
-            out = model(states=s_t, images=i_t, context=context, eval=True) # to avoid computing ATC loss
-            action = out['bc_distrib'].sample()[0, -1].cpu().numpy()
-    # if TASK_NAME == 'nut_assembly':
-    #     action[3:7] = [1.0, 1.0, 0.0, 0.0]
-    action[-1] = 1 if action[-1] > 0 and n_steps < max_T - 1 else -1
-    return action 
-
-def single_run(agent_env, context, img_formatter, variation, show_image, agent_trj, indx):
+def single_run(model, agent_env, context, img_formatter, variation, show_image, agent_trj, indx):
     start, end = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
-    eval_fn = TASK_MAP[TASK_NAME]['eval_fn']
+    eval_fn = TASK_MAP[args.task_name]['eval_fn']
     with torch.no_grad():
         start.record()
         traj, info, context =  eval_fn(model=model, env=agent_env, context=context, gpu_id=0, variation_id=variation, img_formatter=img_formatter, max_T=60, agent_traj=agent_trj, model_act=True, show_img=show_image)
@@ -526,13 +285,13 @@ def run_inference(model, conf_file, task_name, task_indx, results_dir_path, trai
         # select context frames
         context = select_random_frames(demo_data['traj'], 4, sample_sides=True, experiment_number=experiment_number)
         # perform normalization on context frames
-        context = [img_formatter(i)[None] for i in context]
+        context = [img_formatter(i[:,:,::-1]/255)[None] for i in context]
         if isinstance(context[0], np.ndarray):
-            context = torch.from_numpy(np.concatenate(context, 0))[None]
+            context = torch.from_numpy(np.concatenate(context, 0)).float()[None]
         else:
-            context = torch.cat(context, dim=0)[None]
+            context = torch.cat(context, dim=0).float()[None]
         
-        traj, info = single_run(agent_env=agent_env, context=context, img_formatter=img_formatter, variation=variation, show_image=show_image, agent_trj=agent_trj, indx=indx)
+        traj, info = single_run(model=model, agent_env=agent_env, context=context, img_formatter=img_formatter, variation=variation, show_image=show_image, agent_trj=agent_trj, indx=indx)
         results_analysis.append(info)
         info['demo_file'] = demo_file_name
         info['agent_file'] = agent_file_name
@@ -559,12 +318,13 @@ if __name__ == '__main__':
     parser.add_argument('--results_dir', type=str, default="/")
     parser.add_argument('--num_workers', type=int, default=1)
     parser.add_argument('--project_name', type=str, default=None)
+    parser.add_argument('--task_name', type=str, default="pick_place")
     parser.add_argument('--experiment_number', type=int, default=1, help="1: Take samples from list and run 10 times with different demonstrator frames; 2: Take all the file from the training set")
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--training_trj', action='store_true')
     parser.add_argument('--show_img', action='store_true')
     parser.add_argument('--run_inference', action='store_true')
-
+    
     args = parser.parse_args()
 
     if args.debug:
@@ -581,16 +341,18 @@ if __name__ == '__main__':
     model = load_model(model_path=args.model, step=args.step, conf_file=conf_file)
     model.eval()
     # get the sample indices for the desired subtask
-    task_name = TASK_NAME #dataset.subtask_to_idx.keys()
+    task_name = args.task_name #dataset.subtask_to_idx.keys()
     if args.task_indx < 10:
         variation_str = f"{args.task_indx}"
     else:
         variation_str = str(args.task_indx)
     
     if args.experiment_number==1 or args.experiment_number==5:
+        # use specific indices from the list
         subtask_indices = SAMPLE_LIST
         file_pairs = [(dataset.all_file_pairs[indx], indx) for indx in subtask_indices]
     elif args.experiment_number==2:
+        # Try a specific sub-task
         subtask_indices = dataset.subtask_to_idx[task_name][f"task_{variation_str}"]
         file_pairs = [(dataset.all_file_pairs[indx], indx) for indx in subtask_indices]
     elif args.experiment_number == 3:  
@@ -606,7 +368,6 @@ if __name__ == '__main__':
                         for agent_target_trj in agent_target:
                             if agent_target_trj in sample_agent_file:
                                 print(f"Sample number {sample_indx} - Demo file {demo_target_trj} - Agent file {agent_target_trj}")
-
     elif args.experiment_number == 4:
         # Compute object position distribution, the counter is incremented when the object is the target one
         cnt = 0
@@ -641,13 +402,12 @@ if __name__ == '__main__':
                             print(f"Task {task_indx} - {agent_file}")
         print(cnt)
         print(object_distribution)
-    
-    
-    if args.run_inference and (args.experiment_number==1 or args.experiment_number==2 or args.experiment_number==5):
+       
+    if  args.experiment_number==1 or args.experiment_number==2 or args.experiment_number==5:
 
         if args.project_name:
             model_name = f"{args.model.split('/')[-1]}-{args.step}"
-            run = wandb.init(project=args.project_name, job_type='test', group=model_name)
+            run = wandb.init(project=args.project_name, job_type='test', group=model_name.split("-1gpu")[0])
             run.name = model_name + f'-Test_{model_name}-Step_{args.step}' 
             wandb.config.update(args)
 

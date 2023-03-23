@@ -14,8 +14,8 @@ import json
 
 def find_number(name):
     #return int(re.search(r"\d+", name).group())
-    #regex = r'(\d+)_(\d+)'
-    regex = r'(\d+)'
+    regex = r'(\d+)_(\d+)'
+    #regex = r'(\d+)'
     res = re.search(regex, name)
     return res.group()
 
@@ -41,7 +41,7 @@ def torch_to_numpy(tensor):
 def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     
     results_folder = f"results_{task_name}"
-    step_pattern = os.path.join(base_path, results_folder, "step-*")
+    step_pattern = os.path.join(base_path, results_folder, "task-*")
     for step_path in glob.glob(step_pattern):
                 
         step = step_path.split("-")[-1]
@@ -93,7 +93,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 for j in range(num_cols):
                     index = i * num_cols + j
                     if index < number_of_context_frames:
-                        frame = context_frames[index][:,:,::-1]
+                        frame = context_frames[index]
                         row_frames.append(frame)
                 row = cv2.hconcat(row_frames)
                 frames.append(row)

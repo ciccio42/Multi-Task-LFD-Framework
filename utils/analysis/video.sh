@@ -2,7 +2,7 @@
 
 # Define the output video file name and codec
 # Find all the "video" folders in the parent directory
-parent_dir="/user/frosa/robotic/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Stable-Policy-Fixed-Conditioning-Batch32-1gpu-Attn2ly128-Act2ly256mix4-headCat-simclr128x512/results_pick_place/step-60750"
+parent_dir="/user/frosa/robotic/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Balanced-Dataset-RMSProp-Batch64-1gpu-Attn2ly128-Act2ly256mix4-headCat-simclr128x512/results_pick_place/step-506250"
 video_folders=($(find_video_folders "$parent_dir"))
 output_file="$parent_dir/video_test.mp4"
 fourcc="mp4v"
