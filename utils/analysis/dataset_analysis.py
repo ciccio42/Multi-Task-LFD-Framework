@@ -217,7 +217,6 @@ def select_random_frames(frames, n_select, sample_sides=True, experiment_number=
         #return [frames[i]['obs']['image-state'] for i in selected_frames]
     return frames[selected_frames]
 
-
 def single_run(model, agent_env, context, img_formatter, variation, show_image, agent_trj, indx):
     start, end = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
     eval_fn = TASK_MAP[args.task_name]['eval_fn']

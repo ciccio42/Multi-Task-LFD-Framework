@@ -1,6 +1,6 @@
 #!/bin/sh
-export MUJOCO_PY_MUJOCO_PATH="/user/frosa/robotic/.mujoco/mujoco210"
-export CUDA_VISIBLE_DEVICES=2
+#export MUJOCO_PY_MUJOCO_PATH="/user/frosa/robotic/.mujoco/mujoco210"
+export CUDA_VISIBLE_DEVICES=0
 # 1 - BASELINE - mosaic experiment
 #EXP_NAME=Task-NutAssembly
 #TASK_str=nut_assembly
