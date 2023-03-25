@@ -39,89 +39,8 @@ import json
 import wandb
 set_start_method('forkserver', force=True)
 sys.path.append('/home/Multi-Task-LFD-Framework/repo/mosaic/tasks/test_models')
-from eval_functions import *
 import warnings
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
-
-OBJECT_DISTRIBUTION = {
-    'pick_place':{
-        'milk' : [0, 0, 0, 0],
-        'bread' : [0, 0, 0, 0],
-        'cereal' : [0, 0, 0, 0],
-        'can' : [0, 0, 0, 0],
-        'ranges':  [[0.16, 0.19], [0.05, 0.09], [-0.08, -0.03], [-0.19, -0.15]]
-    },
-    'nut_assembly':{
-        'nut0': [0, 0, 0],
-        'nut1': [0, 0, 0],
-        'nut2': [0, 0, 0],
-        'ranges': [[0.10, 0.31], [-0.10, 0.10], [-0.31, -0.10]]
-    }
-}
-
-ENV_OBJECTS = {
-    'pick_place':{
-        'obj_names': ['milk', 'bread', 'cereal', 'can'],
-        'ranges':  [[0.16, 0.19], [0.05, 0.09], [-0.08, -0.03], [-0.19, -0.15]]
-    },
-    'nut_assembly':{
-        'obj_names': ['nut0', 'nut1', 'nut2'],        
-        'ranges': [[0.10, 0.31], [-0.10, 0.10], [-0.31, -0.10]]
-    }
-}
-
-TASK_MAP = {
-    'basketball': {
-        'num_variations':   12, 
-        'env_fn':   basketball_expert,
-        'eval_fn':  basketball_eval,
-        'agent-teacher': ('PandaBasketball', 'SawyerBasketball'),
-        'render_hw': (100, 180),  
-        },
-    'nut_assembly':  {
-        'num_variations':   9, 
-        'env_fn':   nut_expert,
-        'eval_fn':  nut_assembly_eval,
-        'agent-teacher': ('PandaNutAssemblyDistractor', 'SawyerNutAssemblyDistractor'),
-        'render_hw': (100, 180), 
-        },
-    'pick_place': {
-        'num_variations':   16, 
-        'env_fn':   place_expert,
-        'eval_fn':  pick_place_eval,
-        'agent-teacher': ('PandaPickPlaceDistractor', 'SawyerPickPlaceDistractor'),
-        'render_hw': (100, 180), #(150, 270)
-        },
-    'stack_block': {
-        'num_variations':   6, 
-        'env_fn':   stack_expert,
-        'eval_fn':  block_stack_eval,
-        'agent-teacher': ('PandaBlockStacking', 'SawyerBlockStacking'),
-        'render_hw': (100, 180), ## older models used 100x200!!
-        },
-    'drawer': {
-        'num_variations':   8,
-        'env_fn':   draw_expert,
-        'eval_fn':  draw_eval,
-        'agent-teacher': ('PandaDrawer', 'SawyerDrawer'),
-        'render_hw': (100, 180),
-    },
-    'button': {
-        'num_variations':   6,
-        'env_fn':   press_expert,
-        'eval_fn':  press_button_eval,
-        'agent-teacher': ('PandaButton', 'SawyerButton'),
-        'render_hw': (100, 180),
-    },
-    'door': {
-        'num_variations':   4,
-        'env_fn':   door_expert,
-        'eval_fn':  open_door_eval,
-        'agent-teacher': ('PandaDoor', 'SawyerDoor'),
-        'render_hw': (100, 180),
-    },
-
-    }
 
 def torch_to_numpy(original_tensor):
     tensor = copy.deepcopy(original_tensor)
@@ -504,3 +423,46 @@ def nut_assembly_eval(model, env, context, gpu_id, variation_id, img_formatter, 
     torch.cuda.empty_cache()
     return traj, tasks, context
 
+OBJECT_DISTRIBUTION = {
+    'pick_place':{
+        'milk' : [0, 0, 0, 0],
+        'bread' : [0, 0, 0, 0],
+        'cereal' : [0, 0, 0, 0],
+        'can' : [0, 0, 0, 0],
+        'ranges':  [[0.16, 0.19], [0.05, 0.09], [-0.08, -0.03], [-0.19, -0.15]]
+    },
+    'nut_assembly':{
+        'nut0': [0, 0, 0],
+        'nut1': [0, 0, 0],
+        'nut2': [0, 0, 0],
+        'ranges': [[0.10, 0.31], [-0.10, 0.10], [-0.31, -0.10]]
+    }
+}
+
+ENV_OBJECTS = {
+    'pick_place':{
+        'obj_names': ['milk', 'bread', 'cereal', 'can'],
+        'ranges':  [[0.16, 0.19], [0.05, 0.09], [-0.08, -0.03], [-0.19, -0.15]]
+    },
+    'nut_assembly':{
+        'obj_names': ['nut0', 'nut1', 'nut2'],        
+        'ranges': [[0.10, 0.31], [-0.10, 0.10], [-0.31, -0.10]]
+    }
+}
+
+TASK_MAP = {
+    'nut_assembly':  {
+        'num_variations':   9, 
+        'env_fn':   nut_expert,
+        'eval_fn':  nut_assembly_eval,
+        'agent-teacher': ('PandaNutAssemblyDistractor', 'SawyerNutAssemblyDistractor'),
+        'render_hw': (100, 180), 
+        },
+    'pick_place': {
+        'num_variations':   16, 
+        'env_fn':   place_expert,
+        'eval_fn':  pick_place_eval,
+        'agent-teacher': ('PandaPickPlaceDistractor', 'SawyerPickPlaceDistractor'),
+        'render_hw': (100, 180), #(150, 270)
+        }
+}

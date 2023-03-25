@@ -41,7 +41,6 @@ import wandb
 from utils import *
 set_start_method('forkserver', force=True)
 sys.path.append('/home/Multi-Task-LFD-Framework/repo/mosaic/tasks/test_models')
-from eval_functions import *
 import warnings
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
 
@@ -81,28 +80,27 @@ def perform_detection(model, config, ctr,
     build_task = TASK_MAP.get(env_name, None)
     assert build_task, 'Got unsupported task '+env_name
     eval_fn = build_task['eval_fn']
-    traj, info = eval_fn(model, env, context, gpu_id, variation_id, img_formatter, baseline=baseline)
-    print("Evaluated traj #{}, task#{}, reached? {} picked? {} success? {} ".format(ctr, variation_id, info['reached'], info['picked'], info['success']))
-    return traj, info, expert_traj, context
+    predicted_slot, predicted_prob, gt_slot, context, agent_obs = inference(model, env, context, gpu_id, variation_id, img_formatter, baseline=baseline)
+    return predicted_slot, predicted_prob, gt_slot, context, agent_obs
 
 def _proc(model, config, results_dir, heights, widths, size, shape, color, env_name, baseline, variation, seed, n):
     json_name = results_dir + '/traj{}.json'.format(n)
     pkl_name  = results_dir + '/traj{}.pkl'.format(n)
-    if os.path.exists(json_name) and os.path.exists(pkl_name):
-        f = open(json_name)
-        task_success_flags = json.load(f)
-        print("Using previous results at {}. Loaded eval traj #{}, task#{}, reached? {} picked? {} success? {} ".format( 
-            json_name, n, task_success_flags['variation_id'], task_success_flags['reached'], task_success_flags['picked'], task_success_flags['success']))
-    else:
-        rollout, task_success_flags, expert_traj, context = perform_detection(
-            model, config, n, heights, widths, size, shape, color, 
-            max_T=60, env_name=env_name, baseline=baseline, variation=variation, seed=seed)
-        pkl.dump(rollout, open(results_dir+'/traj{}.pkl'.format(n), 'wb'))
-        pkl.dump(expert_traj, open(results_dir+'/demo{}.pkl'.format(n), 'wb'))
-        pkl.dump(context, open(results_dir+'/context{}.pkl'.format(n), 'wb')) 
-        json.dump({k: int(v) for k, v in task_success_flags.items()}, open(results_dir+'/traj{}.json'.format(n), 'w'))
+    res = OrderedDict()
+    predicted_slot, predicted_prob, gt_slot, context, agent_obs = perform_detection(
+        model, config, n, heights, widths, size, shape, color, 
+        max_T=60, env_name=env_name, baseline=baseline, variation=variation, seed=seed)
+    pkl.dump(agent_obs, open(results_dir+'/traj{}.pkl'.format(n), 'wb'))
+    pkl.dump(context, open(results_dir+'/context{}.pkl'.format(n), 'wb')) 
+    # check if the prediction is equal to the gt
+    pred_correctness = (predicted_slot == gt_slot)
+    res['predicted_slot'] = predicted_slot
+    res['gt_slot'] = gt_slot
+    res['pred_correctness'] = pred_correctness
+    res['pred_prob'] = predicted_prob
+    json.dump(res, open(results_dir+'/traj{}.json'.format(n), 'w'))
     del model
-    return task_success_flags
+    return res
 
 def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85, baseline=None, seed=None, agent_traj=None, model_act=False, show_img=False, experiment_number=1):
 
@@ -122,6 +120,25 @@ def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85
     obj_key = object_name + '_pos'
     start_z = obs[obj_key][2]
     t = 0
+
+    # compute agent target object position
+    agent_traj = agent_traj if agent_traj is not None else traj
+    agent_target_obj_position = -1
+    agent_target_obj_id = agent_traj.get(0)['obs']['target-object']
+    for id, obj_name in enumerate(ENV_OBJECTS[task_name]['obj_names']):
+        if id == agent_target_obj_id:
+            # get object position
+            if task_name == 'nut_assembly':
+                if id == 0:
+                    pos = agent_traj.get(0)['obs']['round-nut_pos']
+                else:
+                    pos = agent_traj.get(0)['obs'][f'round-nut-{id+1}_pos']
+            else:
+                pos = agent_traj.get(0)['obs'][f'{obj_name}_pos']        
+            for i, pos_range in enumerate(ENV_OBJECTS[task_name]["ranges"]):
+                if pos[1] >= pos_range[0] and pos[1] <= pos_range[1]: 
+                    agent_target_obj_position = i
+            break   
 
     if baseline and len(states) >= 5:
             images = []
@@ -165,21 +182,23 @@ def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85
         
     with torch.no_grad():
         out = model(images=i_t, context=context, eval=True) # to avoid computing ATC loss
-
+        predicted_slot = torch.argmax(out['target_obj_pred'].permute(0,2,1), dim=1).to('cpu').item()
+        gt_slot = agent_target_obj_position
+        predicted_prob = torch.nn.Softmax(dim=2)(out['target_obj_pred']).to('cpu').tolist()
     env.close()
     del env
     del states
     del images
     del model
     torch.cuda.empty_cache()
-    return traj, tasks, context
+    return predicted_slot, predicted_prob, gt_slot, context, obs['image']
 
 
 def single_run(model, agent_env, context, img_formatter, variation, show_image, agent_trj, indx):
     
     with torch.no_grad():
-        traj, info, context =  inference(model=model, env=agent_env, context=context, gpu_id=0, variation_id=variation, img_formatter=img_formatter, max_T=60, agent_traj=agent_trj, model_act=True, show_img=show_image)
-    return 
+        predicted_target, info, context =  inference(model=model, env=agent_env, context=context, gpu_id=0, variation_id=variation, img_formatter=img_formatter, max_T=60, agent_traj=agent_trj, model_act=True, show_img=show_image)
+    return predicted_target, info
 
 def run_inference(model, conf_file, task_name, task_indx, results_dir_path, training_trj, show_image, experiment_number, file_pair):
 
@@ -276,27 +295,18 @@ def run_inference(model, conf_file, task_name, task_indx, results_dir_path, trai
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('model')
-    parser.add_argument('--wandb_log', action='store_true')
-    parser.add_argument('--project_name', '-pn', default="mosaic", type=str)
-    parser.add_argument('--config', default='')
-    parser.add_argument('--N', default=-1, type=int)
-    parser.add_argument('--use_h', default=-1, type=int)
-    parser.add_argument('--use_w', default=-1, type=int)
-    parser.add_argument('--num_workers', default=3, type=int)
-    parser.add_argument('--size', action='store_true') # for block stacking only!
-    parser.add_argument('--shape', action='store_true')
-    parser.add_argument('--color', action='store_true')
-    parser.add_argument('--env' , '-e', default='door', type=str)
-    parser.add_argument('--eval_each_task',  default=30, type=int)
-    parser.add_argument('--eval_subsets',  default=0, type=int)
-    parser.add_argument('--saved_step', '-s', default=1000, type=int)
-    parser.add_argument('--baseline', '-bline', default=None, type=str, help='baseline uses more frames at each test-time step')
+    parser.add_argument('--model', type=str)
+    parser.add_argument('--step', type=int)
+    parser.add_argument('--task_indx', type=int)
+    parser.add_argument('--results_dir', type=str, default="/")
+    parser.add_argument('--num_workers', type=int, default=1)
+    parser.add_argument('--project_name', type=str, default=None)
+    parser.add_argument('--task_name', type=str, default="pick_place")
+    parser.add_argument('--experiment_number', type=int, default=1, help="1: Take samples from list and run 10 times with different demonstrator frames; 2: Take all the file from the training set")
     parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--results_name', default=None, type=str)
-    parser.add_argument('--variation', default=None, type=int)
-    parser.add_argument('--seed', default=None, type=int)
-
+    parser.add_argument('--training_trj', action='store_true')
+    parser.add_argument('--show_img', action='store_true')
+    parser.add_argument('--run_inference', action='store_true')
     args = parser.parse_args()
     
     if args.debug:
@@ -316,12 +326,27 @@ if __name__ == '__main__':
     model.eval()
     # get the sample indices for the desired subtask
     task_name = args.task_name #dataset.subtask_to_idx.keys()
-    if args.task_indx < 10:
-        variation_str = f"{args.task_indx}"
-    else:
-        variation_str = str(args.task_indx)
-
     
+    if args.project_name:
+        model_name = f"{args.model.split('/')[-1]}-{args.step}"
+        run = wandb.init(project=args.project_name, job_type='test', group=model_name.split("-1gpu")[0])
+        run.name = model_name + f'-Test_{model_name}-Step_{args.step}' 
+        wandb.config.update(args)
+
+    results_dir_path = os.path.join(args.results_dir, f"results_{task_name}", str(f"task-{args.task_indx}"))
+    try:
+        os.makedirs(results_dir_path)
+    except:
+        pass
+
+
+    if args.task_indx:
+        if args.task_indx < 10:
+            variation_str = f"{args.task_indx}"
+        else:
+            variation_str = str(args.task_indx)
+    else:
+        variation_str = None
 
     if args.experiment_number==1 or args.experiment_number==4:
         # use specific indices from the list
@@ -332,6 +357,7 @@ if __name__ == '__main__':
         subtask_indices = dataset.subtask_to_idx[task_name][f"task_{variation_str}"]
         file_pairs = [(dataset.all_file_pairs[indx], indx) for indx in subtask_indices]
     elif args.experiment_number == 3:  
+        # Use training dataset
         for sample_indx in dataset.all_file_pairs.keys():
             sample = dataset.all_file_pairs[sample_indx]
             sample_task_name = sample[0]
@@ -345,24 +371,37 @@ if __name__ == '__main__':
                             if agent_target_trj in sample_agent_file:
                                 print(f"Sample number {sample_indx} - Demo file {demo_target_trj} - Agent file {agent_target_trj}")
 
-    if  args.experiment_number==1 or args.experiment_number==2 or args.experiment_number==5:
-        if args.project_name:
-            model_name = f"{args.model.split('/')[-1]}-{args.step}"
-            run = wandb.init(project=args.project_name, job_type='test', group=model_name.split("-1gpu")[0])
-            run.name = model_name + f'-Test_{model_name}-Step_{args.step}' 
-            wandb.config.update(args)
+    if  args.experiment_number==1 or args.experiment_number==2:
 
-        results_dir_path = os.path.join(args.results_dir, f"results_{task_name}", str(f"task-{args.task_indx}"))
-        try:
-            os.makedirs(results_dir_path)
-        except:
-            pass
 
-    # model, conf_file, task_name, task_indx, results_dir_path, training_trj, show_image, file_pair
-    f =  functools.partial(run_inference, model, conf_file, task_name, args.task_indx, results_dir_path, args.training_trj, args.show_img, args.experiment_number)
+        # model, conf_file, task_name, task_indx, results_dir_path, training_trj, show_image, file_pair
+        f =  functools.partial(run_inference, model, conf_file, task_name, args.task_indx, results_dir_path, args.training_trj, args.show_img, args.experiment_number)
 
-    if args.num_workers > 1:
-        with Pool(args.num_workers) as p:
-            task_success_flags = p.map(f, file_pairs)
-    else:
-        task_success_flags = [f(file_pair) for file_pair in file_pairs]
+        if args.num_workers > 1:
+            with Pool(args.num_workers) as p:
+                task_success_flags = p.map(f, file_pairs)
+        else:
+            task_success_flags = [f(file_pair) for file_pair in file_pairs]
+
+    elif args.experiment_number==5:
+        # Run tests
+        # model, config, results_dir, heights, widths, size, shape, color, env_name, baseline, variation, seed, n)
+        heights = conf_file['dataset_cfg']['height']
+        widths = conf_file['dataset_cfg']['width']
+        size = False 
+        shape = False
+        color = False
+        variation = None 
+        seed = None
+        baseline = None
+        N = 160
+        f = functools.partial(_proc, model, conf_file, results_dir_path, heights, widths, size, shape, color, task_name, baseline, variation, seed)
+
+        if args.num_workers > 1:
+            with Pool(args.num_workers) as p:
+                task_success_flags = p.map(f, range(N))
+        else:
+            results = [f(n) for n in range(N)]
+
+
+
