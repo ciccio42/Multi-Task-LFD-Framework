@@ -1,13 +1,12 @@
 #!/bin/bash
 export CUDA_VISIBLE_DEVICES=0
-BASE_PATH="/home/Multi-Task-LFD-Framework"
-MODEL="${BASE_PATH}/mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Balanced-Dataset-Adam-No-Strong-Aug-No-Crop-Twice-RGB-lr-schedule-Batch64-1gpu-Attn2ly128-Act2ly256mix4-actCat-simclr128x512"
-EXP_NUMBER=1
-STEP=232875 #35280 #37800
-TASK_ID=12 #2
+BASE_PATH="/home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework"
+MODEL="${BASE_PATH}/mosaic-baseline-sav-folder/1Task-Pick-Place-Target-Obj-Batch64-1gpu-Attn2ly128-Act2ly256mix4-actCat-simclr128x512"
+EXP_NUMBER=5
+STEP=34425 #35280 #37800
 
-RESULTS_DIR="${BASE_PATH}/utils/analysis/dataset_analysis_results/tr_overfitting/pick_place_adam_lr"
-NUM_WORKERS=5
-PROJECT_NAME="pick_place_adam_rgb"
+RESULTS_DIR="${BASE_PATH}/utils/analysis/dataset_analysis_results/target_object_detector"
+NUM_WORKERS=1
+PROJECT_NAME="target_object_detector"
 
-python3 ${BASE_PATH}/utils/analysis/dataset_analysis.py --step ${STEP} --model ${MODEL} --task_indx ${TASK_ID} --results_dir ${RESULTS_DIR} --num_workers ${NUM_WORKERS} --experiment_number ${EXP_NUMBER}  --training_trj --project_name ${PROJECT_NAME}
+python3 ${BASE_PATH}/utils/analysis/test_target_obj_detector.py --step ${STEP} --model ${MODEL} --results_dir ${RESULTS_DIR} --num_workers ${NUM_WORKERS} --experiment_number ${EXP_NUMBER} --debug
