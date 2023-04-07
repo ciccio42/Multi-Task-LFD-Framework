@@ -13,7 +13,7 @@
 EXP_NAME=1Task-Pick-Place-Pre-Train-Target-Obj
 TASK_str=pick_place
 EPOCH=250
-BSIZE=64 #32
+BSIZE=128 #64 #32
 CONFIG_PATH=experiments/
 PROJECT_NAME="adam_lr_obj_pretrain"
 CONFIG_NAME=config.yaml
