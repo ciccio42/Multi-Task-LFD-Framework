@@ -15,7 +15,7 @@ TASK_str=pick_place
 EPOCH=250
 BSIZE=128 #64 #32
 CONFIG_PATH=experiments/
-PROJECT_NAME="adam_lr_obj_pretrain"
+PROJECT_NAME="target_obj_detector_embedding"
 CONFIG_NAME=config.yaml
 
 LOAD_TARGET_OBJ_DETECTOR=true
