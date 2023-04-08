@@ -17,7 +17,7 @@ pip --version
 EXP_NAME=1Task-Pick-Place-Target-Obj-Embedding
 TASK_str=pick_place
 EPOCH=250
-BSIZE=128 #64 #32
+BSIZE=64 #32
 CONFIG_PATH=experiments/
 PROJECT_NAME="target_obj_detector_embedding"
 CONFIG_NAME=config.yaml
