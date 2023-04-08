@@ -24,7 +24,7 @@ CONFIG_NAME=config.yaml
 
 LOAD_TARGET_OBJ_DETECTOR=true
 TARGET_OBJ_DETECTOR_STEP=22275
-TARGET_OBJ_DETECTOR_PATH=kaggle/output/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Target-Obj-Batch64-1gpu-Attn2ly128-Act2ly256mix4-actCat-simclr128x512
+TARGET_OBJ_DETECTOR_PATH=mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Target-Obj-Batch64-1gpu-Attn2ly128-Act2ly256mix4-actCat-simclr128x512
 FREEZE_TARGET_OBJ_DETECTOR=true
 
 python repo/mosaic/train_any.py --config-path ${CONFIG_PATH} --config-name ${CONFIG_NAME} policy='${mosaic}' task_names=${TASK_str} exp_name=${EXP_NAME} bsize=${BSIZE} vsize=${BSIZE} epochs=${EPOCH} mosaic.load_target_obj_detector=${LOAD_TARGET_OBJ_DETECTOR} mosaic.target_obj_detector_step=${TARGET_OBJ_DETECTOR_STEP} mosaic.target_obj_detector_path=${TARGET_OBJ_DETECTOR_PATH} mosaic.freeze_target_obj_detector=${FREEZE_TARGET_OBJ_DETECTOR} project_name=${PROJECT_NAME} debug=false wandb_log=true resume=false
