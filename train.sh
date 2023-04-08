@@ -14,7 +14,7 @@ pip --version
 #python repo/mosaic/train_any.py policy='${mosaic}' single_task=${TASK_str} exp_name=${EXP_NAME} bsize=${BSIZE} vsize=${BSIZE} epochs=${EPOCH}
 
 # 2 - BASELINE - mosaic experiment
-EXP_NAME=1Task-Pick-Place-Pre-Train-Target-Obj
+EXP_NAME=1Task-Pick-Place-Target-Obj-Embedding
 TASK_str=pick_place
 EPOCH=250
 BSIZE=128 #64 #32
