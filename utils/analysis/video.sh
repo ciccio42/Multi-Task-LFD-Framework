@@ -2,7 +2,7 @@
 
 # Define the output video file name and codec
 # Find all the "video" folders in the parent directory
-parent_dir="/home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/1Task-Pick-Place-Balanced-Dataset-Adam-No-Strong-Aug-No-Crop-Twice-RGB-lr-schedule-Batch64-1gpu-Attn2ly128-Act2ly256mix4-actCat-simclr128x512/results_pick_place/step-291600"
+parent_dir="/home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Target-Object-Embedding-No-Freezed-Modified-Batch128-1gpu-Attn2ly128-Act2ly256mix4-actCat-simclr128x512/results_pick_place/step-77924_3"
 video_folders=($(find_video_folders "$parent_dir"))
 output_file="$parent_dir/video_test.mp4"
 fourcc="mp4v"
@@ -10,7 +10,7 @@ fourcc="mp4v"
 find_video_folders() {
     local parent_dir="$1"
     local video_folders=()
-    
+
     while IFS= read -r -d '' dir; do
         video_folders+=("$dir")
     done < <(find "$parent_dir" -type d -name "video" -print0)
@@ -26,7 +26,7 @@ concatenate_videos() {
         # video_files=("$video_folder"/*.mp4)
         echo $video_folder
         for video_file in $(find $video_folder/*.mp4 -type f | sort -V); do
-            echo "file '$video_file'" >> "$parent_dir/output.txt";
+            echo "file '$video_file'" >>"$parent_dir/output.txt"
         done
     done
 
@@ -34,8 +34,8 @@ concatenate_videos() {
 }
 
 # Load and concatenate all the video files in the "video" folders
-concatenate_videos "${video_folders[@]}"  
+concatenate_videos "${video_folders[@]}"
 
-echo "Concatenated ${#video_folders[@]} video files into '$output_file' ($(bc <<< "scale=2; $total_duration/1") seconds)."
+echo "Concatenated ${#video_folders[@]} video files into '$output_file' ($(bc <<<"scale=2; $total_duration/1") seconds)."
 
 rm "$parent_dir/output.txt"

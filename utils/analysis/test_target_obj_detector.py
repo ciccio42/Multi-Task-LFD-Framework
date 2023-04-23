@@ -1,8 +1,11 @@
-import cv2
 import numpy as np
-import torch
+import cv2
+cv2.imshow('debug', np.zeros((255, 255, 3), dtype=np.uint8))
+cv2.waitKey(1)
+import warnings
 from omegaconf import DictConfig, OmegaConf
-import hydra, os
+import hydra
+import os
 import gc
 import copy
 import tqdm
@@ -15,7 +18,6 @@ import random
 from collections import deque
 from collections import OrderedDict
 from mosaic.datasets import Trajectory
-from torch.multiprocessing import Pool, set_start_method
 from torchvision.transforms import ToTensor, Normalize
 from torchvision.transforms.functional import resized_crop
 from robosuite import load_controller_config
@@ -24,25 +26,29 @@ from robosuite_env.controllers.expert_basketball import \
 from robosuite_env.controllers.expert_nut_assembly import \
     get_expert_trajectory as nut_expert
 from robosuite_env.controllers.expert_pick_place import \
-    get_expert_trajectory as place_expert 
+    get_expert_trajectory as place_expert
 from robosuite_env.controllers.expert_block_stacking import \
-    get_expert_trajectory as stack_expert 
+    get_expert_trajectory as stack_expert
 from robosuite_env.controllers.expert_drawer import \
-    get_expert_trajectory as draw_expert 
+    get_expert_trajectory as draw_expert
 from robosuite_env.controllers.expert_button import \
-    get_expert_trajectory as press_expert 
+    get_expert_trajectory as press_expert
 from robosuite_env.controllers.expert_door import \
-    get_expert_trajectory as door_expert 
+    get_expert_trajectory as door_expert
 import robosuite.utils.transform_utils as T
-import sys
-import pickle as pkl
-import json
-import wandb
+from einops import rearrange, repeat, parse_shape
 from utils import *
+import wandb
+import json
+import pickle as pkl
+import sys
+import torch
+import torch.nn.functional as F
+from torch.multiprocessing import Pool, set_start_method
+
 set_start_method('forkserver', force=True)
 sys.path.append('/home/Multi-Task-LFD-Framework/repo/mosaic/tasks/test_models')
-import warnings
-warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
+warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
 # pick-place
 agent_target = ["traj039", "traj051", "traj085", "traj092"]
@@ -55,43 +61,45 @@ demo_target = ["traj027", "traj051", "traj039"]
 # demo_target = ["traj051", "traj059"]
 # target object on the center [16290, 16291, 16304]
 # target object on the right [17460, 17461, 17474]
-SAMPLE_LIST= [97470, 97471, 97474, 97494]
+SAMPLE_LIST = [97470, 97471, 97474, 97494]
 
 
-def perform_detection(model, config, ctr, 
-    heights=100, widths=200, size=0, shape=0, color=0, max_T=60, env_name='place', gpu_id=-1, baseline=None, variation=None, seed=None):
+def perform_detection(model, config, ctr,
+                      heights=100, widths=200, size=0, shape=0, color=0, max_T=60, env_name='place', gpu_id=-1, baseline=None, variation=None, seed=None):
     if gpu_id == -1:
         gpu_id = int(ctr % torch.cuda.device_count())
     model = model.cuda(gpu_id)
 
     img_formatter = build_tvf_formatter(config, env_name)
-     
+
     T_context = config.train_cfg.dataset.get('T_context', None)
     random_frames = config.dataset_cfg.get('select_random_frames', False)
     if not T_context:
         assert 'multi' in config.train_cfg.dataset._target_, config.train_cfg.dataset._target_
         T_context = config.train_cfg.dataset.demo_T
-    
+
     env, context, variation_id, expert_traj = build_env_context(
         img_formatter,
-        T_context=T_context, ctr=ctr, env_name=env_name, 
+        T_context=T_context, ctr=ctr, env_name=env_name,
         heights=heights, widths=widths, size=size, shape=shape, color=color, gpu_id=gpu_id, variation=variation, random_frames=random_frames)
-    
+
     build_task = TASK_MAP.get(env_name, None)
     assert build_task, 'Got unsupported task '+env_name
     eval_fn = build_task['eval_fn']
-    predicted_slot, predicted_prob, gt_slot, context, agent_obs = inference(model, env, context, gpu_id, variation_id, img_formatter, baseline=baseline)
+    predicted_slot, predicted_prob, gt_slot, context, agent_obs = inference(
+        model, env, context, gpu_id, variation_id, img_formatter, baseline=baseline)
     return predicted_slot, predicted_prob, gt_slot, context, agent_obs
+
 
 def _proc(model, config, results_dir, heights, widths, size, shape, color, env_name, baseline, variation, seed, n):
     json_name = results_dir + '/traj{}.json'.format(n)
-    pkl_name  = results_dir + '/traj{}.pkl'.format(n)
+    pkl_name = results_dir + '/traj{}.pkl'.format(n)
     res = OrderedDict()
     predicted_slot, predicted_prob, gt_slot, context, agent_obs = perform_detection(
-        model, config, n, heights, widths, size, shape, color, 
+        model, config, n, heights, widths, size, shape, color,
         max_T=60, env_name=env_name, baseline=baseline, variation=variation, seed=seed)
     pkl.dump(agent_obs, open(results_dir+'/traj{}.pkl'.format(n), 'wb'))
-    pkl.dump(context, open(results_dir+'/context{}.pkl'.format(n), 'wb')) 
+    pkl.dump(context, open(results_dir+'/context{}.pkl'.format(n), 'wb'))
     # check if the prediction is equal to the gt
     pred_correctness = (predicted_slot == gt_slot)
     res['predicted_slot'] = predicted_slot
@@ -102,12 +110,14 @@ def _proc(model, config, results_dir, heights, widths, size, shape, color, env_n
     del model
     return res
 
+
 def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85, baseline=None, seed=None, agent_traj=None, model_act=False, show_img=False, experiment_number=1):
 
     done, states, images, context, obs, traj, tasks = \
-        startup_env(model, env, context, gpu_id, variation_id, baseline=baseline, seed=seed)
+        startup_env(model, env, context, gpu_id, variation_id,
+                    baseline=baseline, seed=seed)
     n_steps = 0
-    
+
     if agent_traj is not None:
         # change object position
         print("Set object position based on training sample")
@@ -134,14 +144,14 @@ def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85
                 else:
                     pos = agent_traj.get(0)['obs'][f'round-nut-{id+1}_pos']
             else:
-                pos = agent_traj.get(0)['obs'][f'{obj_name}_pos']        
+                pos = agent_traj.get(0)['obs'][f'{obj_name}_pos']
             for i, pos_range in enumerate(ENV_OBJECTS[task_name]["ranges"]):
-                if pos[1] >= pos_range[0] and pos[1] <= pos_range[1]: 
+                if pos[1] >= pos_range[0] and pos[1] <= pos_range[1]:
                     agent_target_obj_position = i
-            break   
+            break
 
     if baseline and len(states) >= 5:
-            images = []
+        images = []
 
     if show_img:
         # convert context from torch tensor to numpy
@@ -158,12 +168,13 @@ def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85
             for j in range(num_cols):
                 index = i * num_cols + j
                 if index < number_of_context_frames:
-                    frame = context_frames[index][:,:,::-1]
+                    frame = context_frames[index][:, :, ::-1]
                     row_frames.append(frame)
             row = cv2.hconcat(row_frames)
             frames.append(row)
-        new_image = np.array(cv2.resize(cv2.vconcat(frames), (demo_width, demo_height)), np.uint8)
-        output_frame = cv2.hconcat([new_image, obs['image'][:,:,::-1]])
+        new_image = np.array(cv2.resize(cv2.vconcat(
+            frames), (demo_width, demo_height)), np.uint8)
+        output_frame = cv2.hconcat([new_image, obs['image'][:, :, ::-1]])
         # showing the image
         cv2.imshow(f'Frame {t}', output_frame)
         t += 1
@@ -171,20 +182,22 @@ def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85
         cv2.waitKey(1000)
         cv2.destroyAllWindows()
 
-
-    images.append(img_formatter(obs['image'][:,:,::-1]/255)[None])
+    images.append(img_formatter(obs['image'][:, :, ::-1]/255)[None])
     if isinstance(images[-1], np.ndarray):
-        i_t = torch.from_numpy(np.concatenate(images, 0).astype(np.float32))[None] 
+        i_t = torch.from_numpy(np.concatenate(
+            images, 0).astype(np.float32))[None]
     else:
         i_t = images[0][None]
     i_t = i_t.cuda(gpu_id).float()
 
-        
     with torch.no_grad():
-        out = model(images=i_t, context=context, eval=True) # to avoid computing ATC loss
-        predicted_slot = torch.argmax(out['target_obj_pred'].permute(0,2,1), dim=1).to('cpu').item()
+        # to avoid computing ATC loss
+        out = model(images=i_t, context=context, eval=True)
+        predicted_slot = torch.argmax(
+            out['target_obj_pred'].permute(0, 2, 1), dim=1).to('cpu').item()
         gt_slot = agent_target_obj_position
-        predicted_prob = torch.nn.Softmax(dim=2)(out['target_obj_pred']).to('cpu').tolist()
+        predicted_prob = torch.nn.Softmax(dim=2)(
+            out['target_obj_pred']).to('cpu').tolist()
     env.close()
     del env
     del states
@@ -195,10 +208,13 @@ def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85
 
 
 def single_run(model, agent_env, context, img_formatter, variation, show_image, agent_trj, indx):
-    
+
     with torch.no_grad():
-        predicted_target, info, context =  inference(model=model, env=agent_env, context=context, gpu_id=0, variation_id=variation, img_formatter=img_formatter, max_T=60, agent_traj=agent_trj, model_act=True, show_img=show_image)
+        predicted_target, info, context = inference(model=model, env=agent_env, context=context,
+                                                    gpu_id=0, variation_id=variation,
+                                                    img_formatter=img_formatter, max_T=60, agent_traj=agent_trj, model_act=True, show_img=show_image)
     return predicted_target, info
+
 
 def run_inference(model, conf_file, task_name, task_indx, results_dir_path, training_trj, show_image, experiment_number, file_pair):
 
@@ -211,14 +227,14 @@ def run_inference(model, conf_file, task_name, task_indx, results_dir_path, trai
     agent_file_name = agent_file.split('/')[-1]
 
     results_analysis = [task_name, task_indx, demo_file_name, agent_file_name]
-    
+
     # print(f"----\nDemo file {demo_file}\nAgent file {agent_file}\n----")
     # open demo and agent data
     with open(demo_file, "rb") as f:
         demo_data = pickle.load(f)
     with open(agent_file, "rb") as f:
         agent_data = pickle.load(f)
-    
+
     # get target object id
     demo_target = demo_data['traj'].get(0)['obs']['target-object']
     agent_target = agent_data['traj'].get(0)['obs']['target-object']
@@ -231,13 +247,14 @@ def run_inference(model, conf_file, task_name, task_indx, results_dir_path, trai
                 if id == 0:
                     pos = demo_data['traj'].get(1)['obs']['round-nut_pos']
                 else:
-                    pos = demo_data['traj'].get(1)['obs'][f'round-nut-{id+1}_pos']
+                    pos = demo_data['traj'].get(
+                        1)['obs'][f'round-nut-{id+1}_pos']
             else:
-                pos = demo_data['traj'].get(1)['obs'][f'{obj_name}_pos']        
+                pos = demo_data['traj'].get(1)['obs'][f'{obj_name}_pos']
             for i, pos_range in enumerate(ENV_OBJECTS[task_name]["ranges"]):
-                if pos[1] >= pos_range[0] and pos[1] <= pos_range[1]: 
+                if pos[1] >= pos_range[0] and pos[1] <= pos_range[1]:
                     demo_target_obj_pos = i
-            break   
+            break
 
     # get env function
     env_func = TASK_MAP[task_name]['env_fn']
@@ -246,15 +263,16 @@ def run_inference(model, conf_file, task_name, task_indx, results_dir_path, trai
     ret_env = True
     heights = conf_file.dataset_cfg.height
     widths = conf_file.dataset_cfg.width
-    agent_env = create_env(env_fn=env_func, agent_name=agent_name, variation=variation, ret_env=ret_env, heights=heights, widths=widths)
-    
+    agent_env = create_env(env_fn=env_func, agent_name=agent_name,
+                           variation=variation, ret_env=ret_env, heights=heights, widths=widths)
+
     img_formatter = build_tvf_formatter(conf_file, task_name)
 
     if training_trj:
         agent_trj = agent_data['traj']
     else:
-        agent_trj = None   
-    
+        agent_trj = None
+
     if experiment_number == 1:
         cnt = 10
         np.random.seed(0)
@@ -265,34 +283,41 @@ def run_inference(model, conf_file, task_name, task_indx, results_dir_path, trai
         cnt = 1
     for i in range(cnt):
         # select context frames
-        context = select_random_frames(demo_data['traj'], 4, sample_sides=True, experiment_number=experiment_number)
+        context = select_random_frames(
+            demo_data['traj'], 4, sample_sides=True, experiment_number=experiment_number)
         # perform normalization on context frames
-        context = [img_formatter(i[:,:,::-1]/255)[None] for i in context]
+        context = [img_formatter(i[:, :, ::-1]/255)[None] for i in context]
         if isinstance(context[0], np.ndarray):
-            context = torch.from_numpy(np.concatenate(context, 0)).float()[None]
+            context = torch.from_numpy(
+                np.concatenate(context, 0)).float()[None]
         else:
             context = torch.cat(context, dim=0).float()[None]
-        
-        traj, info = single_run(model=model, agent_env=agent_env, context=context, img_formatter=img_formatter, variation=variation, show_image=show_image, agent_trj=agent_trj, indx=indx)
+
+        traj, info = single_run(model=model, agent_env=agent_env, context=context,
+                                img_formatter=img_formatter, variation=variation, show_image=show_image, agent_trj=agent_trj, indx=indx)
         results_analysis.append(info)
         info['demo_file'] = demo_file_name
         info['agent_file'] = agent_file_name
         info['task_name'] = task_name
-        pkl.dump(traj, open(results_dir_path+'/traj{}_{}.pkl'.format(indx, i), 'wb'))
-        pkl.dump(context, open(results_dir_path+'/context{}_{}.pkl'.format(indx, i), 'wb'))
+        pkl.dump(traj, open(results_dir_path +
+                 '/traj{}_{}.pkl'.format(indx, i), 'wb'))
+        pkl.dump(context, open(results_dir_path +
+                 '/context{}_{}.pkl'.format(indx, i), 'wb'))
         res = {}
         for k, v in info.items():
-            if v==True or v==False:
+            if v == True or v == False:
                 res[k] = int(v)
             else:
                 res[k] = v
-        json.dump(res, open(results_dir_path+'/traj{}_{}.json'.format(indx, i), 'w'))
+        json.dump(res, open(results_dir_path +
+                  '/traj{}_{}.json'.format(indx, i), 'w'))
 
     del model
     return results_analysis
 
 
 if __name__ == '__main__':
+
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str)
@@ -302,13 +327,14 @@ if __name__ == '__main__':
     parser.add_argument('--num_workers', type=int, default=1)
     parser.add_argument('--project_name', type=str, default=None)
     parser.add_argument('--task_name', type=str, default="pick_place")
-    parser.add_argument('--experiment_number', type=int, default=1, help="1: Take samples from list and run 10 times with different demonstrator frames; 2: Take all the file from the training set")
+    parser.add_argument('--experiment_number', type=int, default=1,
+                        help="1: Take samples from list and run 10 times with different demonstrator frames; 2: Take all the file from the training set")
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--training_trj', action='store_true')
     parser.add_argument('--show_img', action='store_true')
     parser.add_argument('--run_inference', action='store_true')
     args = parser.parse_args()
-    
+
     if args.debug:
         import debugpy
         debugpy.listen(('0.0.0.0', 5678))
@@ -320,25 +346,32 @@ if __name__ == '__main__':
     # 1. Load Training Dataset
     conf_file = OmegaConf.load(os.path.join(args.model, "config.yaml"))
     # 2. Get the dataset
-    dataset = load_trajectories(conf_file=conf_file)
+    if args.experiment_number != 6:
+        dataset = load_trajectories(conf_file=conf_file)
+    elif args.experiment_number == 6:
+        pkl_files = load_pkl_files(conf_file=conf_file)
+
     # 3. Load model
-    model = load_model(model_path=args.model, step=args.step, conf_file=conf_file)
+    model = load_model(model_path=args.model,
+                       step=args.step, conf_file=conf_file)
     model.eval()
+
     # get the sample indices for the desired subtask
-    task_name = args.task_name #dataset.subtask_to_idx.keys()
-    
+    task_name = args.task_name  # dataset.subtask_to_idx.keys()
     if args.project_name:
         model_name = f"{args.model.split('/')[-1]}-{args.step}"
-        run = wandb.init(project=args.project_name, job_type='test', group=model_name.split("-1gpu")[0])
-        run.name = model_name + f'-Test_{model_name}-Step_{args.step}' 
+        run = wandb.init(project=args.project_name,
+                         job_type='test', group=model_name.split("-1gpu")[0])
+        run.name = model_name + f'-Test_{model_name}-Step_{args.step}'
         wandb.config.update(args)
 
-    results_dir_path = os.path.join(args.results_dir, f"results_{task_name}", str(f"task-{args.task_indx}"))
+    results_dir_path = os.path.join(
+        args.results_dir, f"results_{task_name}", str(f"task-{args.task_indx}"))
+
     try:
         os.makedirs(results_dir_path)
     except:
         pass
-
 
     if args.task_indx:
         if args.task_indx < 10:
@@ -348,15 +381,17 @@ if __name__ == '__main__':
     else:
         variation_str = None
 
-    if args.experiment_number==1 or args.experiment_number==4:
+    if args.experiment_number == 1 or args.experiment_number == 4:
         # use specific indices from the list
         subtask_indices = SAMPLE_LIST
-        file_pairs = [(dataset.all_file_pairs[indx], indx) for indx in subtask_indices]
-    elif args.experiment_number==2:
+        file_pairs = [(dataset.all_file_pairs[indx], indx)
+                      for indx in subtask_indices]
+    elif args.experiment_number == 2:
         # Try a specific sub-task
         subtask_indices = dataset.subtask_to_idx[task_name][f"task_{variation_str}"]
-        file_pairs = [(dataset.all_file_pairs[indx], indx) for indx in subtask_indices]
-    elif args.experiment_number == 3:  
+        file_pairs = [(dataset.all_file_pairs[indx], indx)
+                      for indx in subtask_indices]
+    elif args.experiment_number == 3:
         # Use training dataset
         for sample_indx in dataset.all_file_pairs.keys():
             sample = dataset.all_file_pairs[sample_indx]
@@ -369,13 +404,14 @@ if __name__ == '__main__':
                     if demo_target_trj in sample_demo_file:
                         for agent_target_trj in agent_target:
                             if agent_target_trj in sample_agent_file:
-                                print(f"Sample number {sample_indx} - Demo file {demo_target_trj} - Agent file {agent_target_trj}")
+                                print(
+                                    f"Sample number {sample_indx} - Demo file {demo_target_trj} - Agent file {agent_target_trj}")
 
-    if  args.experiment_number==1 or args.experiment_number==2:
-
+    if args.experiment_number == 1 or args.experiment_number == 2:
 
         # model, conf_file, task_name, task_indx, results_dir_path, training_trj, show_image, file_pair
-        f =  functools.partial(run_inference, model, conf_file, task_name, args.task_indx, results_dir_path, args.training_trj, args.show_img, args.experiment_number)
+        f = functools.partial(run_inference, model, conf_file, task_name, args.task_indx,
+                              results_dir_path, args.training_trj, args.show_img, args.experiment_number)
 
         if args.num_workers > 1:
             with Pool(args.num_workers) as p:
@@ -383,19 +419,20 @@ if __name__ == '__main__':
         else:
             task_success_flags = [f(file_pair) for file_pair in file_pairs]
 
-    elif args.experiment_number==5:
+    elif args.experiment_number == 5:
         # Run tests
         # model, config, results_dir, heights, widths, size, shape, color, env_name, baseline, variation, seed, n)
         heights = conf_file['dataset_cfg']['height']
         widths = conf_file['dataset_cfg']['width']
-        size = False 
+        size = False
         shape = False
         color = False
-        variation = None 
+        variation = None
         seed = None
         baseline = None
         N = 160
-        f = functools.partial(_proc, model, conf_file, results_dir_path, heights, widths, size, shape, color, task_name, baseline, variation, seed)
+        f = functools.partial(_proc, model, conf_file, results_dir_path, heights,
+                              widths, size, shape, color, task_name, baseline, variation, seed)
 
         if args.num_workers > 1:
             with Pool(args.num_workers) as p:
@@ -403,5 +440,77 @@ if __name__ == '__main__':
         else:
             results = [f(n) for n in range(N)]
 
+    elif args.experiment_number == 6:
+        # Perform object detection from pkl files
+        for context_path, trj_path in zip(pkl_files['context'], pkl_files['agent']):
+            img_formatter = build_tvf_formatter(conf_file, task_name)
+            # open context file
+            with open(context_path, "rb") as f:
+                context = pickle.load(f).cuda(0).float()
+            # open agent file
+            with open(trj_path, "rb") as f:
+                trj = pickle.load(f)
 
+            for t in range(len(trj)):
+                # perform target object detection
+                # convert from bgr to rgb
+                current_obs = trj.get(t)['obs']['image'][:, :, ::-1]/255
+                current_obs = img_formatter(current_obs)[
+                    None, None, :, :, :].cuda(0).float()
 
+                # target object embedding
+                target_obj_backbone = model._target_object_backbone.cuda(0)
+                # target-object detection slot
+                slot_detection = model._obj_classifier.cuda(0)
+
+                # 1. Compute target object embedding
+                out = target_obj_backbone(current_obs, context)
+                # 2. Compute the target object distribution
+                demo_embed, img_embed = out['demo_embed'], out['img_embed']
+                demo_embed = torch.mean(demo_embed, dim=1)[None, :, :]
+                ac_in = torch.cat((img_embed, demo_embed), dim=2)
+                ac_in = F.normalize(ac_in, dim=2)
+                out = slot_detection(ac_in)
+                predicted_slot = torch.argmax(
+                    out.permute(0, 2, 1), dim=1).to('cpu').item()
+
+                # convert context from torch tensor to numpy
+                context_frames = torch_to_numpy(context)
+                number_of_context_frames = len(context_frames)
+                demo_height, demo_width, _ = context_frames[0].shape
+                # Determine the number of columns and rows to create the grid of frames
+                num_cols = 2  # Example value, adjust as needed
+                num_rows = (number_of_context_frames +
+                            num_cols - 1) // num_cols
+                # Create the grid of frames
+                frames = []
+                for i in range(num_rows):
+                    row_frames = []
+                    for j in range(num_cols):
+                        index = i * num_cols + j
+                        if index < number_of_context_frames:
+                            frame = context_frames[index]
+                            row_frames.append(frame)
+                    row = cv2.hconcat(row_frames)
+                    frames.append(row)
+                new_image = np.array(cv2.resize(cv2.vconcat(
+                    frames), (demo_width, demo_height)), np.uint8)
+                output_frame = cv2.hconcat(
+                    [new_image, trj.get(t)['obs']['image'][:, :, ::-1]])
+                
+                res_string_1 = f"Predicted target slot {predicted_slot}"
+                # res_string_2 = f"Pred probabilities {pred_prob}"
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                font_scale = 0.35
+                thickness = 1
+                cv2.putText(output_frame, res_string_1, (0, 80), font,
+                            font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                # cv2.putText(output_frame, res_string_2, (0, 99), font,
+                #             font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                
+                # showing the image
+                cv2.imshow(f'Frame {t}', output_frame)
+                t += 1
+                # waiting using waitKey method
+                cv2.waitKey()
+                cv2.destroyAllWindows()
