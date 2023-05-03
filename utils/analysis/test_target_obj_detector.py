@@ -1,25 +1,30 @@
-import numpy as np
-import cv2
-cv2.imshow('debug', np.zeros((255, 255, 3), dtype=np.uint8))
-cv2.waitKey(1)
-import warnings
-from omegaconf import DictConfig, OmegaConf
-import hydra
-import os
-import gc
-import copy
-import tqdm
-import seaborn as sns
-import matplotlib.pyplot as plt
-import pickle
-import glob
-import functools
-import random
-from collections import deque
+import sys
+import pickle as pkl
+import json
+import wandb
+from utils import *
+from einops import rearrange, repeat, parse_shape
 from collections import OrderedDict
-from mosaic.datasets import Trajectory
+from collections import deque
+import random
+import functools
+import glob
+import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
+import tqdm
+import copy
+import gc
+import os
+import hydra
+from omegaconf import DictConfig, OmegaConf
+import warnings
+import torch
+import torch.nn.functional as F
+from torch.multiprocessing import Pool, set_start_method
 from torchvision.transforms import ToTensor, Normalize
 from torchvision.transforms.functional import resized_crop
+from mosaic.datasets import Trajectory
 from robosuite import load_controller_config
 from robosuite_env.controllers.expert_basketball import \
     get_expert_trajectory as basketball_expert
@@ -36,16 +41,10 @@ from robosuite_env.controllers.expert_button import \
 from robosuite_env.controllers.expert_door import \
     get_expert_trajectory as door_expert
 import robosuite.utils.transform_utils as T
-from einops import rearrange, repeat, parse_shape
-from utils import *
-import wandb
-import json
-import pickle as pkl
-import sys
-import torch
-import torch.nn.functional as F
-from torch.multiprocessing import Pool, set_start_method
-
+import numpy as np
+import cv2
+cv2.imshow('debug', np.zeros((255, 255, 3), dtype=np.uint8))
+cv2.waitKey(1)
 set_start_method('forkserver', force=True)
 sys.path.append('/home/Multi-Task-LFD-Framework/repo/mosaic/tasks/test_models')
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
@@ -65,7 +64,7 @@ SAMPLE_LIST = [97470, 97471, 97474, 97494]
 
 
 def perform_detection(model, config, ctr,
-                      heights=100, widths=200, size=0, shape=0, color=0, max_T=60, env_name='place', gpu_id=-1, baseline=None, variation=None, seed=None):
+                      heights=100, widths=200, size=0, shape=0, color=0, max_T=60, env_name='place', gpu_id=-1, baseline=None, variation=None, seed=None, show_image=False):
     if gpu_id == -1:
         gpu_id = int(ctr % torch.cuda.device_count())
     model = model.cuda(gpu_id)
@@ -87,17 +86,17 @@ def perform_detection(model, config, ctr,
     assert build_task, 'Got unsupported task '+env_name
     eval_fn = build_task['eval_fn']
     predicted_slot, predicted_prob, gt_slot, context, agent_obs = inference(
-        model, env, context, gpu_id, variation_id, img_formatter, baseline=baseline)
+        model, env, context, gpu_id, variation_id, img_formatter, baseline=baseline, show_img=show_image)
     return predicted_slot, predicted_prob, gt_slot, context, agent_obs
 
 
-def _proc(model, config, results_dir, heights, widths, size, shape, color, env_name, baseline, variation, seed, n):
+def _proc(model, config, results_dir, heights, widths, size, shape, color, env_name, baseline, variation, seed, show_image, n):
     json_name = results_dir + '/traj{}.json'.format(n)
     pkl_name = results_dir + '/traj{}.pkl'.format(n)
     res = OrderedDict()
     predicted_slot, predicted_prob, gt_slot, context, agent_obs = perform_detection(
         model, config, n, heights, widths, size, shape, color,
-        max_T=60, env_name=env_name, baseline=baseline, variation=variation, seed=seed)
+        max_T=60, env_name=env_name, baseline=baseline, variation=variation, seed=seed, show_image=show_image)
     pkl.dump(agent_obs, open(results_dir+'/traj{}.pkl'.format(n), 'wb'))
     pkl.dump(context, open(results_dir+'/context{}.pkl'.format(n), 'wb'))
     # check if the prediction is equal to the gt
@@ -109,6 +108,33 @@ def _proc(model, config, results_dir, heights, widths, size, shape, color, env_n
     json.dump(res, open(results_dir+'/traj{}.json'.format(n), 'w'))
     del model
     return res
+
+
+def replicate_actions_from_rollout(model, task_name, variation, context, agent_trj):
+    # 1. Create agent environment
+    env_func = TASK_MAP[task_name]['env_fn']
+    agent_name = TASK_MAP[task_name]['agent-teacher'][0]
+    variation = variation
+    ret_env = True
+    heights = conf_file.dataset_cfg.height
+    widths = conf_file.dataset_cfg.width
+    agent_env = create_env(env_fn=env_func, agent_name=agent_name,
+                           variation=variation, ret_env=ret_env, heights=heights, widths=widths)
+    _, _, _, _, _, _, _ = \
+        startup_env(model, agent_env, context, 0, variation,
+                    baseline=None)
+    # 2. Set the same object position as in the trajectory
+    init_env(env=agent_env, traj=agent_trj, task_name=task_name)
+
+    # 3. Perform rollout action
+    for t in range(1, len(agent_trj)):
+        action = agent_trj.get(t)['action']
+        obs, _, _, _ = agent_env.step(action)
+        # showing the image
+        cv2.imshow(f'Frame {t}', obs['image'][:, :, ::-1])
+        # waiting using waitKey method
+        cv2.waitKey()
+        cv2.destroyAllWindows()
 
 
 def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85, baseline=None, seed=None, agent_traj=None, model_act=False, show_img=False, experiment_number=1):
@@ -168,7 +194,7 @@ def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85
             for j in range(num_cols):
                 index = i * num_cols + j
                 if index < number_of_context_frames:
-                    frame = context_frames[index][:, :, ::-1]
+                    frame = context_frames[index]
                     row_frames.append(frame)
             row = cv2.hconcat(row_frames)
             frames.append(row)
@@ -179,7 +205,7 @@ def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85
         cv2.imshow(f'Frame {t}', output_frame)
         t += 1
         # waiting using waitKey method
-        cv2.waitKey(1000)
+        cv2.waitKey(0)
         cv2.destroyAllWindows()
 
     images.append(img_formatter(obs['image'][:, :, ::-1]/255)[None])
@@ -235,26 +261,26 @@ def run_inference(model, conf_file, task_name, task_indx, results_dir_path, trai
     with open(agent_file, "rb") as f:
         agent_data = pickle.load(f)
 
-    # get target object id
-    demo_target = demo_data['traj'].get(0)['obs']['target-object']
-    agent_target = agent_data['traj'].get(0)['obs']['target-object']
-    # compute demo_target_obj_position
-    demo_target_obj_pos = -1
-    for id, obj_name in enumerate(ENV_OBJECTS[task_name]['obj_names']):
-        if id == demo_target:
-            # get object position
-            if task_name == 'nut_assembly':
-                if id == 0:
-                    pos = demo_data['traj'].get(1)['obs']['round-nut_pos']
-                else:
-                    pos = demo_data['traj'].get(
-                        1)['obs'][f'round-nut-{id+1}_pos']
-            else:
-                pos = demo_data['traj'].get(1)['obs'][f'{obj_name}_pos']
-            for i, pos_range in enumerate(ENV_OBJECTS[task_name]["ranges"]):
-                if pos[1] >= pos_range[0] and pos[1] <= pos_range[1]:
-                    demo_target_obj_pos = i
-            break
+    # # get target object id
+    # demo_target = demo_data['traj'].get(0)['obs']['target-object']
+    # agent_target = agent_data['traj'].get(0)['obs']['target-object']
+    # # compute demo_target_obj_position
+    # demo_target_obj_pos = -1
+    # for id, obj_name in enumerate(ENV_OBJECTS[task_name]['obj_names']):
+    #     if id == demo_target:
+    #         # get object position
+    #         if task_name == 'nut_assembly':
+    #             if id == 0:
+    #                 pos = demo_data['traj'].get(1)['obs']['round-nut_pos']
+    #             else:
+    #                 pos = demo_data['traj'].get(
+    #                     1)['obs'][f'round-nut-{id+1}_pos']
+    #         else:
+    #             pos = demo_data['traj'].get(1)['obs'][f'{obj_name}_pos']
+    #         for i, pos_range in enumerate(ENV_OBJECTS[task_name]["ranges"]):
+    #             if pos[1] >= pos_range[0] and pos[1] <= pos_range[1]:
+    #                 demo_target_obj_pos = i
+    #         break
 
     # get env function
     env_func = TASK_MAP[task_name]['env_fn']
@@ -432,7 +458,7 @@ if __name__ == '__main__':
         baseline = None
         N = 160
         f = functools.partial(_proc, model, conf_file, results_dir_path, heights,
-                              widths, size, shape, color, task_name, baseline, variation, seed)
+                              widths, size, shape, color, task_name, baseline, variation, seed, args.show_img)
 
         if args.num_workers > 1:
             with Pool(args.num_workers) as p:
@@ -450,67 +476,69 @@ if __name__ == '__main__':
             # open agent file
             with open(trj_path, "rb") as f:
                 trj = pickle.load(f)
+            variation = int(trj_path.split(
+                "/")[-1].split('.')[0].split('traj')[-1]) % conf_file['tasks_cfgs'][task_name]['n_tasks']
+            replicate_actions_from_rollout(
+                model=model, task_name=task_name, variation=variation, context=context, agent_trj=trj)
 
-            for t in range(len(trj)):
-                # perform target object detection
-                # convert from bgr to rgb
-                current_obs = trj.get(t)['obs']['image'][:, :, ::-1]/255
-                current_obs = img_formatter(current_obs)[
-                    None, None, :, :, :].cuda(0).float()
+            # for t in range(1):
+            #     # perform target object detection
+            #     # convert from bgr to rgb
+            #     current_obs = trj.get(t)['obs']['image'][:, :, ::-1]/255
+            #     current_obs = img_formatter(current_obs)[
+            #         None, None, :, :, :].cuda(0).float()
 
-                # target object embedding
-                target_obj_backbone = model._target_object_backbone.cuda(0)
-                # target-object detection slot
-                slot_detection = model._obj_classifier.cuda(0)
+            #     # target object embedding
+            #     target_obj_backbone = model._target_object_backbone.cuda(0)
+            #     # target-object detection slot
+            #     slot_detection = model._obj_classifier.cuda(0)
 
-                # 1. Compute target object embedding
-                out = target_obj_backbone(current_obs, context)
-                # 2. Compute the target object distribution
-                demo_embed, img_embed = out['demo_embed'], out['img_embed']
-                demo_embed = torch.mean(demo_embed, dim=1)[None, :, :]
-                ac_in = torch.cat((img_embed, demo_embed), dim=2)
-                ac_in = F.normalize(ac_in, dim=2)
-                out = slot_detection(ac_in)
-                predicted_slot = torch.argmax(
-                    out.permute(0, 2, 1), dim=1).to('cpu').item()
+            #     # 1. Compute target object embedding
+            #     out = target_obj_backbone(current_obs, context)
+            #     # 2. Compute the target object distribution
+            #     demo_embed, img_embed = out['demo_embed'], out['img_embed']
+            #     demo_embed = torch.mean(demo_embed, dim=1)[None, :, :]
+            #     ac_in = torch.cat((img_embed, demo_embed), dim=2)
+            #     ac_in = F.normalize(ac_in, dim=2)
+            #     out = slot_detection(ac_in)
+            #     predicted_slot = torch.argmax(
+            #         out.permute(0, 2, 1), dim=1).to('cpu').item()
 
-                # convert context from torch tensor to numpy
-                context_frames = torch_to_numpy(context)
-                number_of_context_frames = len(context_frames)
-                demo_height, demo_width, _ = context_frames[0].shape
-                # Determine the number of columns and rows to create the grid of frames
-                num_cols = 2  # Example value, adjust as needed
-                num_rows = (number_of_context_frames +
-                            num_cols - 1) // num_cols
-                # Create the grid of frames
-                frames = []
-                for i in range(num_rows):
-                    row_frames = []
-                    for j in range(num_cols):
-                        index = i * num_cols + j
-                        if index < number_of_context_frames:
-                            frame = context_frames[index]
-                            row_frames.append(frame)
-                    row = cv2.hconcat(row_frames)
-                    frames.append(row)
-                new_image = np.array(cv2.resize(cv2.vconcat(
-                    frames), (demo_width, demo_height)), np.uint8)
-                output_frame = cv2.hconcat(
-                    [new_image, trj.get(t)['obs']['image'][:, :, ::-1]])
-                
-                res_string_1 = f"Predicted target slot {predicted_slot}"
-                # res_string_2 = f"Pred probabilities {pred_prob}"
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                font_scale = 0.35
-                thickness = 1
-                cv2.putText(output_frame, res_string_1, (0, 80), font,
-                            font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                # cv2.putText(output_frame, res_string_2, (0, 99), font,
-                #             font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                
-                # showing the image
-                cv2.imshow(f'Frame {t}', output_frame)
-                t += 1
-                # waiting using waitKey method
-                cv2.waitKey()
-                cv2.destroyAllWindows()
+            #     # convert context from torch tensor to numpy
+            #     context_frames = torch_to_numpy(context)
+            #     number_of_context_frames = len(context_frames)
+            #     demo_height, demo_width, _ = context_frames[0].shape
+            #     # Determine the number of columns and rows to create the grid of frames
+            #     num_cols = 2  # Example value, adjust as needed
+            #     num_rows = (number_of_context_frames +
+            #                 num_cols - 1) // num_cols
+            #     # Create the grid of frames
+            #     frames = []
+            #     for i in range(num_rows):
+            #         row_frames = []
+            #         for j in range(num_cols):
+            #             index = i * num_cols + j
+            #             if index < number_of_context_frames:
+            #                 frame = context_frames[index]
+            #                 row_frames.append(frame)
+            #         row = cv2.hconcat(row_frames)
+            #         frames.append(row)
+            #     new_image = np.array(cv2.resize(cv2.vconcat(
+            #         frames), (demo_width, demo_height)), np.uint8)
+            #     output_frame = cv2.hconcat(
+            #         [new_image, trj.get(t)['obs']['image'][:, :, ::-1]])
+
+            #     res_string_1 = f"Predicted target slot {predicted_slot}"
+            #     # res_string_2 = f"Pred probabilities {pred_prob}"
+            #     font = cv2.FONT_HERSHEY_SIMPLEX
+            #     font_scale = 0.35
+            #     thickness = 1
+            #     cv2.putText(output_frame, res_string_1, (0, 80), font,
+            #                 font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+
+            #     # showing the image
+            #     cv2.imshow(f'Frame {t}', output_frame)
+            #     t += 1
+            #     # waiting using waitKey method
+            #     cv2.waitKey()
+            #     cv2.destroyAllWindows()

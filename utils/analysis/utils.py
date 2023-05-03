@@ -116,9 +116,11 @@ def startup_env(model, env, context, gpu_id, variation_id, baseline=None, seed=N
     while True:
         try:
             obs = env.reset()
+            # action = np.zeros(7)
+            # obs, _, _, _ = env.step(action)
             break
         except:
-            pass
+           pass
     traj = Trajectory()
     traj.append(obs)
     tasks = {'success': False, 'reached': False,

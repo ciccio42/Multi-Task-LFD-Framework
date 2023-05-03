@@ -1,4 +1,4 @@
-#!/bin/bash
+cd#!/bin/bash
 
 # Set the parent directory
 parent_dir="/mnt/sdc1/frosa/multitask_dataset/multitask_dataset_baseline/pick_place_stable_policy/pick_place/sawyer_pick_place"
@@ -7,7 +7,7 @@ parent_dir="/mnt/sdc1/frosa/multitask_dataset/multitask_dataset_baseline/pick_pl
 video_dir="$parent_dir/video"
 
 # Find all task subdirectories
-task_dirs=($(find "$video_dir" -mindepth 1 -maxdepth 1 -type d -name 'task_*'  | sort -V))
+task_dirs=($(find "$video_dir" -mindepth 1 -maxdepth 1 -type d -name 'task_*' | sort -V))
 
 # Loop over each task subdirectory
 # for dir in "${task_dirs[@]}"; do
@@ -30,9 +30,8 @@ for dir in "${task_dirs[@]}"; do
   video_file=$(find "$traj_dir" -mindepth 1 -maxdepth 1 -type f -name '*.avi' | sort -V)
   video_file=$(find "$traj_dir" -type f -name '*.avi' | head -n 1)
   # Append the video file to the output file
-  echo "file '$(realpath "$video_file")'" >> "$parent_dir/output.txt"
+  echo "file '$(realpath "$video_file")'" >>"$parent_dir/output.txt"
 done
-
 
 # Concatenate the videos in ascending order of task number
 # sort -t _ -k 2n "$parent_dir/output.txt" -o "$parent_dir/output.txt"

@@ -42,8 +42,9 @@ def create_img(base_path="/", task_name="pick_place"):
     
     results_folder = f"results_{task_name}"
     step_pattern = os.path.join(base_path, results_folder, "task-*")
-
-    for step_path in glob.glob(step_pattern):     
+    correct_prediction = 0
+    cnt = 0
+    for step_path in glob.glob(step_pattern):    
         step = step_path.split("-")[-1]
         print(f"---- Step {step} ----")
         context_files = glob.glob(os.path.join(step_path, "context*.pkl"))
@@ -59,6 +60,7 @@ def create_img(base_path="/", task_name="pick_place"):
             pass
 
         for context_file, traj_file in zip(context_files, traj_files):
+            cnt += 1 
             print(context_file, traj_file)
             with open(context_file, "rb") as f:
                 context_data = pickle.load(f)
@@ -120,6 +122,11 @@ def create_img(base_path="/", task_name="pick_place"):
             cv2.putText(output_frame, res_string_1, (0, 80), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
             cv2.putText(output_frame, res_string_2, (0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
             cv2.imwrite(out_path, output_frame)
+
+            if traj_result['pred_correctness']:
+                correct_prediction += 1
+        
+        print(f"Correct predictions {correct_prediction} - Number sample {cnt} - {correct_prediction/cnt}")
 
 
 if __name__ == '__main__':

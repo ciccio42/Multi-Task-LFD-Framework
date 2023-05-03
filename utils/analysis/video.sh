@@ -2,7 +2,7 @@
 
 # Define the output video file name and codec
 # Find all the "video" folders in the parent directory
-parent_dir="/home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Target-Object-Embedding-No-Freezed-Modified-Batch128-1gpu-Attn2ly128-Act2ly256mix4-actCat-simclr128x512/results_pick_place/step-77924_3"
+parent_dir="/home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Target-Object-Embedding-No-Freezed-Modified-Batch128-1gpu-Attn2ly128-Act2ly256mix4-actCat-simclr128x512/results_pick_place/step-29348_1"
 video_folders=($(find_video_folders "$parent_dir"))
 output_file="$parent_dir/video_test.mp4"
 fourcc="mp4v"
