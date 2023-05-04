@@ -2,7 +2,8 @@
 echo ----- User -----
 whoami
 sudo apt-get install htop
-pip install torch==1.8.1+cu101 torchvision==0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
+pip install --user seaborn
+pip install --user torch==1.8.1+cu101 torchvision==0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
 BASEPATH=/home/Multi-Task-LFD-Framework
 echo ----- Installing mujoco-py -----
 

@@ -75,9 +75,13 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
             # convert context from torch tensor to numpy
             context_frames = torch_to_numpy(context_data)
-
             traj_frames = [t["obs"]['image'] for t in traj_data]
             
+            # get predicted slot
+            predicted_slot=[]
+            for i in range(1, len(traj_data)):
+                predicted_slot.append(np.argmax(traj_data.get(i)['info']['target_pred']))
+                
             number_of_context_frames = len(context_frames)
             demo_height, demo_width, _ = context_frames[0].shape
             traj_height, traj_width, _ = traj_frames[0].shape
@@ -109,26 +113,33 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
             
             # create the string to put on each frame
             if traj_result:
-                res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}" 
             else:
                 res_string = f"Sample index {step}"
             font = cv2.FONT_HERSHEY_SIMPLEX
             font_scale = 0.35
             thickness = 1
-            for traj_frame in traj_frames:
+            for i, traj_frame in enumerate(traj_frames):
                 output_frame = cv2.hconcat([new_image, traj_frame[:,:,::-1]])
-                cv2.putText(output_frame, res_string, (0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                if i != len(traj_frames)-1:
+                    cv2.putText(output_frame,  res_string, (0, 80), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                    cv2.putText(output_frame,  f"Predicted slot {predicted_slot[i]}", (0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                else:
+                    cv2.putText(output_frame,  res_string, (0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+
                 out.write(output_frame)
 
             out.release()
 
 if __name__ == '__main__':
-    import argparse
+    import argparse, debugpy
     parser = argparse.ArgumentParser()
     parser.add_argument('--base_path', type=str, default="/", help="Path to checkpoint folder")
     parser.add_argument('--task', type=str, default="pick_place", help="Task name")        
     args = parser.parse_args()
-    
+    debugpy.listen(('0.0.0.0', 5678))
+    print("Waiting for debugger attach")
+    debugpy.wait_for_client()
     # 1. create video
     create_video_for_each_trj(base_path=args.base_path, task_name=args.task)
     
