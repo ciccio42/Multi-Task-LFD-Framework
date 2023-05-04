@@ -18,7 +18,7 @@ docker image rm multitask_lfd
 docker rm -f multitask_lfd
 # Build Docker
 export GID=$(id -g frosa)
-docker build -t multitask_lfd --build-arg USER_UID=$UID --build-arg USERNAME=$USER --build-arg USER_GID=$GID .
+docker build -t multitask_lfd --build-arg USER_UID=$UID --build-arg USERNAME=$USER --build-arg USER_GID=$GID .   
 
 # Run docker
 docker run  --name multitask_lfd -it --user frosa --rm --gpus all  multitask_lfd
