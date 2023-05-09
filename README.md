@@ -56,4 +56,14 @@ export MUJOCO_PY_MUJOCO_PATH=/user/frosa/robotic/.mujoco/mujoco210
 
 ## Dataset Collector
 This folder contains the code used to collect the dataset in real-world application.
-It depends dependens on the 
+It depends dependens on the
+
+
+# To use with conda
+```bash
+conda install -c conda-forge glew
+conda install -c conda-forge mesalib
+conda install -c menpo glfw3
+echo $CONDA_PREFIX # chech the conda prefix
+export CPATH=$CONDA_PREFIX/include
+```

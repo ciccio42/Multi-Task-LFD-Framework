@@ -206,7 +206,7 @@ if __name__ == "__main__":
                         # get action
                         try:
                             action_t = trajectory_obj.get(t)['action']
-                            logger.debug(
+                            logger.info(
                                 f"Action at time-step {t}: {action_t}")
                         except KeyError:
                             pass
