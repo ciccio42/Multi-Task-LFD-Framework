@@ -7,14 +7,14 @@ EXPERT_DATA=/raid/home/miviacluster/data/frosa/multitask_dataset/multitask_datas
 SAVE_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-no-obj-detector
 POLICY='${mosaic}'
 
-EXP_NAME=1Task-Pick-Place-Mosaic-Box
+EXP_NAME=1Task-Pick-Place-Mosaic-Box-Linear-Variance
 TASK_str=pick_place
 EPOCH=250
 BSIZE=128 #64 #32
 CONFIG_PATH=experiments/
 PROJECT_NAME="mosaic_baseline_box_no_obj_box"
 CONFIG_NAME=config.yaml
-LOADER_WORKERS=25
+LOADER_WORKERS=8
 
 LOAD_TARGET_OBJ_DETECTOR=false
 TARGET_OBJ_DETECTOR_STEP=17204
@@ -58,6 +58,6 @@ python /home/frosa_loc/Multi-Task-LFD-Framework/repo/mosaic/train_any.py \
     train_cfg.weight_decay=${WEIGHT_DECAY} \
     train_cfg.lr_schedule=${SCHEDULER} \
     debug=false \
-    wandb_log=true \
+    wandb_log=false \
     resume=false \
     loader_workers=${LOADER_WORKERS}

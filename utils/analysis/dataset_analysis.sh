@@ -1,14 +1,16 @@
 #!/bin/bash
 export CUDA_VISIBLE_DEVICES=0
-BASE_PATH="/home/Multi-Task-LFD-Framework"
-MODEL="${BASE_PATH}/mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Balanced-Dataset-Adam-No-Strong-Aug-No-Crop-Twice-RGB-lr-schedule-Batch64-1gpu-Attn2ly128-Act2ly256mix4-actCat-simclr128x512"
-#"${BASE_PATH}/mosaic-baseline-sav-folder/baseline-1/1Task-Pick-Place-Stable-Policy-Batch32-1gpu-Attn2ly128-Act2ly256mix4-headCat-simclr128x512"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/frosa_loc/.mujoco/mujoco210/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia
+
+MODEL=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-no-obj-detector/1Task-Pick-Place-Mosaic-Box-Batch128
+# 1 Run rollout on the whole dataset, 5 rollout for sample
 EXP_NUMBER=1
-STEP=232875 #35280 #37800
-TASK_ID=12 #2
+STEP=96140
+TASK_ID=-1 #2
 
-RESULTS_DIR="${BASE_PATH}/utils/analysis/dataset_analysis_results/tr_overfitting/pick_place_adam_lr"
-NUM_WORKERS=5
-PROJECT_NAME="pick_place_adam_rgb"
+RESULTS_DIR=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-no-obj-detector/1Task-Pick-Place-Mosaic-Box-Batch128/training_results
+NUM_WORKERS=1
+# PROJECT_NAME="ur_mosaic_baseline_no_obj_detector_training_rollout"
 
-python3 ${BASE_PATH}/utils/analysis/dataset_analysis.py --step ${STEP} --model ${MODEL} --task_indx ${TASK_ID} --results_dir ${RESULTS_DIR} --num_workers ${NUM_WORKERS} --experiment_number ${EXP_NUMBER}  --training_trj --project_name ${PROJECT_NAME} #--training_trj --run_inference 
+python dataset_analysis.py --step ${STEP} --model ${MODEL} --task_indx ${TASK_ID} --results_dir ${RESULTS_DIR} --num_workers ${NUM_WORKERS} --experiment_number ${EXP_NUMBER} --training_trj --debug # --project_name ${PROJECT_NAME} --debug
