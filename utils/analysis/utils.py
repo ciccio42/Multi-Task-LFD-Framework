@@ -59,7 +59,7 @@ def torch_to_numpy(original_tensor):
 
 
 def load_trajectories(conf_file, mode='train'):
-    conf_file.dataset_cfg.mode = 'train'
+    conf_file.dataset_cfg.mode = mode
     return hydra.utils.instantiate(conf_file.dataset_cfg)
 
 
@@ -83,14 +83,6 @@ def load_pkl_files(conf_file, task_name='pick_place', step="29348_1"):
             file_paths['agent'].append(os.path.join(pkls_path, file))
 
     return file_paths
-
-
-def load_from_pickle(step=None):
-    if step is None:
-        raise ValueError("Step must be not None")
-    else:
-        # create a dictionary with all the pairs context agent-trajectory
-        pass
 
 
 def load_model(model_path=None, step=0, conf_file=None):
@@ -180,12 +172,11 @@ def get_action(model, states, images, context, gpu_id, n_steps, max_T=80, baseli
     return action
 
 
-def select_random_frames(frames, n_select, sample_sides=True, random_frames=True):
+def select_random_frames(frames, n_select, sample_sides=True, experiment_number=1):
     selected_frames = []
-    def clip(x): return int(max(0, min(x, len(frames) - 1)))
-    per_bracket = max(len(frames) / n_select, 1)
-
-    if random_frames:
+    if experiment_number != 5:
+        def clip(x): return int(max(0, min(x, len(frames) - 1)))
+        per_bracket = max(len(frames) / n_select, 1)
         for i in range(n_select):
             n = clip(np.random.randint(
                 int(i * per_bracket), int((i + 1) * per_bracket)))
@@ -194,7 +185,7 @@ def select_random_frames(frames, n_select, sample_sides=True, random_frames=True
             elif sample_sides and i == 0:
                 n = 0
             selected_frames.append(n)
-    else:
+    elif experiment_number == 5:
         for i in range(n_select):
             # get first frame
             if i == 0:
@@ -225,6 +216,7 @@ def select_random_frames(frames, n_select, sample_sides=True, random_frames=True
                         end_moving = t
                         break
                 n = start_moving + int((end_moving-start_moving)/2)
+
             selected_frames.append(n)
 
     if isinstance(frames, (list, tuple)):
@@ -359,7 +351,7 @@ def pick_place_eval(model, env, context, gpu_id, variation_id, img_formatter, ma
         states.append(np.concatenate(
             (obs['ee_aa'], obs['gripper_qpos'])).astype(np.float32)[None])
 
-        if show_img:
+        if True:
             # convert context from torch tensor to numpy
             context_frames = torch_to_numpy(context)
             number_of_context_frames = len(context_frames)
@@ -374,21 +366,24 @@ def pick_place_eval(model, env, context, gpu_id, variation_id, img_formatter, ma
                 for j in range(num_cols):
                     index = i * num_cols + j
                     if index < number_of_context_frames:
-                        frame = context_frames[index][:, :, ::-1]
+                        frame = context_frames[index]
                         row_frames.append(frame)
                 row = cv2.hconcat(row_frames)
                 frames.append(row)
             new_image = np.array(cv2.resize(cv2.vconcat(
                 frames), (demo_width, demo_height)), np.uint8)
-            output_frame = cv2.hconcat([new_image, obs['image'][:, :, ::-1]])
+            output_frame = cv2.hconcat(
+                [new_image, obs['image'][:, :, ::-1]])
             # showing the image
-            cv2.imshow(f'Frame {t}', output_frame)
+            cv2.imwrite(
+                f'/home/frosa_loc/Multi-Task-LFD-Framework/repo/Multi-Task-LFD-Training-Framework/training/multi_task_il/utils/test_img/frame_{t}.png', output_frame)
             t += 1
             # waiting using waitKey method
-            cv2.waitKey(1000)
-            cv2.destroyAllWindows()
+            # cv2.waitKey(1000)
+            # cv2.destroyAllWindows()
 
-        images.append(img_formatter(obs['image'][:, :, ::-1]/255)[None])
+        images.append(img_formatter(
+            obs['image'][:, :, ::-1]/255)[None])
         if model_act:
             action = get_action(model, states, images, context,
                                 gpu_id, n_steps, max_T, baseline)
