@@ -83,7 +83,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
             # convert context from torch tensor to numpy
             context_frames = torch_to_numpy(context_data)
-            traj_frames = [t["obs"]['image'] for t in traj_data]
+            traj_frames = [t["obs"]['camera_front_image'] for t in traj_data]
 
             # get predicted slot
             predicted_slot = []

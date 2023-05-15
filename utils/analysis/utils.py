@@ -58,8 +58,8 @@ def torch_to_numpy(original_tensor):
     return numpy_array_transposed
 
 
-def load_trajectories(conf_file):
-    conf_file.dataset_cfg.mode = 'val'
+def load_trajectories(conf_file, mode='train'):
+    conf_file.dataset_cfg.mode = 'train'
     return hydra.utils.instantiate(conf_file.dataset_cfg)
 
 
@@ -120,7 +120,7 @@ def startup_env(model, env, context, gpu_id, variation_id, baseline=None, seed=N
             # obs, _, _, _ = env.step(action)
             break
         except:
-           pass
+            pass
     traj = Trajectory()
     traj.append(obs)
     tasks = {'success': False, 'reached': False,
