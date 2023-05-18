@@ -8,7 +8,7 @@ PROJECT_NAME="mosaic_baseline_box_no_obj_box"
 for MODEL in mosaic-baseline-sav-folder/baseline-no-obj-detector/1Task-Pick-Place-Mosaic-Box-Batch128; do
     for S in 75900 96140; do
         for TASK in pick_place; do
-            python $BASE_PATH/repo/mosaic/tasks/test_models/test_any_task.py $MODEL --env $TASK --saved_step $S --eval_each_task 10 --num_workers 8 --project_name ${PROJECT_NAME} --wandb_log
+            python $BASE_PATH/repo/mosaic/tasks/test_models/test_any_task.py $MODEL --env $TASK --saved_step $S --eval_each_task 10 --num_workers 8 --project_name ${PROJECT_NAME} --debug
         done
     done
 done

@@ -1,18 +1,18 @@
 #!/bin/sh
 export MUJOCO_PY_MUJOCO_PATH="/home/frosa_loc/.mujoco/mujoco210"
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=1
 export HYDRA_FULL_ERROR=1
 
-EXPERT_DATA=/raid/home/miviacluster/data/frosa/multitask_dataset/multitask_dataset_baseline/
-SAVE_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-no-obj-detector
+EXPERT_DATA=/home/frosa_loc/multitask_dataset_baseline_paper_object
+SAVE_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-obj-paper-no-obj-detector
 POLICY='${mosaic}'
 
-EXP_NAME=1Task-Pick-Place-Mosaic-Box-Linear-Variance
+EXP_NAME=1Task-Pick-Place-Mosaic-Obj-Paper-No-Obj-Detector
 TASK_str=pick_place
 EPOCH=250
 BSIZE=128 #64 #32
 CONFIG_PATH=experiments/
-PROJECT_NAME="mosaic_baseline_box_no_obj_box"
+PROJECT_NAME="mosaic_baseline_obj_paper_no_obj_det"
 CONFIG_NAME=config.yaml
 LOADER_WORKERS=8
 
@@ -22,15 +22,16 @@ TARGET_OBJ_DETECTOR_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baselin
 FREEZE_TARGET_OBJ_DETECTOR=false
 CONCAT_STATE=false
 
+RESUME=true
+RESUME_STEP=10120
+RESUME_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-obj-paper-no-obj-detector/1Task-Pick-Place-Mosaic-Obj-Paper-No-Obj-Detector-Batch128
+
 ACTION_DIM=8
-EARLY_STOPPING_PATIECE=20
+EARLY_STOPPING_PATIECE=30
 OPTIMIZER='AdamW'
 LR=0.0001
 WEIGHT_DECAY=0.05
 SCHEDULER=None
-
-RESUME_PATH=None
-RESUME_STEP=-1
 
 python /home/frosa_loc/Multi-Task-LFD-Framework/repo/mosaic/train_any.py \
     --config-path ${CONFIG_PATH} \
@@ -58,6 +59,6 @@ python /home/frosa_loc/Multi-Task-LFD-Framework/repo/mosaic/train_any.py \
     train_cfg.weight_decay=${WEIGHT_DECAY} \
     train_cfg.lr_schedule=${SCHEDULER} \
     debug=false \
-    wandb_log=false \
-    resume=false \
+    wandb_log=true \
+    resume=${RESUME} \
     loader_workers=${LOADER_WORKERS}

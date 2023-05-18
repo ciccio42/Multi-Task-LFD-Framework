@@ -67,3 +67,9 @@ conda install -c menpo glfw3
 echo $CONDA_PREFIX # chech the conda prefix
 export CPATH=$CONDA_PREFIX/include
 ```
+
+# Vima and Vima-bench
+```bash
+git clone git@github.com:ciccio42/VIMA.git
+git clone git@github.com:ciccio42/VIMABench.git
+```

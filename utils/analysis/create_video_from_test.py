@@ -48,7 +48,8 @@ def torch_to_numpy(tensor):
 def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
     results_folder = f"results_{task_name}"
-    step_pattern = os.path.join(base_path, results_folder, "step-*")
+    # step_pattern = os.path.join(base_path, results_folder, "step-*")
+    step_pattern = base_path
     for step_path in glob.glob(step_pattern):
 
         step = step_path.split("-")[-1]
