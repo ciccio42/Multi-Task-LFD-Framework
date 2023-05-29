@@ -11,6 +11,7 @@ import numpy as np
 import torch
 from torchvision.transforms import Normalize
 import json
+from tqdm import tqdm
 
 
 def find_number(name):
@@ -34,8 +35,8 @@ def sort_key(file_name):
 
 
 def torch_to_numpy(tensor):
-    tensor = Normalize([-0.485/0.229, -0.456/0.224, -0.406/0.225],
-                       std=[1/0.229, 1/0.224, 1/0.225])(tensor)
+    # tensor = Normalize([-0.485/0.229, -0.456/0.224, -0.406/0.225],
+    #                    std=[1/0.229, 1/0.224, 1/0.225])(tensor)
     tensor = torch.mul(tensor, 255)
     # convert the tensor to a numpy array
     numpy_array = tensor.cpu().numpy()
@@ -83,8 +84,18 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 pass
 
             # convert context from torch tensor to numpy
-            context_frames = torch_to_numpy(context_data)
-            traj_frames = [t["obs"]['camera_front_image'] for t in traj_data]
+            try:
+                context_frames = torch_to_numpy(context_data)
+            except:
+                print("Exception")
+                context_frames = context_data
+
+            if 'camera_front_image' in traj_data.get(0)["obs"].keys():
+                traj_frames = [t["obs"]['camera_front_image']
+                               for t in traj_data]
+            else:
+                traj_frames = [t["obs"]['image']
+                               for t in traj_data]
 
             # get predicted slot
             predicted_slot = []
@@ -109,9 +120,11 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                     index = i * num_cols + j
                     if index < number_of_context_frames:
                         frame = context_frames[index]
+                        cv2.imwrite(f"context_{index}", context_frames[index])
                         row_frames.append(frame)
                 row = cv2.hconcat(row_frames)
                 frames.append(row)
+
             new_image = np.array(cv2.resize(cv2.vconcat(
                 frames), (traj_width, traj_height)), np.uint8)
 
@@ -121,19 +134,24 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
             context_number = find_number(
                 context_file.split('/')[-1].split('.')[0])
             trj_number = find_number(traj_file.split('/')[-1].split('.')[0])
-            out_path = f"{task_name}_step_{step}_demo_{context_number}_traj_{trj_number}.mp4"
+            # out_path = f"{task_name}_step_{step}_demo_{context_number}_traj_{trj_number}.mp4"
+            out_path = f"demo_{context_number}_traj_{trj_number}.mp4"
+            print(video_path)
+            print(out_path)
             out = cv2.VideoWriter(os.path.join(
                 video_path, out_path), fourcc, 30, (output_width, output_height))
 
             # create the string to put on each frame
             if traj_result:
-                res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                # res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
             else:
                 res_string = f"Sample index {step}"
             font = cv2.FONT_HERSHEY_SIMPLEX
             font_scale = 0.35
             thickness = 1
             for i, traj_frame in enumerate(traj_frames):
+
                 output_frame = cv2.hconcat([new_image, traj_frame[:, :, ::-1]])
                 if i != len(traj_frames)-1 and len(predicted_slot) != 0:
                     cv2.putText(output_frame,  res_string, (0, 80), font,
@@ -143,7 +161,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 else:
                     cv2.putText(output_frame,  res_string, (0, 99), font,
                                 font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-
+                # cv2.imwrite("frame.png", output_frame)
                 out.write(output_frame)
 
             out.release()

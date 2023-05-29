@@ -11,3 +11,7 @@ utils/analysis/dataset_analysis_results/*
 utils/analysis/wandb/*
 *.csv
 /test/*
+context/*
+trajectory/*
+*multitask_dataset/*
+*.png

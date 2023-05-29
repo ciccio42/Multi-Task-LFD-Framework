@@ -61,9 +61,7 @@ It depends dependens on the
 
 # To use with conda
 ```bash
-conda install -c conda-forge glew
-conda install -c conda-forge mesalib
-conda install -c menpo glfw3
+conda install -c conda-forge glew && conda install -c conda-forge patchelf && conda install -c conda-forge mesalib && conda install -c menpo glfw3
 echo $CONDA_PREFIX # chech the conda prefix
 export CPATH=$CONDA_PREFIX/include
 ```
@@ -73,3 +71,4 @@ export CPATH=$CONDA_PREFIX/include
 git clone git@github.com:ciccio42/VIMA.git
 git clone git@github.com:ciccio42/VIMABench.git
 ```
+

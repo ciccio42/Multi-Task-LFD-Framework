@@ -1,18 +1,20 @@
 #!/bin/sh
 export MUJOCO_PY_MUJOCO_PATH="/home/frosa_loc/.mujoco/mujoco210"
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=0
 export HYDRA_FULL_ERROR=1
 
-EXPERT_DATA=/home/frosa_loc/multitask_dataset_baseline_paper_object
-SAVE_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-obj-paper-no-obj-detector
+EXPERT_DATA=/home/frosa_loc/Multi-Task-LFD-Framework/multitask_dataset/multitask_dataset_repo
+SAVE_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/mosaic-parameters
 POLICY='${mosaic}'
 
-EXP_NAME=1Task-Pick-Place-Mosaic-Obj-Paper-No-Obj-Detector
+EXP_NAME=1Task-Pick-Place-Mosaic-Parameters-Paper-Object-Cropped-No-Norm
 TASK_str=pick_place
-EPOCH=250
-BSIZE=128 #64 #32
+EPOCH=20
+BSIZE=32 #128 #64 #32
+SET_SAME_N=2
+COMPUTE_OBJ_DISTRIBUTION=false
 CONFIG_PATH=experiments/
-PROJECT_NAME="mosaic_baseline_obj_paper_no_obj_det"
+PROJECT_NAME="mosaic-parameters-paper-object-cropped-no-norm"
 CONFIG_NAME=config.yaml
 LOADER_WORKERS=8
 
@@ -22,16 +24,32 @@ TARGET_OBJ_DETECTOR_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baselin
 FREEZE_TARGET_OBJ_DETECTOR=false
 CONCAT_STATE=false
 
-RESUME=true
-RESUME_STEP=10120
-RESUME_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-obj-paper-no-obj-detector/1Task-Pick-Place-Mosaic-Obj-Paper-No-Obj-Detector-Batch128
+RESUME=false
+RESUME_STEP=46500
+RESUME_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/mosaic-parameters/1Task-Pick-Place-Mosaic-Parameters-Paper-Scenario-Batch32
 
 ACTION_DIM=8
-EARLY_STOPPING_PATIECE=30
-OPTIMIZER='AdamW'
-LR=0.0001
-WEIGHT_DECAY=0.05
+N_MIXTURES=6
+OUT_DIM=128
+ATTN_FF=256
+COMPRESSOR_DIM=256
+HIDDEN_DIM=512
+CONCAT_DEMO_HEAD=true
+CONCAT_DEMO_ACT=false
+PRETRAINED=false
+
+EARLY_STOPPING_PATIECE=-1
+OPTIMIZER='Adam'
+LR=0.0005
+WEIGHT_DECAY=0.00
 SCHEDULER=None
+
+SAVE_FREQ=500
+LOG_FREQ=500
+VAL_FREQ=500
+
+# Policy 1: At each slot is assigned a RandomSampler
+BALANCING_POLICY=0
 
 python /home/frosa_loc/Multi-Task-LFD-Framework/repo/mosaic/train_any.py \
     --config-path ${CONFIG_PATH} \
@@ -39,16 +57,30 @@ python /home/frosa_loc/Multi-Task-LFD-Framework/repo/mosaic/train_any.py \
     policy=${POLICY} \
     task_names=${TASK_str} \
     exp_name=${EXP_NAME} \
+    save_freq=${SAVE_FREQ} \
+    log_freq=${LOG_FREQ} \
+    val_freq=${VAL_FREQ} \
+    set_same_n=${SET_SAME_N} \
     bsize=${BSIZE} \
     vsize=${BSIZE} \
     epochs=${EPOCH} \
+    dataset_cfg.compute_obj_distribution=${COMPUTE_OBJ_DISTRIBUTION} \
+    samplers.balancing_policy=${BALANCING_POLICY} \
     mosaic.load_target_obj_detector=${LOAD_TARGET_OBJ_DETECTOR} \
     mosaic.target_obj_detector_step=${TARGET_OBJ_DETECTOR_STEP} \
     mosaic.target_obj_detector_path=${TARGET_OBJ_DETECTOR_PATH} \
     mosaic.freeze_target_obj_detector=${FREEZE_TARGET_OBJ_DETECTOR} \
     actions.adim=${ACTION_DIM} \
+    actions.n_mixtures=${N_MIXTURES} \
+    actions.out_dim=${OUT_DIM} \
+    attn.attn_ff=${ATTN_FF} \
+    simclr.compressor_dim=${COMPRESSOR_DIM} \
+    simclr.hidden_dim=${HIDDEN_DIM} \
     mosaic.concat_state=${CONCAT_STATE} \
+    mosaic.concat_demo_head=${CONCAT_DEMO_HEAD} \
+    mosaic.concat_demo_act=${CONCAT_DEMO_ACT} \
     early_stopping_cfg.patience=${EARLY_STOPPING_PATIECE} \
+    attn.img_cfg.pretrained=${PRETRAINED} \
     project_name=${PROJECT_NAME} \
     EXPERT_DATA=${EXPERT_DATA} \
     save_path=${SAVE_PATH} \
