@@ -3,18 +3,18 @@ export MUJOCO_PY_MUJOCO_PATH="/home/frosa_loc/.mujoco/mujoco210"
 export CUDA_VISIBLE_DEVICES=0
 export HYDRA_FULL_ERROR=1
 
-EXPERT_DATA=/home/frosa_loc/Multi-Task-LFD-Framework/multitask_dataset/multitask_dataset_repo
+EXPERT_DATA=/home/frosa_loc/Multi-Task-LFD-Framework/multitask_dataset/multitask_dataset_repo_box
 SAVE_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/mosaic-parameters
 POLICY='${mosaic}'
 
-EXP_NAME=1Task-Pick-Place-Mosaic-Parameters-Paper-Object-Cropped-No-Norm
+EXP_NAME=1Task-Pick-Place-Mosaic-Prova
 TASK_str=pick_place
-EPOCH=20
+EPOCH=40
 BSIZE=32 #128 #64 #32
 SET_SAME_N=2
 COMPUTE_OBJ_DISTRIBUTION=false
 CONFIG_PATH=experiments/
-PROJECT_NAME="mosaic-parameters-paper-object-cropped-no-norm"
+PROJECT_NAME="mosaic-parameters-paper-object-cropped-no-norm-box"
 CONFIG_NAME=config.yaml
 LOADER_WORKERS=8
 
@@ -25,8 +25,8 @@ FREEZE_TARGET_OBJ_DETECTOR=false
 CONCAT_STATE=false
 
 RESUME=false
-RESUME_STEP=46500
-RESUME_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/mosaic-parameters/1Task-Pick-Place-Mosaic-Parameters-Paper-Scenario-Batch32
+RESUME_STEP=84100
+RESUME_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/ur-baseline/1Task-Pick-Place-Mosaic-cropped-no-normalized-Batch32
 
 ACTION_DIM=8
 N_MIXTURES=6
@@ -44,9 +44,9 @@ LR=0.0005
 WEIGHT_DECAY=0.00
 SCHEDULER=None
 
-SAVE_FREQ=500
-LOG_FREQ=500
-VAL_FREQ=500
+SAVE_FREQ=1000
+LOG_FREQ=1000
+VAL_FREQ=1000
 
 # Policy 1: At each slot is assigned a RandomSampler
 BALANCING_POLICY=0
@@ -90,7 +90,7 @@ python /home/frosa_loc/Multi-Task-LFD-Framework/repo/mosaic/train_any.py \
     train_cfg.lr=${LR} \
     train_cfg.weight_decay=${WEIGHT_DECAY} \
     train_cfg.lr_schedule=${SCHEDULER} \
-    debug=false \
-    wandb_log=true \
+    debug=true \
+    wandb_log=false \
     resume=${RESUME} \
     loader_workers=${LOADER_WORKERS}

@@ -9,31 +9,30 @@ echo ----- Installing mujoco-py -----
 
 # install mujoco-py
 unset LD_LIBRARY_PATH
-echo export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/$USER/.mujoco/mujoco210/bin:/usr/local/cuda-10.1/lib64/:/usr/lib/nvidia-000 >> /home/$USER/.bashrc
+echo export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/$USER/.mujoco/mujoco210/bin:/usr/local/cuda-10.1/lib64/:/usr/lib/nvidia-000 >>/home/$USER/.bashrc
 source /home/$USER/.bashrc
-pip3 install --user mujoco-py
+pip install --user mujoco-py
 
 # install robosuite
 echo ----- Installing robosuite -----
 cd $BASEPATH/repo/robosuite
-pip3 install --user .
+pip install --user .
 
 echo ----- Installing mosaic -----
-cp  $BASEPATH/repo/mosaic/tasks/robosuite_env/sawyer/sawyer_arm.urdf $BASEPATH/repo/robosuite/models/assets/bullet_data/sawyer_description/urdf/sawyer_arm.urdf 
+cp $BASEPATH/repo/mosaic/tasks/robosuite_env/sawyer/sawyer_arm.urdf $BASEPATH/repo/robosuite/models/assets/bullet_data/sawyer_description/urdf/sawyer_arm.urdf
 cd $BASEPATH/repo/mosaic
-pip3 install --user .
+pip install --user .
 cd $BASEPATH/repo/mosaic/tasks
-pip3 install --user .
-
+pip install --user .
 
 # install code for running scripted policies
 #echo ----- Installing Training Framework -----
-# 1. Install training 
+# 1. Install training
 cd $BASEPATH/repo/Multi-Task-LFD-Training-Framework/training
-pip3 install --user .
+pip install --user .
 ## 2. Install tasks
 cd $BASEPATH/repo/Multi-Task-LFD-Training-Framework/tasks
-pip3 install --user .
+pip install --user .
 
 export CUDA_VISIBLE_DEVICES=0
 

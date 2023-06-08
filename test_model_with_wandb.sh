@@ -3,12 +3,12 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/frosa_loc/.mujoco/mujoco210/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia
 # ---- Pick-Place ---- #
 
-BASE_PATH=/home/frosa_loc/Multi-Task-LFD-Framework
-PROJECT_NAME="mosaic-parameters-paper-object-cropped-no-norm"
-for MODEL in mosaic-baseline-sav-folder/mosaic-parameters/1Task-Pick-Place-Mosaic-Parameters-Paper-Object-Cropped-No-Norm-Batch32; do
-    for S in 81000; do
+BASE_PATH=/home/frosa_loc/Multi-Task-LFD-Framework/
+PROJECT_NAME="mosaic-parameters-paper-object-cropped-no-norm-box"
+for MODEL in mosaic-baseline-sav-folder/mosaic-parameters/1Task-Pick-Place-Mosaic-Parameters-Paper-Object-Cropped-No-Norm-Box-Batch32; do
+    for S in 84000 162000; do
         for TASK in pick_place; do
-            python $BASE_PATH/repo/mosaic/tasks/test_models/test_any_task.py $MODEL --env $TASK --saved_step $S --eval_each_task 10 --num_workers 4 --wandb_log --project_name ${PROJECT_NAME}
+            python $BASE_PATH/repo/mosaic/tasks/test_models/test_any_task.py $MODEL --env $TASK --saved_step $S --eval_each_task 10 --num_workers 2 --wandb_log --project_name ${PROJECT_NAME}
         done
     done
 done

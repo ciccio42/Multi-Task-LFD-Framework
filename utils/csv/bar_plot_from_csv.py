@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from collections import OrderedDict
 import numpy as np
 
-CVS_FILE_PATH = "/home/ciccio/Desktop/multi_task_lfd/Multi-Task-LFD-Framework/utils/csv/wandb_export_2023-04-20T09_27_27.486+02_00.csv"
+CVS_FILE_PATH = "/home/frosa_loc/Multi-Task-LFD-Framework/utils/csv/wandb_export_2023-06-07T09_18_38.580+02_00.csv"
 PLOT_NAME = "avg_success"
 X_LABEL = "Step"
 Y_LABEL = "Percentage"
@@ -54,4 +54,4 @@ if __name__ == '__main__':
     plt.ylabel(Y_LABEL)
     plt.errorbar(results_label, results_avg, results_std_dev, fmt='.', color='Black', elinewidth=2,
                  capthick=10, errorevery=1, alpha=0.5, ms=4, capsize=2)
-    plt.show()
+    plt.savefig(f"{PLOT_NAME}.png")

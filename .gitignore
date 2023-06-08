@@ -2,6 +2,7 @@ repo/*
 training_log/*
 mosaic/bashes2/outputs/*
 nohup*
+*/wandb/*
 wandb/*
 outputs/*
 mosaic-baseline-sav-folder/*
@@ -15,3 +16,4 @@ context/*
 trajectory/*
 *multitask_dataset/*
 *.png
+gdrive/*

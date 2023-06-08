@@ -110,7 +110,8 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
             # Determine the number of columns and rows to create the grid of frames
             num_cols = 2  # Example value, adjust as needed
-            num_rows = (number_of_context_frames + num_cols - 1) // num_cols
+            num_rows = (number_of_context_frames +
+                        num_cols - 1) // num_cols
 
             # Create the grid of frames
             frames = []
@@ -120,7 +121,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                     index = i * num_cols + j
                     if index < number_of_context_frames:
                         frame = context_frames[index]
-                        cv2.imwrite(f"context_{index}", context_frames[index])
+                        # cv2.imwrite(f"context_{index}", context_frames[index])
                         row_frames.append(frame)
                 row = cv2.hconcat(row_frames)
                 frames.append(row)
@@ -133,7 +134,8 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
             output_height = traj_height
             context_number = find_number(
                 context_file.split('/')[-1].split('.')[0])
-            trj_number = find_number(traj_file.split('/')[-1].split('.')[0])
+            trj_number = find_number(
+                traj_file.split('/')[-1].split('.')[0])
             # out_path = f"{task_name}_step_{step}_demo_{context_number}_traj_{trj_number}.mp4"
             out_path = f"demo_{context_number}_traj_{trj_number}.mp4"
             print(video_path)
@@ -152,7 +154,8 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
             thickness = 1
             for i, traj_frame in enumerate(traj_frames):
 
-                output_frame = cv2.hconcat([new_image, traj_frame[:, :, ::-1]])
+                output_frame = cv2.hconcat(
+                    [new_image, traj_frame[:, :, ::-1]])
                 if i != len(traj_frames)-1 and len(predicted_slot) != 0:
                     cv2.putText(output_frame,  res_string, (0, 80), font,
                                 font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
@@ -165,6 +168,55 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 out.write(output_frame)
 
             out.release()
+
+
+def read_results(base_path="/", task_name="pick_place"):
+    results_folder = f"results_{task_name}"
+    # step_pattern = os.path.join(base_path, results_folder, "step-*")
+    step_pattern = base_path
+    for step_path in glob.glob(step_pattern):
+
+        step = step_path.split("-")[-1]
+        print(f"---- Step {step} ----")
+        context_files = glob.glob(os.path.join(step_path, "context*.pkl"))
+        context_files.sort(key=sort_key)
+        traj_files = glob.glob(os.path.join(step_path, "traj*.pkl"))
+        traj_files.sort(key=sort_key)
+
+        try:
+            print("Creating folder {}".format(
+                os.path.join(step_path, "video")))
+            video_path = os.path.join(step_path, "video")
+            os.makedirs(video_path)
+        except:
+            pass
+
+        success_cnt = 0
+        reached_cnt = 0
+        file_cnt = 0
+        for context_file, traj_file in zip(context_files, traj_files):
+            print(context_file, traj_file)
+            with open(context_file, "rb") as f:
+                context_data = pickle.load(f)
+            with open(traj_file, "rb") as f:
+                traj_data = pickle.load(f)
+            # open json file
+            traj_result = None
+            try:
+                json_file = traj_file.split('.')[-2]
+                with open(f"{json_file}.json", "rb") as f:
+                    traj_result = json.load(f)
+                    file_cnt += 1
+            except:
+                pass
+
+            if traj_result['success'] == 1:
+                success_cnt += 1
+            if traj_result['reached'] == 1:
+                reached_cnt += 1
+
+        print(f"Success rate {success_cnt/file_cnt}")
+        print(f"Reached rate {reached_cnt/file_cnt}")
 
 
 if __name__ == '__main__':
@@ -180,4 +232,8 @@ if __name__ == '__main__':
     # print("Waiting for debugger attach")
     # debugpy.wait_for_client()
     # 1. create video
-    create_video_for_each_trj(base_path=args.base_path, task_name=args.task)
+    # create_video_for_each_trj(base_path=args.base_path, task_name=args.task)
+    import time
+    while True:
+        read_results(base_path=args.base_path, task_name=args.task)
+        time.sleep(3)
