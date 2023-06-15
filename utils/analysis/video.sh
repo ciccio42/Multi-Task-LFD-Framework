@@ -2,7 +2,7 @@
 
 # Define the output video file name and codec
 # Find all the "video" folders in the parent directory
-parent_dir="/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/ur-baseline/1Task-Pick-Place-Mosaic-cropped-no-normalized-Batch32/results_pick_place/step-160000_3"
+parent_dir="/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/ur-baseline/1Task-Nut-Assembly-Mosaic-200-360-Batch27/results_nut_assembly/step-108000_3"
 video_folders=($(find_video_folders "$parent_dir"))
 output_file="$parent_dir/video.mp4"
 fourcc="mp4v"

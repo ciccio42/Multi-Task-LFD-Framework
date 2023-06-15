@@ -1,6 +1,6 @@
 #!/bin/sh
 export MUJOCO_PY_MUJOCO_PATH="/home/frosa_loc/.mujoco/mujoco210"
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=2
 export HYDRA_FULL_ERROR=1
 
 EXPERT_DATA=/home/frosa_loc/Multi-Task-LFD-Framework/multitask_dataset/multitask_dataset_repo_box
@@ -16,7 +16,7 @@ COMPUTE_OBJ_DISTRIBUTION=false
 CONFIG_PATH=experiments/
 PROJECT_NAME="mosaic-parameters-paper-object-cropped-no-norm-box"
 CONFIG_NAME=config.yaml
-LOADER_WORKERS=8
+LOADER_WORKERS=1
 
 LOAD_TARGET_OBJ_DETECTOR=false
 TARGET_OBJ_DETECTOR_STEP=17204

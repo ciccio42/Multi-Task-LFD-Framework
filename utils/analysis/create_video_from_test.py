@@ -164,7 +164,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 else:
                     cv2.putText(output_frame,  res_string, (0, 99), font,
                                 font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                # cv2.imwrite("frame.png", output_frame)
+                cv2.imwrite("frame.png", output_frame)
                 out.write(output_frame)
 
             out.release()
@@ -232,8 +232,8 @@ if __name__ == '__main__':
     # print("Waiting for debugger attach")
     # debugpy.wait_for_client()
     # 1. create video
-    # create_video_for_each_trj(base_path=args.base_path, task_name=args.task)
-    import time
-    while True:
-        read_results(base_path=args.base_path, task_name=args.task)
-        time.sleep(3)
+    create_video_for_each_trj(base_path=args.base_path, task_name=args.task)
+    # import time
+    # while True:
+    #     read_results(base_path=args.base_path, task_name=args.task)
+    #     time.sleep(3)
