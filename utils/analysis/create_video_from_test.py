@@ -59,7 +59,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
         context_files.sort(key=sort_key)
         traj_files = glob.glob(os.path.join(step_path, "traj*.pkl"))
         traj_files.sort(key=sort_key)
-
+        print(context_files)
         try:
             print("Creating folder {}".format(
                 os.path.join(step_path, "video")))
@@ -67,107 +67,157 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
             os.makedirs(video_path)
         except:
             pass
+        if len(context_files) != 0:
+            for context_file, traj_file in zip(context_files, traj_files):
+                print(context_file, traj_file)
+                with open(context_file, "rb") as f:
+                    context_data = pickle.load(f)
+                with open(traj_file, "rb") as f:
+                    traj_data = pickle.load(f)
+                # open json file
+                traj_result = None
+                try:
+                    json_file = traj_file.split('.')[-2]
+                    with open(f"{json_file}.json", "rb") as f:
+                        traj_result = json.load(f)
+                except:
+                    pass
 
-        for context_file, traj_file in zip(context_files, traj_files):
-            print(context_file, traj_file)
-            with open(context_file, "rb") as f:
-                context_data = pickle.load(f)
-            with open(traj_file, "rb") as f:
-                traj_data = pickle.load(f)
-            # open json file
-            traj_result = None
-            try:
-                json_file = traj_file.split('.')[-2]
-                with open(f"{json_file}.json", "rb") as f:
-                    traj_result = json.load(f)
-            except:
-                pass
+                # convert context from torch tensor to numpy
+                try:
+                    context_frames = torch_to_numpy(context_data)
+                except:
+                    print("Exception")
+                    context_frames = context_data
 
-            # convert context from torch tensor to numpy
-            try:
-                context_frames = torch_to_numpy(context_data)
-            except:
-                print("Exception")
-                context_frames = context_data
-
-            if 'camera_front_image' in traj_data.get(0)["obs"].keys():
-                traj_frames = [t["obs"]['camera_front_image']
-                               for t in traj_data]
-            else:
-                traj_frames = [t["obs"]['image']
-                               for t in traj_data]
-
-            # get predicted slot
-            predicted_slot = []
-            if 'info' in traj_data.get(0):
-                for i in range(1, len(traj_data)):
-                    predicted_slot.append(
-                        np.argmax(traj_data.get(i)['info']['target_pred']))
-
-            number_of_context_frames = len(context_frames)
-            demo_height, demo_width, _ = context_frames[0].shape
-            traj_height, traj_width, _ = traj_frames[0].shape
-
-            # Determine the number of columns and rows to create the grid of frames
-            num_cols = 2  # Example value, adjust as needed
-            num_rows = (number_of_context_frames +
-                        num_cols - 1) // num_cols
-
-            # Create the grid of frames
-            frames = []
-            for i in range(num_rows):
-                row_frames = []
-                for j in range(num_cols):
-                    index = i * num_cols + j
-                    if index < number_of_context_frames:
-                        frame = context_frames[index]
-                        # cv2.imwrite(f"context_{index}", context_frames[index])
-                        row_frames.append(frame)
-                row = cv2.hconcat(row_frames)
-                frames.append(row)
-
-            new_image = np.array(cv2.resize(cv2.vconcat(
-                frames), (traj_width, traj_height)), np.uint8)
-
-            fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-            output_width = 2*traj_width
-            output_height = traj_height
-            context_number = find_number(
-                context_file.split('/')[-1].split('.')[0])
-            trj_number = find_number(
-                traj_file.split('/')[-1].split('.')[0])
-            # out_path = f"{task_name}_step_{step}_demo_{context_number}_traj_{trj_number}.mp4"
-            out_path = f"demo_{context_number}_traj_{trj_number}.mp4"
-            print(video_path)
-            print(out_path)
-            out = cv2.VideoWriter(os.path.join(
-                video_path, out_path), fourcc, 30, (output_width, output_height))
-
-            # create the string to put on each frame
-            if traj_result:
-                # res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
-                res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
-            else:
-                res_string = f"Sample index {step}"
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            font_scale = 0.35
-            thickness = 1
-            for i, traj_frame in enumerate(traj_frames):
-
-                output_frame = cv2.hconcat(
-                    [new_image, traj_frame[:, :, ::-1]])
-                if i != len(traj_frames)-1 and len(predicted_slot) != 0:
-                    cv2.putText(output_frame,  res_string, (0, 80), font,
-                                font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                    cv2.putText(output_frame,  f"Predicted slot {predicted_slot[i]}", (
-                        0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                if 'camera_front_image' in traj_data.get(0)["obs"].keys():
+                    traj_frames = [t["obs"]['camera_front_image']
+                                   for t in traj_data]
                 else:
-                    cv2.putText(output_frame,  res_string, (0, 99), font,
-                                font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                cv2.imwrite("frame.png", output_frame)
-                out.write(output_frame)
+                    traj_frames = [t["obs"]['image']
+                                   for t in traj_data]
 
-            out.release()
+                # get predicted slot
+                predicted_slot = []
+                if 'info' in traj_data.get(0):
+                    for i in range(1, len(traj_data)):
+                        predicted_slot.append(
+                            np.argmax(traj_data.get(i)['info']['target_pred']))
+
+                number_of_context_frames = len(context_frames)
+                demo_height, demo_width, _ = context_frames[0].shape
+                traj_height, traj_width, _ = traj_frames[0].shape
+
+                # Determine the number of columns and rows to create the grid of frames
+                num_cols = 2  # Example value, adjust as needed
+                num_rows = (number_of_context_frames +
+                            num_cols - 1) // num_cols
+
+                # Create the grid of frames
+                frames = []
+                for i in range(num_rows):
+                    row_frames = []
+                    for j in range(num_cols):
+                        index = i * num_cols + j
+                        if index < number_of_context_frames:
+                            frame = context_frames[index]
+                            # cv2.imwrite(f"context_{index}", context_frames[index])
+                            row_frames.append(frame)
+                    row = cv2.hconcat(row_frames)
+                    frames.append(row)
+
+                new_image = np.array(cv2.resize(cv2.vconcat(
+                    frames), (traj_width, traj_height)), np.uint8)
+
+                fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+                output_width = 2*traj_width
+                output_height = traj_height
+                context_number = find_number(
+                    context_file.split('/')[-1].split('.')[0])
+                trj_number = find_number(
+                    traj_file.split('/')[-1].split('.')[0])
+                # out_path = f"{task_name}_step_{step}_demo_{context_number}_traj_{trj_number}.mp4"
+                out_path = f"demo_{context_number}_traj_{trj_number}.mp4"
+                print(video_path)
+                print(out_path)
+                out = cv2.VideoWriter(os.path.join(
+                    video_path, out_path), fourcc, 30, (output_width, output_height))
+
+                # create the string to put on each frame
+                if traj_result:
+                    # res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                    res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                else:
+                    res_string = f"Sample index {step}"
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                font_scale = 0.35
+                thickness = 1
+                for i, traj_frame in enumerate(traj_frames):
+
+                    output_frame = cv2.hconcat(
+                        [new_image, traj_frame[:, :, ::-1]])
+                    if i != len(traj_frames)-1 and len(predicted_slot) != 0:
+                        cv2.putText(output_frame,  res_string, (0, 80), font,
+                                    font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                        cv2.putText(output_frame,  f"Predicted slot {predicted_slot[i]}", (
+                            0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                    else:
+                        cv2.putText(output_frame,  res_string, (0, 99), font,
+                                    font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                    cv2.imwrite("frame.png", output_frame)
+                    out.write(output_frame)
+
+                out.release()
+        else:
+            for traj_file in traj_files:
+                with open(traj_file, "rb") as f:
+                    traj_data = pickle.load(f)
+                # open json file
+                traj_result = None
+                try:
+                    json_file = traj_file.split('.')[-2]
+                    with open(f"{json_file}.json", "rb") as f:
+                        traj_result = json.load(f)
+                except:
+                    pass
+                if traj_result["success"] == 0:
+                    if 'camera_front_image' in traj_data.get(0)["obs"].keys():
+                        traj_frames = [t["obs"]['camera_front_image']
+                                       for t in traj_data]
+                    else:
+                        traj_frames = [t["obs"]['image']
+                                       for t in traj_data]
+
+                    traj_height, traj_width, _ = traj_frames[0].shape
+                    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+                    output_width = traj_width
+                    output_height = traj_height
+                    trj_number = find_number(
+                        traj_file.split('/')[-1].split('.')[0])
+                    out_path = f"traj_{trj_number}.mp4"
+                    print(video_path)
+                    print(out_path)
+                    out = cv2.VideoWriter(os.path.join(
+                        video_path, out_path), fourcc, 30, (output_width, output_height))
+
+                    # create the string to put on each frame
+                    if traj_result:
+                        # res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                        res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                    else:
+                        res_string = f"Sample index {step}"
+                    font = cv2.FONT_HERSHEY_SIMPLEX
+                    font_scale = 0.35
+                    thickness = 1
+                    predicted_slot = []
+                    for i, traj_frame in enumerate(traj_frames):
+
+                        output_frame = np.array(traj_frame[:, :, ::-1])
+
+                        cv2.imwrite("frame.png", output_frame)
+                        out.write(output_frame)
+
+                    out.release()
 
 
 def read_results(base_path="/", task_name="pick_place"):
@@ -228,7 +278,7 @@ if __name__ == '__main__':
     parser.add_argument('--task', type=str,
                         default="pick_place", help="Task name")
     args = parser.parse_args()
-    # debugpy.listen(('0.0.0.0', 5678))
+    # debugpy.listen(('0.0.0.0', 5679))
     # print("Waiting for debugger attach")
     # debugpy.wait_for_client()
     # 1. create video

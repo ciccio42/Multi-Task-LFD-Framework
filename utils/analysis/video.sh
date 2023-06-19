@@ -2,9 +2,9 @@
 
 # Define the output video file name and codec
 # Find all the "video" folders in the parent directory
-parent_dir="/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/ur-baseline/1Task-Nut-Assembly-Mosaic-200-360-Batch27/results_nut_assembly/step-108000_3"
+parent_dir="/home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/ur-baseline/1Task-Nut-Assembly-VIMA-Batch27/results_nut_assembly/step-6600_1/"
 video_folders=($(find_video_folders "$parent_dir"))
-output_file="$parent_dir/video.mp4"
+output_file="$parent_dir/video_fail.mp4"
 fourcc="mp4v"
 # Define the function to recursively search for "video" folders
 find_video_folders() {

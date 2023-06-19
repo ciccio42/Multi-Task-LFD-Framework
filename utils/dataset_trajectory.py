@@ -18,9 +18,9 @@ MAX_DIST = 10
 MIN_DIST = 0.01
 
 # object_to_id = {"milk": 0, "bread": 1, "cereal": 2, "can": 3}
-# object_to_id = {"greenbox": 0, "yellowbox": 1, "bluebox": 2, "redbox": 3}
-object_to_id = {"round-nut": 0, "round-nut-2": 1, "round-nut-3": 2}
-TASK_NAME = None
+object_to_id = {"greenbox": 0, "yellowbox": 1, "bluebox": 2, "redbox": 3}
+# object_to_id = {"round-nut": 0, "round-nut-2": 1, "round-nut-3": 2}
+TASK_NAME = "pick_place"
 
 RANGES = np.array(
     [[-0.3, 0.3], [-0.3, 0.3], [0.82, 1.2], [-5, 5], [-5, 5], [-5, 5]])
@@ -116,34 +116,34 @@ def write_frame(rgb_video_writer, depth_video_writer, camera_name, obs, str):
         #     cv2.putText(image_rgb, str, (0, 99), font, font_scale,
         #                 (0, 255, 0), thickness, cv2.LINE_AA)
 
-    if 'target-object' in obs.keys() and (camera_name != 'eye_in_hand' and camera_name != 'image'):
-        target_obj_id = obs['target-object']
-        target_obj_bb = None
-        for object_names in object_to_id.keys():
-            if target_obj_id == object_to_id[object_names]:
-                target_obj_bb = obs['obj_bb'][camera_name.split('_image')[
-                    0]][object_names]
+    # if 'target-object' in obs.keys() and (camera_name != 'eye_in_hand' and camera_name != 'image'):
+    #     target_obj_id = obs['target-object']
+    #     target_obj_bb = None
+    #     for object_names in object_to_id.keys():
+    #         if target_obj_id == object_to_id[object_names]:
+    #             target_obj_bb = obs['obj_bb'][camera_name.split('_image')[
+    #                 0]][object_names]
 
-        center = target_obj_bb['center']
-        upper_left_corner = target_obj_bb['upper_left_corner']
-        bottom_right_corner = target_obj_bb['bottom_right_corner']
-        image_rgb = cv2.circle(
-            image_rgb, center, radius=1, color=(0, 0, 255), thickness=-1)
-        image_rgb = cv2.rectangle(
-            image_rgb, upper_left_corner,
-            bottom_right_corner, (255, 0, 0), 1)
+    #     center = target_obj_bb['center']
+    #     upper_left_corner = target_obj_bb['upper_left_corner']
+    #     bottom_right_corner = target_obj_bb['bottom_right_corner']
+    #     image_rgb = cv2.circle(
+    #         image_rgb, center, radius=1, color=(0, 0, 255), thickness=-1)
+    #     image_rgb = cv2.rectangle(
+    #         image_rgb, upper_left_corner,
+    #         bottom_right_corner, (255, 0, 0), 1)
 
-        if 'pick_place' in TASK_NAME:
-            bin_bb = obs['obj_bb'][camera_name.split('_image')[
-                0]]['bin']
-            center = bin_bb['center']
-            upper_left_corner = bin_bb['upper_left_corner']
-            bottom_right_corner = bin_bb['bottom_right_corner']
-            image_rgb = cv2.circle(
-                image_rgb, center, radius=1, color=(0, 0, 255), thickness=-1)
-            image_rgb = cv2.rectangle(
-                image_rgb, upper_left_corner,
-                bottom_right_corner, (255, 0, 0), 1)
+    #     if 'pick_place' in TASK_NAME:
+    #         bin_bb = obs['obj_bb'][camera_name.split('_image')[
+    #             0]]['bin']
+    #         center = bin_bb['center']
+    #         upper_left_corner = bin_bb['upper_left_corner']
+    #         bottom_right_corner = bin_bb['bottom_right_corner']
+    #         image_rgb = cv2.circle(
+    #             image_rgb, center, radius=1, color=(0, 0, 255), thickness=-1)
+    #         image_rgb = cv2.rectangle(
+    #             image_rgb, upper_left_corner,
+    #             bottom_right_corner, (255, 0, 0), 1)
 
         # cv2.imwrite("box.png", image_rgb)
 
