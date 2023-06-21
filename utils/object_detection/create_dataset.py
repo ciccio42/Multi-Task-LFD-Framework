@@ -5,10 +5,10 @@ import pickle as pkl
 import numpy as np
 from multiprocessing import Pool
 import functools
-import mmcv
+# import mmcv
 import cv2
-from mmengine.fileio import dump, load
-from mmengine.utils import track_iter_progress
+# from mmengine.fileio import dump, load
+# from mmengine.utils import track_iter_progress
 import json
 import hydra
 from omegaconf import DictConfig, OmegaConf

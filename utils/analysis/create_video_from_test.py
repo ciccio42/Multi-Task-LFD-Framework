@@ -180,7 +180,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                         traj_result = json.load(f)
                 except:
                     pass
-                if traj_result["success"] == 0:
+                if traj_result["success"] == 1:
                     if 'camera_front_image' in traj_data.get(0)["obs"].keys():
                         traj_frames = [t["obs"]['camera_front_image']
                                        for t in traj_data]
