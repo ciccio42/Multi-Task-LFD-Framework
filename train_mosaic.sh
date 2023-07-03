@@ -16,7 +16,7 @@ COMPUTE_OBJ_DISTRIBUTION=false
 CONFIG_PATH=experiments/
 PROJECT_NAME="mosaic-parameters-paper-object-cropped-no-norm-box"
 CONFIG_NAME=config.yaml
-LOADER_WORKERS=1
+LOADER_WORKERS=8
 
 LOAD_TARGET_OBJ_DETECTOR=false
 TARGET_OBJ_DETECTOR_STEP=17204

@@ -52,8 +52,12 @@ def normalize_action(action, n_action_bin, action_ranges):
     return (norm_action * half_action_bin).astype(np.int32)
 
 
-def denormalize_action(norm_action, action_ranges):
-    action = np.clip(norm_action.copy(), -1, 1)
+def denormalize_action(norm_action, n_action_bin, action_ranges):
+    # action = np.clip(norm_action.copy(), -1, 1)
+    half_action_bin = int(n_action_bin/2)
+    action = norm_action.copy()
+    # -1,1 action
+    action = action/half_action_bin
     for d in range(action_ranges.shape[0]):
         action[d] = (0.5 * (action[d] + 1) *
                      (action_ranges[d, 1] - action_ranges[d, 0])) + action_ranges[d, 0]
@@ -120,7 +124,10 @@ if __name__ == "__main__":
                                 action=action_t,
                                 n_action_bin=256,
                                 action_ranges=NORM_RANGES)
-                            for dim, action_label in enumerate(action_normalized):
+                            action_denormalized = denormalize_action(norm_action=action_normalized,
+                                                                     n_action_bin=256,
+                                                                     action_ranges=NORM_RANGES)
+                            for dim, action_label in enumerate(action_denormalized):
                                 ACTION_DISTRIBUTION[dim].append(
                                     action_label)
                             # print(f"Norm action{action_t[:3]}")

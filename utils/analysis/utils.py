@@ -16,30 +16,23 @@ import functools
 import random
 from collections import deque
 from collections import OrderedDict
-from mosaic.datasets import Trajectory
+from multi_task_il.datasets import Trajectory
 from torch.multiprocessing import Pool, set_start_method
 from torchvision.transforms import ToTensor, Normalize
 from torchvision.transforms.functional import resized_crop
 from robosuite import load_controller_config
-from robosuite_env.controllers.expert_basketball import \
-    get_expert_trajectory as basketball_expert
-from robosuite_env.controllers.expert_nut_assembly import \
+from multi_task_robosuite_env.controllers.controllers.expert_nut_assembly import \
     get_expert_trajectory as nut_expert
-from robosuite_env.controllers.expert_pick_place import \
+from multi_task_robosuite_env.controllers.controllers.expert_pick_place import \
     get_expert_trajectory as place_expert
-from robosuite_env.controllers.expert_block_stacking import \
+from multi_task_robosuite_env.controllers.controllers.expert_block_stacking import \
     get_expert_trajectory as stack_expert
-from robosuite_env.controllers.expert_drawer import \
-    get_expert_trajectory as draw_expert
-from robosuite_env.controllers.expert_button import \
-    get_expert_trajectory as press_expert
-from robosuite_env.controllers.expert_door import \
-    get_expert_trajectory as door_expert
 import sys
 import pickle as pkl
 import json
 import wandb
 from natsort import natsorted
+import robosuite.utils.transform_utils as T
 set_start_method('forkserver', force=True)
 sys.path.append('/home/Multi-Task-LFD-Framework/repo/mosaic/tasks/test_models')
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
@@ -98,18 +91,23 @@ def load_model(model_path=None, step=0, conf_file=None):
         raise ValueError("Model path cannot be None")
 
 
-def startup_env(model, env, context, gpu_id, variation_id, baseline=None, seed=None):
+def startup_env(model, env, context, gpu_id, variation_id, baseline=None):
     done, states, images = False, [], []
     if baseline is None:
         states = deque(states, maxlen=1)
         images = deque(images, maxlen=1)  # NOTE: always use only one frame
-    context = context.cuda(gpu_id)
-    # np.random.seed(seed)
+    context = context.cuda(gpu_id).float()
+    np.random.seed(None)
     while True:
         try:
             obs = env.reset()
-            # action = np.zeros(7)
-            # obs, _, _, _ = env.step(action)
+            # make a "null step" to stabilize all objects
+            current_gripper_position = env.sim.data.site_xpos[env.robots[0].eef_site_id]
+            current_gripper_orientation = T.quat2axisangle(T.mat2quat(np.reshape(
+                env.sim.data.site_xmat[env.robots[0].eef_site_id], (3, 3))))
+            current_gripper_pose = np.concatenate(
+                (current_gripper_position, current_gripper_orientation, np.array([1])), axis=-1)
+            obs, reward, env_done, info = env.step(current_gripper_pose)
             break
         except:
             pass
@@ -172,24 +170,25 @@ def get_action(model, states, images, context, gpu_id, n_steps, max_T=80, baseli
     return action
 
 
-def select_random_frames(frames, n_select, sample_sides=True, experiment_number=1):
+def select_random_frames(frames, n_select, sample_sides=True, random_frames=True):
     selected_frames = []
-    if experiment_number != 5:
-        def clip(x): return int(max(0, min(x, len(frames) - 1)))
-        per_bracket = max(len(frames) / n_select, 1)
+    def clip(x): return int(max(0, min(x, len(frames) - 1)))
+    per_bracket = max(len(frames) / n_select, 1)
+
+    if random_frames:
         for i in range(n_select):
             n = clip(np.random.randint(
                 int(i * per_bracket), int((i + 1) * per_bracket)))
             if sample_sides and i == n_select - 1:
                 n = len(frames) - 1
             elif sample_sides and i == 0:
-                n = 0
+                n = 1
             selected_frames.append(n)
-    elif experiment_number == 5:
+    else:
         for i in range(n_select):
             # get first frame
             if i == 0:
-                n = 0
+                n = 1
             # get the last frame
             elif i == n_select - 1:
                 n = len(frames) - 1
@@ -216,13 +215,12 @@ def select_random_frames(frames, n_select, sample_sides=True, experiment_number=
                         end_moving = t
                         break
                 n = start_moving + int((end_moving-start_moving)/2)
-
             selected_frames.append(n)
 
     if isinstance(frames, (list, tuple)):
         return [frames[i] for i in selected_frames]
     elif isinstance(frames, Trajectory):
-        return [frames[i]['obs']['image'] for i in selected_frames]
+        return [frames[i]['obs']['camera_front_image'] for i in selected_frames]
         # return [frames[i]['obs']['image-state'] for i in selected_frames]
     return frames[selected_frames]
 
@@ -234,11 +232,8 @@ def build_tvf_formatter(config, env_name='stack'):
     dataset_cfg = config.train_cfg.dataset
     height, width = dataset_cfg.get(
         'height', 100), dataset_cfg.get('width', 180)
-    task_spec = config.get(env_name, dict())
-    # if 'baseline' in config.policy._target_: # yaml for the CMU baseline is messed up
-    #     crop_params = [10, 50, 70, 70] if env_name == 'place' else [0,0,0,0]
+    task_spec = config.tasks_cfgs.get(env_name, dict())
 
-    # assert task_spec, 'Must go back to the saved config file to get crop params for this task: '+env_name
     crop_params = task_spec.get('crop', [0, 0, 0, 0])
     # print(crop_params)
     top, left = crop_params[0], crop_params[2]
@@ -255,18 +250,24 @@ def build_tvf_formatter(config, env_name='stack'):
         obs = resized_crop(obs, top=top, left=left, height=box_h, width=box_w,
                            size=(height, width))
 
-        obs = Normalize(mean=[0.485, 0.456, 0.406],
-                        std=[0.229, 0.224, 0.225])(obs)
-
+        # obs = Normalize(mean=[0.485, 0.456, 0.406],
+        #                 std=[0.229, 0.224, 0.225])(obs)
+        cv2.imwrite("random_resized_crop_test.png",
+                    np.moveaxis(obs.numpy(), 0, -1)*255)
         return obs
     return resize_crop
 
 
 def build_env_context(img_formatter, T_context=4, ctr=0, env_name='nut',
-                      heights=100, widths=200, size=False, shape=False, color=False, gpu_id=0, variation=None, random_frames=True):
+                      heights=100, widths=200, size=False, shape=False, color=False, gpu_id=0, variation=None, random_frames=True, controller_path=None):
     create_seed = random.Random(None)
     create_seed = create_seed.getrandbits(32)
-    controller = load_controller_config(default_controller='IK_POSE')
+    if controller_path == None:
+        controller = load_controller_config(default_controller='IK_POSE')
+    else:
+        # load custom controller
+        controller = load_controller_config(
+            custom_fpath=controller_path)
     assert gpu_id != -1
     build_task = TASK_MAP.get(env_name, None)
     assert build_task, 'Got unsupported task '+env_name
@@ -281,26 +282,47 @@ def build_env_context(img_formatter, T_context=4, ctr=0, env_name='nut',
 
     if 'Stack' in teacher_name:
         teacher_expert_rollout = env_fn(teacher_name,
-                                        controller_type=controller, task=variation, size=size, shape=shape, color=color,
-                                        seed=create_seed, heights=heights, widths=widths, gpu_id=gpu_id)
+                                        controller_type=controller,
+                                        task=variation,
+                                        size=size,
+                                        shape=shape,
+                                        color=color,
+                                        seed=create_seed,
+                                        gpu_id=gpu_id,
+                                        object_set=TASK_MAP[env_name]['object_set'])
         agent_env = env_fn(agent_name,
-                           size=size, shape=shape, color=color,
-                           controller_type=controller, task=variation, ret_env=True, seed=create_seed,
-                           heights=heights, widths=widths, gpu_id=gpu_id)
+                           size=size,
+                           shape=shape,
+                           color=color,
+                           controller_type=controller,
+                           task=variation,
+                           ret_env=True,
+                           seed=create_seed,
+                           gpu_id=gpu_id,
+                           object_set=TASK_MAP[env_name]['object_set'])
     else:
         teacher_expert_rollout = env_fn(teacher_name,
-                                        controller_type=controller, task=variation,
-                                        seed=create_seed, heights=heights, widths=widths, gpu_id=gpu_id)
+                                        controller_type=controller,
+                                        task=variation,
+                                        seed=create_seed,
+                                        gpu_id=gpu_id,
+                                        object_set=TASK_MAP[env_name]['object_set'])
 
         agent_env = env_fn(agent_name,
-                           controller_type=controller, task=variation, ret_env=True, seed=create_seed,
-                           heights=heights, widths=widths, gpu_id=gpu_id)
+                           controller_type=controller,
+                           task=variation,
+                           ret_env=True,
+                           seed=create_seed,
+                           gpu_id=gpu_id,
+                           object_set=TASK_MAP[env_name]['object_set'])
 
     assert isinstance(teacher_expert_rollout, Trajectory)
     context = select_random_frames(
         teacher_expert_rollout, T_context, sample_sides=True, random_frames=random_frames)
     # convert BGR context image to RGB and scale to 0-1
-    context = [img_formatter(i[:, :, ::-1]/255)[None] for i in context]
+    for i, img in enumerate(context):
+        cv2.imwrite(f"context_{i}.png", np.array(img[:, :, ::-1]))
+    context = [img_formatter(i[:, :, ::-1])[None] for i in context]
     # assert len(context ) == 6
     if isinstance(context[0], np.ndarray):
         context = torch.from_numpy(np.concatenate(context, 0))[None]
@@ -494,24 +516,24 @@ def nut_assembly_eval(model, env, context, gpu_id, variation_id, img_formatter, 
 
 OBJECT_DISTRIBUTION = {
     'pick_place': {
-        'milk': [0, 0, 0, 0],
-        'bread': [0, 0, 0, 0],
-        'cereal': [0, 0, 0, 0],
-        'can': [0, 0, 0, 0],
-        'ranges':  [[0.16, 0.19], [0.05, 0.09], [-0.08, -0.03], [-0.19, -0.15]]
+        'greenbox': [0, 0, 0, 0],
+        'yellowbox': [0, 0, 0, 0],
+        'bluebox': [0, 0, 0, 0],
+        'redbox': [0, 0, 0, 0],
+        'ranges':  [[0.195, 0.255], [0.045, 0.105], [-0.105, -0.045], [-0.255, -0.195]]
     },
     'nut_assembly': {
         'nut0': [0, 0, 0],
         'nut1': [0, 0, 0],
         'nut2': [0, 0, 0],
-        'ranges': [[0.10, 0.31], [-0.10, 0.10], [-0.31, -0.10]]
+        'ranges':  [[0.10, 0.31], [-0.10, 0.10], [-0.31, -0.10]]
     }
 }
 
 ENV_OBJECTS = {
     'pick_place': {
-        'obj_names': ['milk', 'bread', 'cereal', 'can'],
-        'ranges':  [[0.16, 0.19], [0.05, 0.09], [-0.08, -0.03], [-0.19, -0.15]]
+        'obj_names': ['greenbox', 'yellowbox', 'bluebox', 'redbox'],
+        'ranges': [[-0.255, -0.195], [-0.105, -0.045], [0.045, 0.105], [0.195, 0.255]],
     },
     'nut_assembly': {
         'obj_names': ['nut0', 'nut1', 'nut2'],
@@ -524,14 +546,16 @@ TASK_MAP = {
         'num_variations':   9,
         'env_fn':   nut_expert,
         'eval_fn':  nut_assembly_eval,
-        'agent-teacher': ('PandaNutAssemblyDistractor', 'SawyerNutAssemblyDistractor'),
-        'render_hw': (100, 180),
+        'agent-teacher': ('UR5e_NutAssemblyDistractor', 'Panda_NutAssemblyDistractor'),
+        'render_hw': (200, 360),
+        'object_set': 1,
     },
     'pick_place': {
         'num_variations':   16,
         'env_fn':   place_expert,
         'eval_fn':  pick_place_eval,
-        'agent-teacher': ('PandaPickPlaceDistractor', 'SawyerPickPlaceDistractor'),
-        'render_hw': (100, 180),  # (150, 270)
-    }
+        'agent-teacher': ('UR5e_PickPlaceDistractor', 'Panda_PickPlaceDistractor'),
+        'render_hw': (200, 360),  # (150, 270)
+        'object_set': 2,
+    },
 }

@@ -88,7 +88,9 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                     context_frames = torch_to_numpy(context_data)
                 except:
                     print("Exception")
-                    context_frames = context_data
+                    context_frames = list()
+                    for i in range(len(context_data)):
+                        context_frames.append(context_data[i][:, :, ::-1])
 
                 if 'camera_front_image' in traj_data.get(0)["obs"].keys():
                     traj_frames = [t["obs"]['camera_front_image']
@@ -278,7 +280,7 @@ if __name__ == '__main__':
     parser.add_argument('--task', type=str,
                         default="pick_place", help="Task name")
     args = parser.parse_args()
-    # debugpy.listen(('0.0.0.0', 5679))
+    # debugpy.listen(('0.0.0.0', 5678))
     # print("Waiting for debugger attach")
     # debugpy.wait_for_client()
     # 1. create video

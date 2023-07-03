@@ -57,7 +57,7 @@ python /home/frosa_loc/Multi-Task-LFD-Framework/repo/mosaic/train_any.py \
     train_cfg.lr=${LR} \
     train_cfg.weight_decay=${WEIGHT_DECAY} \
     train_cfg.lr_schedule=${SCHEDULER} \
-    debug=false \
-    wandb_log=true \
+    debug=true \
+    wandb_log=false \
     resume=false \
     loader_workers=${LOADER_WORKERS}

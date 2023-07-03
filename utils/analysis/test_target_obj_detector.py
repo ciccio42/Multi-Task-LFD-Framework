@@ -24,29 +24,11 @@ import torch.nn.functional as F
 from torch.multiprocessing import Pool, set_start_method
 from torchvision.transforms import ToTensor, Normalize
 from torchvision.transforms.functional import resized_crop
-from mosaic.datasets import Trajectory
-from robosuite import load_controller_config
-from robosuite_env.controllers.expert_basketball import \
-    get_expert_trajectory as basketball_expert
-from robosuite_env.controllers.expert_nut_assembly import \
-    get_expert_trajectory as nut_expert
-from robosuite_env.controllers.expert_pick_place import \
-    get_expert_trajectory as place_expert
-from robosuite_env.controllers.expert_block_stacking import \
-    get_expert_trajectory as stack_expert
-from robosuite_env.controllers.expert_drawer import \
-    get_expert_trajectory as draw_expert
-from robosuite_env.controllers.expert_button import \
-    get_expert_trajectory as press_expert
-from robosuite_env.controllers.expert_door import \
-    get_expert_trajectory as door_expert
+from multi_task_il.datasets import Trajectory
 import robosuite.utils.transform_utils as T
 import numpy as np
 import cv2
-cv2.imshow('debug', np.zeros((255, 255, 3), dtype=np.uint8))
-cv2.waitKey(1)
 set_start_method('forkserver', force=True)
-sys.path.append('/home/Multi-Task-LFD-Framework/repo/mosaic/tasks/test_models')
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
 # pick-place
@@ -64,7 +46,7 @@ SAMPLE_LIST = [97470, 97471, 97474, 97494]
 
 
 def perform_detection(model, config, ctr,
-                      heights=100, widths=200, size=0, shape=0, color=0, max_T=60, env_name='place', gpu_id=-1, baseline=None, variation=None, seed=None, show_image=False):
+                      heights=100, widths=200, size=0, shape=0, color=0, max_T=150, env_name='place', gpu_id=-1, baseline=None, variation=None, controller_path=None, seed=None, action_ranges=[], model_name=None):
     if gpu_id == -1:
         gpu_id = int(ctr % torch.cuda.device_count())
     model = model.cuda(gpu_id)
@@ -77,34 +59,61 @@ def perform_detection(model, config, ctr,
         assert 'multi' in config.train_cfg.dataset._target_, config.train_cfg.dataset._target_
         T_context = config.train_cfg.dataset.demo_T
 
-    env, context, variation_id, expert_traj = build_env_context(
-        img_formatter,
-        T_context=T_context, ctr=ctr, env_name=env_name,
-        heights=heights, widths=widths, size=size, shape=shape, color=color, gpu_id=gpu_id, variation=variation, random_frames=random_frames)
+        env, context, variation_id, expert_traj = build_env_context(img_formatter,
+                                                                    T_context=T_context,
+                                                                    ctr=ctr,
+                                                                    env_name=env_name,
+                                                                    heights=heights,
+                                                                    widths=widths,
+                                                                    size=size,
+                                                                    shape=shape,
+                                                                    color=color,
+                                                                    gpu_id=gpu_id,
+                                                                    variation=variation, random_frames=random_frames,
+                                                                    controller_path=controller_path)
 
     build_task = TASK_MAP.get(env_name, None)
     assert build_task, 'Got unsupported task '+env_name
     eval_fn = build_task['eval_fn']
     predicted_slot, predicted_prob, gt_slot, context, agent_obs = inference(
-        model, env, context, gpu_id, variation_id, img_formatter, baseline=baseline, show_img=show_image)
+        model, env, context, gpu_id, variation_id, img_formatter, baseline=baseline)
     return predicted_slot, predicted_prob, gt_slot, context, agent_obs
 
 
-def _proc(model, config, results_dir, heights, widths, size, shape, color, env_name, baseline, variation, seed, show_image, n):
+def _proc(model, config, results_dir, heights, widths, size, shape, color, env_name, baseline, variation, seed, max_T, controller_path, model_name, n):
     json_name = results_dir + '/traj{}.json'.format(n)
     pkl_name = results_dir + '/traj{}.pkl'.format(n)
     res = OrderedDict()
+
     predicted_slot, predicted_prob, gt_slot, context, agent_obs = perform_detection(
-        model, config, n, heights, widths, size, shape, color,
-        max_T=60, env_name=env_name, baseline=baseline, variation=variation, seed=seed, show_image=show_image)
+        model,
+        config,
+        n,
+        heights,
+        widths,
+        size,
+        shape,
+        color,
+        max_T=max_T,
+        env_name=env_name,
+        baseline=baseline,
+        variation=variation,
+        controller_path=controller_path,
+        seed=seed,
+        action_ranges=np.array(
+            config.dataset_cfg.get('normalization_ranges', [])),
+        model_name=model_name)
+
     pkl.dump(agent_obs, open(results_dir+'/traj{}.pkl'.format(n), 'wb'))
     pkl.dump(context, open(results_dir+'/context{}.pkl'.format(n), 'wb'))
     # check if the prediction is equal to the gt
     pred_correctness = (predicted_slot == gt_slot)
+    print(f"Pred correct {pred_correctness}")
     res['predicted_slot'] = predicted_slot
     res['gt_slot'] = gt_slot
     res['pred_correctness'] = pred_correctness
     res['pred_prob'] = predicted_prob
+    print()
     json.dump(res, open(results_dir+'/traj{}.json'.format(n), 'w'))
     del model
     return res
@@ -131,17 +140,14 @@ def replicate_actions_from_rollout(model, task_name, variation, context, agent_t
         action = agent_trj.get(t)['action']
         obs, _, _, _ = agent_env.step(action)
         # showing the image
-        cv2.imshow(f'Frame {t}', obs['image'][:, :, ::-1])
-        # waiting using waitKey method
-        cv2.waitKey()
-        cv2.destroyAllWindows()
+        cv2.imwrite(f'Frame{t}.png', obs['image'][:, :, ::-1])
 
 
 def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85, baseline=None, seed=None, agent_traj=None, model_act=False, show_img=False, experiment_number=1):
 
     done, states, images, context, obs, traj, tasks = \
         startup_env(model, env, context, gpu_id, variation_id,
-                    baseline=baseline, seed=seed)
+                    baseline=baseline)
     n_steps = 0
 
     if agent_traj is not None:
@@ -179,36 +185,8 @@ def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85
     if baseline and len(states) >= 5:
         images = []
 
-    if show_img:
-        # convert context from torch tensor to numpy
-        context_frames = torch_to_numpy(context)
-        number_of_context_frames = len(context_frames)
-        demo_height, demo_width, _ = context_frames[0].shape
-        # Determine the number of columns and rows to create the grid of frames
-        num_cols = 2  # Example value, adjust as needed
-        num_rows = (number_of_context_frames + num_cols - 1) // num_cols
-        # Create the grid of frames
-        frames = []
-        for i in range(num_rows):
-            row_frames = []
-            for j in range(num_cols):
-                index = i * num_cols + j
-                if index < number_of_context_frames:
-                    frame = context_frames[index]
-                    row_frames.append(frame)
-            row = cv2.hconcat(row_frames)
-            frames.append(row)
-        new_image = np.array(cv2.resize(cv2.vconcat(
-            frames), (demo_width, demo_height)), np.uint8)
-        output_frame = cv2.hconcat([new_image, obs['image'][:, :, ::-1]])
-        # showing the image
-        cv2.imshow(f'Frame {t}', output_frame)
-        t += 1
-        # waiting using waitKey method
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-    images.append(img_formatter(obs['image'][:, :, ::-1]/255)[None])
+    images.append(img_formatter(
+        obs['camera_front_image'][:, :, ::-1]/255)[None])
     if isinstance(images[-1], np.ndarray):
         i_t = torch.from_numpy(np.concatenate(
             images, 0).astype(np.float32))[None]
@@ -230,7 +208,7 @@ def inference(model, env, context, gpu_id, variation_id, img_formatter, max_T=85
     del images
     del model
     torch.cuda.empty_cache()
-    return predicted_slot, predicted_prob, gt_slot, context, obs['image']
+    return predicted_slot, predicted_prob, gt_slot, context, obs['camera_front_image']
 
 
 def single_run(model, agent_env, context, img_formatter, variation, show_image, agent_trj, indx):
@@ -359,6 +337,11 @@ if __name__ == '__main__':
     parser.add_argument('--training_trj', action='store_true')
     parser.add_argument('--show_img', action='store_true')
     parser.add_argument('--run_inference', action='store_true')
+    parser.add_argument('--controller_path', default=None, type=str)
+    parser.add_argument('--env', '-e', default='door', type=str)
+    parser.add_argument('--baseline', '-bline', default=None, type=str,
+                        help='baseline uses more frames at each test-time step')
+
     args = parser.parse_args()
 
     if args.debug:
@@ -457,8 +440,23 @@ if __name__ == '__main__':
         seed = None
         baseline = None
         N = 160
-        f = functools.partial(_proc, model, conf_file, results_dir_path, heights,
-                              widths, size, shape, color, task_name, baseline, variation, seed, args.show_img)
+        model_name = "mosaic"
+        f = functools.partial(_proc,
+                              model,
+                              conf_file,
+                              results_dir_path,
+                              heights,
+                              widths,
+                              size,
+                              shape,
+                              color,
+                              args.env,
+                              args.baseline,
+                              variation,
+                              seed,
+                              60,
+                              args.controller_path,
+                              model_name)
 
         if args.num_workers > 1:
             with Pool(args.num_workers) as p:
