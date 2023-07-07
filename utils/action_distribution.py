@@ -37,7 +37,8 @@ ACTION_DISTRIBUTION = {
     3: [],
     4: [],
     5: [],
-    6: []
+    6: [],
+    7: [],
 }
 
 
@@ -75,7 +76,7 @@ if __name__ == "__main__":
                         help="whether or not render depth")
     args = parser.parse_args()
 
-    camera_name = "camera_front"
+    camera_name = "image"
 
     if args.debug:
         debugpy.listen(('0.0.0.0', 5678))
@@ -101,7 +102,7 @@ if __name__ == "__main__":
                     sample = pickle.load(f)
                     logger.debug(f"Sample keys {sample.keys()}")
                     logger.debug(sample)
-                    print(f"Sample command: {sample['command']}")
+                    # print(f"Sample command: {sample['command']}")
                     if i == 0:
                         i += 1
                         logger.debug(sample)
@@ -117,24 +118,27 @@ if __name__ == "__main__":
                     start_moving = 0
                     end_moving = 0
                     for t in range(len(trajectory_obj)):
-                        logger.debug(f"Time-step {t}")
-                        try:
-                            action_t = trajectory_obj.get(t)['action']
-                            action_normalized = normalize_action(
-                                action=action_t,
-                                n_action_bin=256,
-                                action_ranges=NORM_RANGES)
-                            action_denormalized = denormalize_action(norm_action=action_normalized,
-                                                                     n_action_bin=256,
-                                                                     action_ranges=NORM_RANGES)
-                            for dim, action_label in enumerate(action_denormalized):
-                                ACTION_DISTRIBUTION[dim].append(
-                                    action_label)
-                            # print(f"Norm action{action_t[:3]}")
-                            # print(
-                            #     f"Denorm action {denormalize_action(action_t)[:3]}")
-                        except KeyError:
-                            pass
+                        if t > 0:
+                            logger.debug(f"Time-step {t}")
+                            try:
+                                action_t = trajectory_obj.get(t)['action']
+                                # cv2.imwrite("prova.png", trajectory_obj.get(t)['obs'][
+                                #             'image'][:, :, ::-1])
+                                # action_normalized = normalize_action(
+                                #     action=action_t,
+                                #     n_action_bin=256,
+                                #     action_ranges=NORM_RANGES)
+                                # action_denormalized = denormalize_action(norm_action=action_normalized,
+                                #                                          n_action_bin=256,
+                                #                                          action_ranges=NORM_RANGES)
+                                for dim, action_label in enumerate(action_t):
+                                    ACTION_DISTRIBUTION[dim].append(
+                                        action_label)
+                                # print(f"Norm action{action_t[:3]}")
+                                # print(
+                                #     f"Denorm action {denormalize_action(action_t)[:3]}")
+                            except KeyError:
+                                print("error")
     # An "interface" to matplotlib.axes.Axes.hist() method
     for dim, key in enumerate(ACTION_DISTRIBUTION.keys()):
         n, bins, patches = plt.hist(x=ACTION_DISTRIBUTION[key], bins=256, color='#0504aa',
