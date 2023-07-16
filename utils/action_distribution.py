@@ -10,7 +10,7 @@ import glob
 from torchvision.transforms import ToTensor, Normalize
 from torchvision.transforms.functional import resized_crop
 import matplotlib.pyplot as plt
-
+from collections import OrderedDict
 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger("Log")
@@ -89,13 +89,19 @@ if __name__ == "__main__":
 
     task_paths = glob.glob(os.path.join(args.task_path, 'task_*'))
 
-    for dir in sorted(task_paths):
+    task_distribution = OrderedDict()
+    for task_var, dir in enumerate(sorted(task_paths)):
+
+        task_distribution[task_var] = OrderedDict()
         print(dir)
+
         if os.path.isdir(os.path.join(args.task_path, dir)):
             # assert len(trjs) == 100, print(f"{os.path.join(args.task_path, dir)} does not have 100 trjs")
             trj_paths = glob.glob(os.path.join(dir, 'traj*.pkl'))
 
             for j, trj in enumerate(sorted(trj_paths)):
+
+                task_distribution[task_var][j] = list()
                 print(trj)
 
                 with open(trj, "rb") as f:
@@ -121,9 +127,12 @@ if __name__ == "__main__":
                         if t > 0:
                             logger.debug(f"Time-step {t}")
                             try:
-                                action_t = trajectory_obj.get(t)['action']
+                                action_t = trajectory_obj.get(t)[
+                                    'action']
+                                task_distribution[task_var][j].append(
+                                    action_t)
                                 # cv2.imwrite("prova.png", trajectory_obj.get(t)['obs'][
-                                #             'image'][:, :, ::-1])
+                                #     'camera_front_image'][:, :, ::-1])
                                 # action_normalized = normalize_action(
                                 #     action=action_t,
                                 #     n_action_bin=256,
@@ -131,25 +140,54 @@ if __name__ == "__main__":
                                 # action_denormalized = denormalize_action(norm_action=action_normalized,
                                 #                                          n_action_bin=256,
                                 #                                          action_ranges=NORM_RANGES)
-                                for dim, action_label in enumerate(action_t):
-                                    ACTION_DISTRIBUTION[dim].append(
-                                        action_label)
+                                # for dim, action_label in enumerate(action_t):
+                                #     ACTION_DISTRIBUTION[dim].append(
+                                #         action_label)
                                 # print(f"Norm action{action_t[:3]}")
                                 # print(
                                 #     f"Denorm action {denormalize_action(action_t)[:3]}")
                             except KeyError:
                                 print("error")
+
+    for variation in task_distribution.keys():
+        print(variation)
+        # Plot y-axis trajectories for each variation
+        fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(
+            16, 9))
+        fig.tight_layout(pad=5.0)
+        for trj in task_distribution[variation].keys():
+            trajectory = np.array(
+                [action_t[:3] for action_t in task_distribution[variation][trj]])
+
+            t = np.array([i for i in range(len(trajectory))])
+            ax1.plot(t, trajectory[:, 0], color='b', alpha=0.5)
+            ax1.set_title(f"Trajectory distribution along x axis")
+            ax1.set_xlabel("Timestamp t")
+            ax1.set_ylabel("x value [m]")
+
+            ax2.plot(t, trajectory[:, 1], color='b', alpha=0.5)
+            ax2.set_title(f"Trajectory distribution along y axis")
+            ax2.set_xlabel("Timestamp t")
+            ax2.set_ylabel("y value [m]")
+
+            ax3.plot(t, trajectory[:, 2], color='b', alpha=0.5)
+            ax3.set_title(f"Trajectory distribution along z axis")
+            ax3.set_xlabel("Timestamp t")
+            ax3.set_ylabel("z value [m]")
+
+        plt.savefig(f"variation_{variation}.png")
+
     # An "interface" to matplotlib.axes.Axes.hist() method
-    for dim, key in enumerate(ACTION_DISTRIBUTION.keys()):
-        n, bins, patches = plt.hist(x=ACTION_DISTRIBUTION[key], bins=256, color='#0504aa',
-                                    alpha=0.7, rwidth=0.85)
-        plt.grid(axis='y', alpha=0.75)
-        plt.xlabel('Value')
-        plt.ylabel('Frequency')
-        plt.title('Action Distribution')
-        maxfreq = n.max()
-        # Set a clean upper y-axis limit.
-        plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq %
-                 10 else maxfreq + 10)
-        plt.savefig(f"dim_{dim}.png")
-        plt.clf()
+    # for dim, key in enumerate(ACTION_DISTRIBUTION.keys()):
+    #     n, bins, patches = plt.hist(x=ACTION_DISTRIBUTION[key], bins=256, color='#0504aa',
+    #                                 alpha=0.7, rwidth=0.85)
+    #     plt.grid(axis='y', alpha=0.75)
+    #     plt.xlabel('Value')
+    #     plt.ylabel('Frequency')
+    #     plt.title('Action Distribution')
+    #     maxfreq = n.max()
+    #     # Set a clean upper y-axis limit.
+    #     plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq %
+    #              10 else maxfreq + 10)
+    #     plt.savefig(f"dim_{dim}.png")
+    #     plt.clf()
