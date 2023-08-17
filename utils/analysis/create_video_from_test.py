@@ -12,6 +12,9 @@ import torch
 from torchvision.transforms import Normalize
 import json
 from tqdm import tqdm
+from torchvision import transforms
+from torchvision.transforms.functional import resized_crop
+import multi_task_il
 
 
 def find_number(name):
@@ -46,9 +49,65 @@ def torch_to_numpy(tensor):
     return numpy_array_transposed
 
 
+def build_tvf_formatter_obj_detector(config, env_name):
+    """Use this for torchvision.transforms in multi-task dataset, 
+    note eval_fn always feeds in traj['obs']['images'], i.e. shape (h,w,3)
+    """
+
+    def resize_crop(img, bb=None):
+        img_height, img_width = img.shape[:2]
+        """applies to every timestep's RGB obs['camera_front_image']"""
+        task_spec = config.tasks_cfgs.get(env_name, dict())
+        crop_params = task_spec.get('crop', [0, 0, 0, 0])
+        top, left = crop_params[0], crop_params[2]
+        img_height, img_width = img.shape[0], img.shape[1]
+        box_h, box_w = img_height - top - \
+            crop_params[1], img_width - left - crop_params[3]
+
+        img = transforms.ToTensor()(img.copy())
+        # ---- Resized crop ----#
+        img = resized_crop(img, top=top, left=left, height=box_h,
+                           width=box_w, size=(config.dataset_cfg.height, config.dataset_cfg.width))
+
+        cv2.imwrite("resized_target_obj.png", np.moveaxis(
+            img.numpy()*255, 0, -1))
+
+        if bb is not None:
+            bb = multi_task_il.datasets.utils.adjust_bb(dataset_loader=config.dataset_cfg,
+                                                        bb=bb,
+                                                        obs=img,
+                                                        img_height=img_height,
+                                                        img_width=img_width,
+                                                        top=top,
+                                                        left=left,
+                                                        box_w=box_w,
+                                                        box_h=box_h)
+
+            image = cv2.rectangle(np.ascontiguousarray(np.array(np.moveaxis(
+                img.numpy()*255, 0, -1), dtype=np.uint8)),
+                (bb[0][0],
+                 bb[0][1]),
+                (bb[0][2],
+                 bb[0][3]),
+                color=(0, 0, 255),
+                thickness=1)
+            cv2.imwrite("bb_cropped.png", image)
+            return img, bb
+
+        return img
+
+    return resize_crop
+
+
 def create_video_for_each_trj(base_path="/", task_name="pick_place"):
+    from omegaconf import DictConfig, OmegaConf
 
     results_folder = f"results_{task_name}"
+
+    # Load config
+    config_path = os.path.join(base_path, "../../config.yaml")
+    config = OmegaConf.load(config_path)
+
     # step_pattern = os.path.join(base_path, results_folder, "step-*")
     step_pattern = base_path
     for step_path in glob.glob(step_pattern):
@@ -93,8 +152,20 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                         context_frames.append(context_data[i][:, :, ::-1])
 
                 if 'camera_front_image' in traj_data.get(0)["obs"].keys():
+
+                    img_formatter = build_tvf_formatter_obj_detector(config=config,
+                                                                     env_name=task_name)
+
                     traj_frames = [t["obs"]['camera_front_image']
                                    for t in traj_data]
+                    try:
+                        predicted_bb = []
+                        for i, t in enumerate(traj_data):
+                            if i > 0:
+                                predicted_bb.append(t["obs"]["predicted_bb"])
+                    except:
+                        pass
+
                 else:
                     traj_frames = [t["obs"]['image']
                                    for t in traj_data]
@@ -108,7 +179,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
                 number_of_context_frames = len(context_frames)
                 demo_height, demo_width, _ = context_frames[0].shape
-                traj_height, traj_width, _ = traj_frames[0].shape
+                traj_height, traj_width = 224, 224
 
                 # Determine the number of columns and rows to create the grid of frames
                 num_cols = 2  # Example value, adjust as needed
@@ -148,16 +219,30 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 # create the string to put on each frame
                 if traj_result:
                     # res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
-                    res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                    # res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                    res_string = ""
                 else:
                     res_string = f"Sample index {step}"
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 font_scale = 0.35
                 thickness = 1
                 for i, traj_frame in enumerate(traj_frames):
+                    formatted_frame = img_formatter(traj_frame[:, :, ::-1])
+                    formatted_frame = np.array(np.ascontiguousarray(np.moveaxis(
+                        formatted_frame.numpy()*255, 0, -1)), dtype=np.uint8)
+                    if i > 0 and len(predicted_bb) != 0:
 
+                        frame_agent = cv2.rectangle(formatted_frame,
+                                                    (int(predicted_bb[i-1][0]),
+                                                     int(predicted_bb[i-1][1])),
+                                                    (int(predicted_bb[i-1][2]),
+                                                     int(predicted_bb[i-1][3])),
+                                                    color=(0, 0, 255),
+                                                    thickness=1)
+                    else:
+                        frame_agent = formatted_frame
                     output_frame = cv2.hconcat(
-                        [new_image, traj_frame[:, :, ::-1]])
+                        [new_image, frame_agent])
                     if i != len(traj_frames)-1 and len(predicted_slot) != 0:
                         cv2.putText(output_frame,  res_string, (0, 80), font,
                                     font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
@@ -226,6 +311,7 @@ def read_results(base_path="/", task_name="pick_place"):
     results_folder = f"results_{task_name}"
     # step_pattern = os.path.join(base_path, results_folder, "step-*")
     step_pattern = base_path
+    avg_iou = 0
     for step_path in glob.glob(step_pattern):
 
         step = step_path.split("-")[-1]
@@ -267,8 +353,14 @@ def read_results(base_path="/", task_name="pick_place"):
             if traj_result['reached'] == 1:
                 reached_cnt += 1
 
+            try:
+                avg_iou += traj_result['avg_iou']
+            except:
+                pass
+
         print(f"Success rate {success_cnt/file_cnt}")
         print(f"Reached rate {reached_cnt/file_cnt}")
+        print(f"Mean IoU  {avg_iou/file_cnt}")
 
 
 if __name__ == '__main__':
@@ -284,8 +376,8 @@ if __name__ == '__main__':
     # print("Waiting for debugger attach")
     # debugpy.wait_for_client()
     # 1. create video
-    create_video_for_each_trj(base_path=args.base_path, task_name=args.task)
-    # import time
-    # while True:
-    #     read_results(base_path=args.base_path, task_name=args.task)
-    #     time.sleep(3)
+    # create_video_for_each_trj(base_path=args.base_path, task_name=args.task)
+    import time
+    while True:
+        read_results(base_path=args.base_path, task_name=args.task)
+        time.sleep(3)
