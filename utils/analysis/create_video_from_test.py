@@ -12,6 +12,9 @@ import torch
 from torchvision.transforms import Normalize
 import json
 from tqdm import tqdm
+from torchvision import transforms
+from torchvision.transforms.functional import resized_crop
+import multi_task_il
 
 
 def find_number(name):
@@ -71,8 +74,14 @@ def adjust_bb(bb, crop_params=[20, 25, 80, 75]):
 
 
 def create_video_for_each_trj(base_path="/", task_name="pick_place"):
+    from omegaconf import DictConfig, OmegaConf
 
     results_folder = f"results_{task_name}"
+
+    # Load config
+    config_path = os.path.join(base_path, "../../config.yaml")
+    config = OmegaConf.load(config_path)
+
     # step_pattern = os.path.join(base_path, results_folder, "step-*")
     step_pattern = base_path
     for step_path in glob.glob(step_pattern):
@@ -136,7 +145,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
                 number_of_context_frames = len(context_frames)
                 demo_height, demo_width, _ = context_frames[0].shape
-                traj_height, traj_width, _ = traj_frames[0].shape
+                traj_height, traj_width = 224, 224
 
                 # Determine the number of columns and rows to create the grid of frames
                 num_cols = 2  # Example value, adjust as needed
@@ -194,7 +203,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                                 int(bb[3])),
                             (0, 0, 255), 1))
                     output_frame = cv2.hconcat(
-                        [new_image, traj_frame[:, :, ::-1]])
+                        [new_image, frame_agent])
                     if i != len(traj_frames)-1 and len(predicted_slot) != 0:
                         cv2.putText(output_frame,  res_string, (0, 80), font,
                                     font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
@@ -264,6 +273,7 @@ def read_results(base_path="/", task_name="pick_place"):
     results_folder = f"results_{task_name}"
     # step_pattern = os.path.join(base_path, results_folder, "step-*")
     step_pattern = base_path
+    avg_iou = 0
     for step_path in glob.glob(step_pattern):
 
         step = step_path.split("-")[-1]
@@ -313,6 +323,11 @@ def read_results(base_path="/", task_name="pick_place"):
             if 'avg_iou' in traj_result.keys():
                 mean_iou += traj_result['avg_iou']
                 fp_avg += traj_result['num_false_positive']
+
+            try:
+                avg_iou += traj_result['avg_iou']
+            except:
+                pass
 
         print(f"Success rate {success_cnt/file_cnt}")
         print(f"Reached rate {reached_cnt/file_cnt}")

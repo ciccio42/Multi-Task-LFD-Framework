@@ -82,6 +82,7 @@ pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 -f https://download.py
 # 2 Install mujoco follow https://pytorch.org/rl/reference/generated/knowledge_base/MUJOCO_INSTALLATION.html
 cd ~ && mkdir -p ~/.mujoco && cd ~/.mujoco
 wget https://mujoco.org/download/mujoco210-linux-x86_64.tar.gz
+pip install setuptools==65.5.0
 tar -xvf mujoco210-linux-x86_64.tar.gz
 conda install -c conda-forge glew -y
 conda install -c conda-forge mesalib -y
@@ -90,9 +91,7 @@ conda install -c menpo glfw3 -y
 conda install libgcc -y
 conda install patchelf -y
 conda install -c anaconda mesa-libegl-cos6-x86_64 -y
-export LD_PRELOAD=$LD_PRELOAD:/user/frosa/miniconda3/envs/multi_task_lfd/lib
-
-
+conda install -c conda-forge gcc==12.1.0
 
 # 3 Install requirements
 pip install -r requirements.txt
@@ -102,7 +101,7 @@ pip install -r requirements_multi_task_lfd.txt
 pip install -e /user/frosa/multi_task_lfd/Multi-Task-LFD-Framework/repo/robosuite/.
 
 # 5 Install Multi-Task IL Framework
-pip install -e /user/frosa/multi_task_lfd/Multi-Task-LFD-Framework/repo/robosuite/.
+pip install -e /user/frosa/multi_task_lfd/Multi-Task-LFD-Framework/repo/
 
 
 ```

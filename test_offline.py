@@ -49,6 +49,7 @@ MODEL_XML = """
 
 model = load_model_from_xml(MODEL_XML)
 sim = MjSim(model)
+# offscreen = MjRenderContextOffscreen(sim, 0)
 t = 0
 while True:
     sim.data.ctrl[0] = math.cos(t / 10.) * 0.01

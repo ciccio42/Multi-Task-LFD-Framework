@@ -1,369 +1,0 @@
-/home/frosa_loc/miniconda3/envs/multi_task_lfd/lib/python3.9/site-packages/hydra/_internal/defaults_list.py:251: UserWarning: In 'config.yaml': Defaults list is missing `_self_`. See https://hydra.cc/docs/1.2/upgrades/1.0_to_1.1/default_composition_order for more information
-  warnings.warn(msg, UserWarning)
-wandb: Currently logged in as: francescorosa97. Use `wandb login --relogin` to force relogin
-wandb: wandb version 0.15.4 is available!  To upgrade, please run:
-wandb:  $ pip install wandb --upgrade
-wandb: Tracking run with wandb version 0.15.3
-wandb: Run data is saved locally in /home/frosa_loc/Multi-Task-LFD-Framework/wandb/run-20230619_183445-f08usnjf
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run 1Task-Pick-Place-TOSIL-Box-Batch128
-wandb: ⭐️ View project at https://wandb.ai/francescorosa97/tosil_baseline_box_no_obj_box
-wandb: 🚀 View run at https://wandb.ai/francescorosa97/tosil_baseline_box_no_obj_box/runs/f08usnjf
-Finished initializing trainer
-Backbone Pretrained: True
-Position embedding shape: torch.Size([1, 256, 3000]) 
-
-Total params in Imitation module: 3525925
-Action model initialized to: mosaic.models.baselines.InverseImitation
-
- Done initializing Workspace, saving config.yaml to directory: /home/frosa_loc/Multi-Task-LFD-Framework/mosaic-baseline-sav-folder/baseline-no-obj-detector/1Task-Pick-Place-TOSIL-Box-Batch128
-Initializing mosaic.datasets.multi_task_datasets.MultiTaskPairedDataset with hydra config. 
-
-Loading task [pick_place] saved on date None
-Task crop OrderedDict([('pick_place', [30, 0, 35, 35])])
-Done loading Task pick_place, agent/demo trajctores pairs reach a count of: 129600
-Data aug parameters: {'strong_jitter': 0.01, 'weak_jitter': 0.01, 'grayscale': 0.01, 'blur': [0.1, 2.0], 'flip': 0.05, 'weak_crop_scale': [0.8, 1.0], 'strong_crop_scale': [0.6, 1.0], 'weak_crop_ratio': [1.8, 1.8], 'strong_crop_ratio': [1.8, 1.8], 'use_affine': False, 'rand_trans': 0.1}
-Using strong augmentations? True
-Balancing policy: 0
-Task pick_place loaded 16 subtasks, starting from task_00, should all have sizes 8100
-Max length for sampler iterator: 1012
-Shuffling to break the task ordering in each batch?  True
-Task crop OrderedDict([('pick_place', [30, 0, 35, 35])])
-Done loading Task pick_place, agent/demo trajctores pairs reach a count of: 1600
-Using strong augmentations? True
-Balancing policy: 0
-Task pick_place loaded 16 subtasks, starting from task_00, should all have sizes 100
-Max length for sampler iterator: 12
-Shuffling to break the task ordering in each batch?  True
-Overlapping counter 0 - 0
-Training stage 
- Found 1 GPU devices 
-
-Creating AdamW (
-Parameter Group 0
-    amsgrad: False
-    betas: (0.9, 0.999)
-    capturable: False
-    eps: 1e-08
-    foreach: None
-    lr: 0.0001
-    maximize: False
-    weight_decay: 0.05
-), with lr 0.0001
-Lr-scheduler None
-Loss multipliers: 
- BC: 1 inv: 1 Point: 0.1
-{'simclr_pre': 1, 'simclr_post': 1}
- Weighting each task loss separately: {'pick_place': 1.0}
-Training for 250 epochs train dataloader has length 1012,                 which sums to 253000 total train steps,                 validation loader has length 12
-  0%|          | 0/1012 [00:00<?, ?it/s]Model checkpoint saved at step 0
-Training epoch 0/250, step 0: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.113200 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-  0%|          | 1/1012 [00:20<5:42:56, 20.35s/it]  0%|          | 2/1012 [00:21<2:29:59,  8.91s/it]  0%|          | 3/1012 [00:22<1:29:10,  5.30s/it]  0%|          | 4/1012 [00:23<59:46,  3.56s/it]    0%|          | 5/1012 [00:24<44:12,  2.63s/it]  1%|          | 6/1012 [00:25<34:08,  2.04s/it]  1%|          | 7/1012 [00:26<28:26,  1.70s/it]  1%|          | 8/1012 [00:26<24:00,  1.43s/it]  1%|          | 9/1012 [00:27<21:58,  1.31s/it]  1%|          | 10/1012 [00:28<19:53,  1.19s/it]  1%|          | 11/1012 [00:29<18:52,  1.13s/it]  1%|          | 12/1012 [00:30<17:42,  1.06s/it]  1%|▏         | 13/1012 [00:31<17:46,  1.07s/it]  1%|▏         | 14/1012 [00:32<16:54,  1.02s/it]  1%|▏         | 15/1012 [00:33<16:54,  1.02s/it]  2%|▏         | 16/1012 [00:34<16:15,  1.02it/s]  2%|▏         | 17/1012 [00:35<16:24,  1.01it/s]  2%|▏         | 18/1012 [00:36<15:54,  1.04it/s]  2%|▏         | 19/1012 [00:37<16:07,  1.03it/s]  2%|▏         | 20/1012 [00:38<15:37,  1.06it/s]  2%|▏         | 21/1012 [00:39<15:54,  1.04it/s]  2%|▏         | 22/1012 [00:40<16:15,  1.01it/s]  2%|▏         | 23/1012 [00:41<16:41,  1.01s/it]  2%|▏         | 24/1012 [00:42<17:36,  1.07s/it]  2%|▏         | 25/1012 [00:44<20:12,  1.23s/it]  3%|▎         | 26/1012 [00:45<19:45,  1.20s/it]  3%|▎         | 27/1012 [00:46<19:16,  1.17s/it]  3%|▎         | 28/1012 [00:47<19:06,  1.17s/it]  3%|▎         | 29/1012 [00:48<18:57,  1.16s/it]  3%|▎         | 30/1012 [00:49<18:00,  1.10s/it]  3%|▎         | 31/1012 [00:51<18:30,  1.13s/it]  3%|▎         | 32/1012 [00:52<18:26,  1.13s/it]  3%|▎         | 33/1012 [00:53<20:10,  1.24s/it]  3%|▎         | 34/1012 [00:54<18:48,  1.15s/it]  3%|▎         | 35/1012 [00:55<19:03,  1.17s/it]  4%|▎         | 36/1012 [00:56<18:14,  1.12s/it]  4%|▎         | 37/1012 [00:58<20:15,  1.25s/it]  4%|▍         | 38/1012 [00:59<18:49,  1.16s/it]  4%|▍         | 39/1012 [01:00<18:23,  1.13s/it]  4%|▍         | 40/1012 [01:01<17:13,  1.06s/it]  4%|▍         | 41/1012 [01:02<17:02,  1.05s/it]  4%|▍         | 42/1012 [01:03<16:12,  1.00s/it]  4%|▍         | 43/1012 [01:04<16:11,  1.00s/it]  4%|▍         | 44/1012 [01:05<15:33,  1.04it/s]  4%|▍         | 45/1012 [01:06<15:38,  1.03it/s]  5%|▍         | 46/1012 [01:06<15:11,  1.06it/s]  5%|▍         | 47/1012 [01:07<15:26,  1.04it/s]  5%|▍         | 48/1012 [01:08<15:02,  1.07it/s]  5%|▍         | 49/1012 [01:09<15:18,  1.05it/s]  5%|▍         | 50/1012 [01:10<14:58,  1.07it/s]  5%|▌         | 51/1012 [01:11<15:18,  1.05it/s]Validation step 0:
-[pick_place] l_tot: 10.5 l_bc: 5.1 l_inv:  5.125440 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Validation loss decreased (inf --> 10.455798).  Saving model ...
-Model checkpoint saved at step 0
-Model checkpoint saved at step 1
-Training epoch 0/250, step 1: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.102110 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 2
-Training epoch 0/250, step 2: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.110840 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 3
-Training epoch 0/250, step 3: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.114470 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 4
-Training epoch 0/250, step 4: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.103930 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 5
-Training epoch 0/250, step 5: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.106770 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 6
-Training epoch 0/250, step 6: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.116840 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 7
-Training epoch 0/250, step 7: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.104580 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 8
-Training epoch 0/250, step 8: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.100160 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 9
-Training epoch 0/250, step 9: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.101690 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 10
-Training epoch 0/250, step 10: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.095440 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 11
-Training epoch 0/250, step 11: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.107620 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 12
-Training epoch 0/250, step 12: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.115720 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 13
-Training epoch 0/250, step 13: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.099650 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 14
-Training epoch 0/250, step 14: 	 
-[pick_place] l_tot: 10.5 l_bc: 5.1 l_inv:  5.131560 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 15
-Training epoch 0/250, step 15: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.113000 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 16
-Training epoch 0/250, step 16: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.114500 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 17
-Training epoch 0/250, step 17: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.102820 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 18
-Training epoch 0/250, step 18: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.095490 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 19
-Training epoch 0/250, step 19: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.120860 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 20
-Training epoch 0/250, step 20: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.108290 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 21
-Training epoch 0/250, step 21: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.098530 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 22
-Training epoch 0/250, step 22: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.091180 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 23
-Training epoch 0/250, step 23: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.104700 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 24
-Training epoch 0/250, step 24: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.103100 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 25
-Training epoch 0/250, step 25: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.102540 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 26
-Training epoch 0/250, step 26: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.109380 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 27
-Training epoch 0/250, step 27: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.105500 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 28
-Training epoch 0/250, step 28: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.112050 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 29
-Training epoch 0/250, step 29: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.092430 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 30
-Training epoch 0/250, step 30: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.116570 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 31
-Training epoch 0/250, step 31: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.109090 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 32
-Training epoch 0/250, step 32: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.092020 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 33
-Training epoch 0/250, step 33: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.097880 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 34
-Training epoch 0/250, step 34: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.113460 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 35
-Training epoch 0/250, step 35: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.091110 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 36
-Training epoch 0/250, step 36: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.097000 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 37
-Training epoch 0/250, step 37: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.105160 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 38
-Training epoch 0/250, step 38: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.090940 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 39
-Training epoch 0/250, step 39: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.090730 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 40
-Training epoch 0/250, step 40: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.087380 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 41
-Training epoch 0/250, step 41: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.099650 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 42
-Training epoch 0/250, step 42: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.104000 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 43
-Training epoch 0/250, step 43: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.118300 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 44
-Training epoch 0/250, step 44: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.088940 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 45
-Training epoch 0/250, step 45: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.095180 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 46
-Training epoch 0/250, step 46: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.094320 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 47
-Training epoch 0/250, step 47: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.093020 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 48
-Training epoch 0/250, step 48: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.100550 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 49
-Training epoch 0/250, step 49: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.116280 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 50
-Training epoch 0/250, step 50: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.082380 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-  5%|▌         | 52/1012 [01:12<14:54,  1.07it/s]  5%|▌         | 53/1012 [01:13<15:39,  1.02it/s]  5%|▌         | 54/1012 [01:14<15:09,  1.05it/s]  5%|▌         | 55/1012 [01:15<15:23,  1.04it/s]  6%|▌         | 56/1012 [01:16<15:37,  1.02it/s]  6%|▌         | 57/1012 [01:17<15:50,  1.01it/s]  6%|▌         | 58/1012 [01:18<16:06,  1.01s/it]  6%|▌         | 59/1012 [01:19<16:13,  1.02s/it]  6%|▌         | 60/1012 [01:20<15:36,  1.02it/s]  6%|▌         | 61/1012 [01:21<16:13,  1.02s/it]  6%|▌         | 62/1012 [01:22<15:32,  1.02it/s]  6%|▌         | 63/1012 [01:23<15:40,  1.01it/s]  6%|▋         | 64/1012 [01:24<15:09,  1.04it/s]  6%|▋         | 65/1012 [01:25<16:02,  1.02s/it]  7%|▋         | 66/1012 [01:26<15:29,  1.02it/s]  7%|▋         | 67/1012 [01:27<15:40,  1.01it/s]  7%|▋         | 68/1012 [01:28<15:07,  1.04it/s]  7%|▋         | 69/1012 [01:29<15:21,  1.02it/s]  7%|▋         | 70/1012 [01:30<14:53,  1.05it/s]  7%|▋         | 71/1012 [01:31<15:27,  1.01it/s]  7%|▋         | 72/1012 [01:32<14:53,  1.05it/s]  7%|▋         | 73/1012 [01:33<15:12,  1.03it/s]  7%|▋         | 74/1012 [01:34<14:45,  1.06it/s]  7%|▋         | 75/1012 [01:35<15:05,  1.04it/s]  8%|▊         | 76/1012 [01:36<14:41,  1.06it/s]  8%|▊         | 77/1012 [01:37<14:59,  1.04it/s]  8%|▊         | 78/1012 [01:38<14:40,  1.06it/s]  8%|▊         | 79/1012 [01:39<15:00,  1.04it/s]  8%|▊         | 80/1012 [01:39<14:39,  1.06it/s]  8%|▊         | 81/1012 [01:40<15:03,  1.03it/s]  8%|▊         | 82/1012 [01:41<14:40,  1.06it/s]  8%|▊         | 83/1012 [01:42<15:00,  1.03it/s]  8%|▊         | 84/1012 [01:43<14:35,  1.06it/s]  8%|▊         | 85/1012 [01:44<15:19,  1.01it/s]  8%|▊         | 86/1012 [01:45<14:51,  1.04it/s]  9%|▊         | 87/1012 [01:46<15:06,  1.02it/s]  9%|▊         | 88/1012 [01:47<15:07,  1.02it/s]  9%|▉         | 89/1012 [01:48<15:14,  1.01it/s]  9%|▉         | 90/1012 [01:49<15:11,  1.01it/s]  9%|▉         | 91/1012 [01:50<15:19,  1.00it/s]  9%|▉         | 92/1012 [01:51<14:46,  1.04it/s]  9%|▉         | 93/1012 [01:52<15:36,  1.02s/it]  9%|▉         | 94/1012 [01:53<14:57,  1.02it/s]  9%|▉         | 95/1012 [01:54<15:33,  1.02s/it]  9%|▉         | 96/1012 [01:55<14:55,  1.02it/s] 10%|▉         | 97/1012 [01:56<15:08,  1.01it/s] 10%|▉         | 98/1012 [01:57<14:37,  1.04it/s] 10%|▉         | 99/1012 [01:58<14:53,  1.02it/s] 10%|▉         | 100/1012 [01:59<15:15,  1.00s/it] 10%|▉         | 101/1012 [02:00<15:21,  1.01s/it] 10%|█         | 102/1012 [02:01<14:55,  1.02it/s]Model checkpoint saved at step 51
-Training epoch 0/250, step 51: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.101430 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 52
-Training epoch 0/250, step 52: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.080300 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 53
-Training epoch 0/250, step 53: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.081770 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 54
-Training epoch 0/250, step 54: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.087330 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 55
-Training epoch 0/250, step 55: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.082410 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 56
-Training epoch 0/250, step 56: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.097400 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 57
-Training epoch 0/250, step 57: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.091580 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 58
-Training epoch 0/250, step 58: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.087710 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 59
-Training epoch 0/250, step 59: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.099830 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 60
-Training epoch 0/250, step 60: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.094310 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 61
-Training epoch 0/250, step 61: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.081960 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 62
-Training epoch 0/250, step 62: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.084290 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 63
-Training epoch 0/250, step 63: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.104560 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 64
-Training epoch 0/250, step 64: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.074490 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 65
-Training epoch 0/250, step 65: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.087770 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 66
-Training epoch 0/250, step 66: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.091250 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 67
-Training epoch 0/250, step 67: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.095980 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 68
-Training epoch 0/250, step 68: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.074540 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 69
-Training epoch 0/250, step 69: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.088220 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 70
-Training epoch 0/250, step 70: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.095070 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 71
-Training epoch 0/250, step 71: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.077190 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 72
-Training epoch 0/250, step 72: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.079030 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 73
-Training epoch 0/250, step 73: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.078840 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 74
-Training epoch 0/250, step 74: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.097890 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 75
-Training epoch 0/250, step 75: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.080170 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 76
-Training epoch 0/250, step 76: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.085790 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 77
-Training epoch 0/250, step 77: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.088590 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 78
-Training epoch 0/250, step 78: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.078920 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 79
-Training epoch 0/250, step 79: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.063380 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 80
-Training epoch 0/250, step 80: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.087220 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 81
-Training epoch 0/250, step 81: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.083950 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 82
-Training epoch 0/250, step 82: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.104630 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 83
-Training epoch 0/250, step 83: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.082250 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 84
-Training epoch 0/250, step 84: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.073380 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 85
-Training epoch 0/250, step 85: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.076720 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 86
-Training epoch 0/250, step 86: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.081000 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 87
-Training epoch 0/250, step 87: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.070140 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 88
-Training epoch 0/250, step 88: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.076230 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 89
-Training epoch 0/250, step 89: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.080940 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 90
-Training epoch 0/250, step 90: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.075640 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 91
-Training epoch 0/250, step 91: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.072660 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 92
-Training epoch 0/250, step 92: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.086690 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 93
-Training epoch 0/250, step 93: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.071140 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 94
-Training epoch 0/250, step 94: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.091840 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 95
-Training epoch 0/250, step 95: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.068770 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 96
-Training epoch 0/250, step 96: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.065880 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 97
-Training epoch 0/250, step 97: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.085870 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 98
-Training epoch 0/250, step 98: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.096460 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 99
-Training epoch 0/250, step 99: 	 
-[pick_place] l_tot: 10.4 l_bc: 5.1 l_inv:  5.085630 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 100
-Training epoch 0/250, step 100: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.058770 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
-Model checkpoint saved at step 101
-Training epoch 0/250, step 101: 	 
-[pick_place] l_tot: 10.3 l_bc: 5.1 l_inv:  5.067500 l_rep:  0.000000 l_pnt: 0.2 l_aux: 0.0 
- 10%|█         | 103/1012 [02:02<15:06,  1.00it/s] 10%|█         | 104/1012 [02:03<14:35,  1.04it/s] 10%|█         | 105/1012 [02:04<14:53,  1.01it/s] 10%|█         | 106/1012 [02:05<14:26,  1.05it/s] 11%|█         | 107/1012 [02:06<14:41,  1.03it/s] 11%|█         | 108/1012 [02:07<14:16,  1.06it/s]
