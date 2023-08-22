@@ -133,19 +133,19 @@ def write_frame(rgb_video_writer, depth_video_writer, camera_name, obs, str):
     #         image_rgb, upper_left_corner,
     #         bottom_right_corner, (255, 0, 0), 1)
 
-    #     if 'pick_place' in TASK_NAME:
-    #         bin_bb = obs['obj_bb'][camera_name.split('_image')[
-    #             0]]['bin']
-    #         center = bin_bb['center']
-    #         upper_left_corner = bin_bb['upper_left_corner']
-    #         bottom_right_corner = bin_bb['bottom_right_corner']
-    #         image_rgb = cv2.circle(
-    #             image_rgb, center, radius=1, color=(0, 0, 255), thickness=-1)
-    #         image_rgb = cv2.rectangle(
-    #             image_rgb, upper_left_corner,
-    #             bottom_right_corner, (255, 0, 0), 1)
+        # if 'pick_place' in TASK_NAME:
+        #     bin_bb = obs['obj_bb'][camera_name.split('_image')[
+        #         0]]['bin']
+        #     center = bin_bb['center']
+        #     upper_left_corner = bin_bb['upper_left_corner']
+        #     bottom_right_corner = bin_bb['bottom_right_corner']
+        #     image_rgb = cv2.circle(
+        #         image_rgb, center, radius=1, color=(0, 0, 255), thickness=-1)
+        #     image_rgb = cv2.rectangle(
+        #         image_rgb, upper_left_corner,
+        #         bottom_right_corner, (255, 0, 0), 1)
 
-        # cv2.imwrite("box.png", image_rgb)
+        cv2.imwrite("box.png", image_rgb)
 
     rgb_video_writer.write(image_rgb)
 
@@ -190,7 +190,7 @@ if __name__ == "__main__":
             trj_paths = glob.glob(os.path.join(dir, 'traj*.pkl'))
 
             for j, trj in enumerate(sorted(trj_paths)):
-                if j == 0:
+                if j == 56:
                     print(trj)
                     try:
                         os.makedirs(os.path.join(args.task_path,

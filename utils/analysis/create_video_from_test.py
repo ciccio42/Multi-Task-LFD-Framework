@@ -46,6 +46,30 @@ def torch_to_numpy(tensor):
     return numpy_array_transposed
 
 
+def adjust_bb(bb, crop_params=[20, 25, 80, 75]):
+
+    x1_old, y1_old, x2_old, y2_old = bb
+    x1_old = int(x1_old)
+    y1_old = int(y1_old)
+    x2_old = int(x2_old)
+    y2_old = int(y2_old)
+
+    top, left = crop_params[0], crop_params[2]
+    img_height, img_width = 200, 360
+    box_h, box_w = img_height - top - \
+        crop_params[1], img_width - left - crop_params[3]
+
+    # Modify bb based on computed resized-crop
+    # 1. Take into account crop and resize
+    x_scale = 224/box_w
+    y_scale = 224/box_h
+    x1 = int((x1_old/x_scale)+left)
+    x2 = int((x2_old/x_scale)+left)
+    y1 = int((y1_old/y_scale)+top)
+    y2 = int((y2_old/y_scale)+top)
+    return [x1, y1, x2, y2]
+
+
 def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
     results_folder = f"results_{task_name}"
@@ -92,12 +116,16 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                     for i in range(len(context_data)):
                         context_frames.append(context_data[i][:, :, ::-1])
 
-                if 'camera_front_image' in traj_data.get(0)["obs"].keys():
-                    traj_frames = [t["obs"]['camera_front_image']
-                                   for t in traj_data]
-                else:
-                    traj_frames = [t["obs"]['image']
-                                   for t in traj_data]
+                traj_frames = []
+                bb_frames = []
+                for t, step in enumerate(traj_data):
+                    if 'camera_front_image' in traj_data.get(t)["obs"].keys():
+                        traj_frames.append(step["obs"]['camera_front_image'])
+                    else:
+                        traj_frames.append(step["obs"]['image'])
+
+                    if 'predicted_bb' in traj_data.get(t)["obs"].keys():
+                        bb_frames.append(step["obs"]['predicted_bb'])
 
                 # get predicted slot
                 predicted_slot = []
@@ -148,14 +176,23 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 # create the string to put on each frame
                 if traj_result:
                     # res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
-                    res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                    # res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                    res_string = ""
                 else:
                     res_string = f"Sample index {step}"
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 font_scale = 0.35
                 thickness = 1
                 for i, traj_frame in enumerate(traj_frames):
-
+                    if len(bb_frames) != 0 and i != 0:
+                        bb = adjust_bb(bb_frames[i-1])
+                        traj_frames = np.array(cv2.rectangle(
+                            traj_frame,
+                            (int(bb[0]),
+                             int(bb[1])),
+                            (int(bb[2]),
+                                int(bb[3])),
+                            (0, 0, 255), 1))
                     output_frame = cv2.hconcat(
                         [new_image, traj_frame[:, :, ::-1]])
                     if i != len(traj_frames)-1 and len(predicted_slot) != 0:
@@ -166,7 +203,8 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                     else:
                         cv2.putText(output_frame,  res_string, (0, 99), font,
                                     font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                    cv2.imwrite("frame.png", output_frame)
+
+                    # cv2.imwrite("frame.png", output_frame)
                     out.write(output_frame)
 
                 out.release()
@@ -245,7 +283,10 @@ def read_results(base_path="/", task_name="pick_place"):
 
         success_cnt = 0
         reached_cnt = 0
+        picked_cnt = 0
         file_cnt = 0
+        mean_iou = 0.0
+        fp_avg = 0.0
         for context_file, traj_file in zip(context_files, traj_files):
             print(context_file, traj_file)
             with open(context_file, "rb") as f:
@@ -266,9 +307,18 @@ def read_results(base_path="/", task_name="pick_place"):
                 success_cnt += 1
             if traj_result['reached'] == 1:
                 reached_cnt += 1
+            if traj_result['picked'] == 1:
+                picked_cnt += 1
+
+            if 'avg_iou' in traj_result.keys():
+                mean_iou += traj_result['avg_iou']
+                fp_avg += traj_result['num_false_positive']
 
         print(f"Success rate {success_cnt/file_cnt}")
         print(f"Reached rate {reached_cnt/file_cnt}")
+        print(f"Picked rate {picked_cnt/file_cnt}")
+        print(f"MeanIoU {mean_iou/file_cnt}")
+        print(f"MeanFP {fp_avg/file_cnt}")
 
 
 if __name__ == '__main__':
@@ -279,13 +329,17 @@ if __name__ == '__main__':
                         help="Path to checkpoint folder")
     parser.add_argument('--task', type=str,
                         default="pick_place", help="Task name")
+    parser.add_argument('--metric', type=str,
+                        default="results")
     args = parser.parse_args()
     # debugpy.listen(('0.0.0.0', 5678))
     # print("Waiting for debugger attach")
     # debugpy.wait_for_client()
-    # 1. create video
-    create_video_for_each_trj(base_path=args.base_path, task_name=args.task)
-    # import time
-    # while True:
-    #     read_results(base_path=args.base_path, task_name=args.task)
-    #     time.sleep(3)
+    if args.metric != "results":
+        # 1. create video
+        create_video_for_each_trj(
+            base_path=args.base_path, task_name=args.task)
+    else:
+        import time
+        read_results(base_path=args.base_path, task_name=args.task)
+        time.sleep(3)

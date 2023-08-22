@@ -42,27 +42,22 @@ ACTION_DISTRIBUTION = {
 }
 
 
-def normalize_action(action, n_action_bin, action_ranges):
+def normalize_action(action, n_action_bin, action_ranges, continous=False):
     half_action_bin = int(n_action_bin/2)
     norm_action = action.copy()
     # normalize between [-1 , 1]
-    norm_action[:-1] = (2 * (norm_action[:-1] - action_ranges[:, 0]) /
-                        (action_ranges[:, 1] - action_ranges[:, 0])) - 1
-    # action discretization
-    # .astype(np.float32) / half_action_bin
-    return (norm_action * half_action_bin).astype(np.int32)
+    if action.shape[0] == 7:
+        norm_action[:-1] = (2 * (norm_action[:-1] - action_ranges[:, 0]) /
+                            (action_ranges[:, 1] - action_ranges[:, 0])) - 1
 
-
-def denormalize_action(norm_action, n_action_bin, action_ranges):
-    # action = np.clip(norm_action.copy(), -1, 1)
-    half_action_bin = int(n_action_bin/2)
-    action = norm_action.copy()
-    # -1,1 action
-    action = action/half_action_bin
-    for d in range(action_ranges.shape[0]):
-        action[d] = (0.5 * (action[d] + 1) *
-                     (action_ranges[d, 1] - action_ranges[d, 0])) + action_ranges[d, 0]
-    return action
+    else:
+        norm_action = (2 * (norm_action - action_ranges[:, 0]) /
+                       (action_ranges[:, 1] - action_ranges[:, 0])) - 1
+    if continous:
+        return norm_action
+    else:
+        # action discretization
+        return (norm_action * half_action_bin).astype(np.int32).astype(np.float32) / half_action_bin
 
 
 if __name__ == "__main__":
@@ -98,7 +93,7 @@ if __name__ == "__main__":
         if os.path.isdir(os.path.join(args.task_path, dir)):
             # assert len(trjs) == 100, print(f"{os.path.join(args.task_path, dir)} does not have 100 trjs")
             trj_paths = glob.glob(os.path.join(dir, 'traj*.pkl'))
-
+            norm_action = []
             for j, trj in enumerate(sorted(trj_paths)):
 
                 task_distribution[task_var][j] = list()
@@ -130,16 +125,12 @@ if __name__ == "__main__":
                                 action_t = trajectory_obj.get(t)[
                                     'action']
                                 task_distribution[task_var][j].append(
-                                    action_t)
-                                # cv2.imwrite("prova.png", trajectory_obj.get(t)['obs'][
-                                #     'camera_front_image'][:, :, ::-1])
-                                # action_normalized = normalize_action(
-                                #     action=action_t,
-                                #     n_action_bin=256,
-                                #     action_ranges=NORM_RANGES)
-                                # action_denormalized = denormalize_action(norm_action=action_normalized,
-                                #                                          n_action_bin=256,
-                                #                                          action_ranges=NORM_RANGES)
+                                    normalize_action(action=action_t,
+                                                     n_action_bin=256,
+                                                     action_ranges=NORM_RANGES))
+                                norm_action.append(normalize_action(action=action_t,
+                                                                    n_action_bin=256,
+                                                                    action_ranges=NORM_RANGES))
                                 # for dim, action_label in enumerate(action_t):
                                 #     ACTION_DISTRIBUTION[dim].append(
                                 #         action_label)
@@ -148,7 +139,10 @@ if __name__ == "__main__":
                                 #     f"Denorm action {denormalize_action(action_t)[:3]}")
                             except KeyError:
                                 print("error")
-
+    # Compute mean and std-deviation
+    norm_action_matrix = np.array(norm_action).reshape(len(norm_action), 7)
+    print(f"Standard deviation {np.std(np.array(norm_action_matrix), axis=0)}")
+    print(f"Standard mean {np.mean(np.array(norm_action_matrix), axis=0)}")
     for variation in task_distribution.keys():
         print(variation)
         # Plot y-axis trajectories for each variation

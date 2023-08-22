@@ -1,6 +1,6 @@
 #!/bin/sh
 export MUJOCO_PY_MUJOCO_PATH="/home/frosa_loc/.mujoco/mujoco210"
-export CUDA_VISIBLE_DEVICES=2
+export CUDA_VISIBLE_DEVICES=4
 export HYDRA_FULL_ERROR=1
 
 EXPERT_DATA=/home/frosa_loc/Multi-Task-LFD-Framework/multitask_dataset/multitask_dataset_repo_box
@@ -90,7 +90,7 @@ python /home/frosa_loc/Multi-Task-LFD-Framework/repo/mosaic/train_any.py \
     train_cfg.lr=${LR} \
     train_cfg.weight_decay=${WEIGHT_DECAY} \
     train_cfg.lr_schedule=${SCHEDULER} \
-    debug=true \
-    wandb_log=false \
+    debug=false \
+    wandb_log=true \
     resume=${RESUME} \
     loader_workers=${LOADER_WORKERS}
