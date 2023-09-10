@@ -145,7 +145,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
                 number_of_context_frames = len(context_frames)
                 demo_height, demo_width, _ = context_frames[0].shape
-                traj_height, traj_width = 224, 224
+                traj_height, traj_width, _ = traj_frames[0].shape
 
                 # Determine the number of columns and rows to create the grid of frames
                 num_cols = 2  # Example value, adjust as needed
@@ -185,8 +185,8 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 # create the string to put on each frame
                 if traj_result:
                     # res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
-                    # res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
-                    res_string = ""
+                    res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                    # res_string = ""
                 else:
                     res_string = f"Sample index {step}"
                 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -195,7 +195,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 for i, traj_frame in enumerate(traj_frames):
                     if len(bb_frames) != 0 and i != 0:
                         bb = adjust_bb(bb_frames[i-1])
-                        traj_frames = np.array(cv2.rectangle(
+                        traj_frame = np.array(cv2.rectangle(
                             traj_frame,
                             (int(bb[0]),
                              int(bb[1])),
@@ -203,7 +203,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                                 int(bb[3])),
                             (0, 0, 255), 1))
                     output_frame = cv2.hconcat(
-                        [new_image, frame_agent])
+                        [new_image, traj_frame[:, :, ::-1]])
                     if i != len(traj_frames)-1 and len(predicted_slot) != 0:
                         cv2.putText(output_frame,  res_string, (0, 80), font,
                                     font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
@@ -346,10 +346,12 @@ if __name__ == '__main__':
                         default="pick_place", help="Task name")
     parser.add_argument('--metric', type=str,
                         default="results")
+    parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
-    # debugpy.listen(('0.0.0.0', 5678))
-    # print("Waiting for debugger attach")
-    # debugpy.wait_for_client()
+    if args.debug:
+        debugpy.listen(('0.0.0.0', 5678))
+        print("Waiting for debugger attach")
+        debugpy.wait_for_client()
     if args.metric != "results":
         # 1. create video
         create_video_for_each_trj(
