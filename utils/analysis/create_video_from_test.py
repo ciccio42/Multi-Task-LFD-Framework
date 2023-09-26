@@ -64,8 +64,8 @@ def adjust_bb(bb, crop_params=[20, 25, 80, 75]):
 
     # Modify bb based on computed resized-crop
     # 1. Take into account crop and resize
-    x_scale = 224/box_w
-    y_scale = 224/box_h
+    x_scale = 180/box_w
+    y_scale = 100/box_h
     x1 = int((x1_old/x_scale)+left)
     x2 = int((x2_old/x_scale)+left)
     y1 = int((y1_old/y_scale)+top)
@@ -127,6 +127,10 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
                 traj_frames = []
                 bb_frames = []
+                gt_bb = []
+                predicted_conf_score = []
+                iou = []
+                predicted_bb = False
                 for t, step in enumerate(traj_data):
                     if 'camera_front_image' in traj_data.get(t)["obs"].keys():
                         traj_frames.append(step["obs"]['camera_front_image'])
@@ -134,7 +138,12 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                         traj_frames.append(step["obs"]['image'])
 
                     if 'predicted_bb' in traj_data.get(t)["obs"].keys():
+                        predicted_bb = True
                         bb_frames.append(step["obs"]['predicted_bb'])
+                        predicted_conf_score.append(
+                            step["obs"]['predicted_score'])
+                        iou.append(step["obs"]['iou'])
+                        gt_bb.append(step["obs"]['gt_bb'])
 
                 # get predicted slot
                 predicted_slot = []
@@ -168,25 +177,32 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 new_image = np.array(cv2.resize(cv2.vconcat(
                     frames), (traj_width, traj_height)), np.uint8)
 
-                fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                output_width = 2*traj_width
-                output_height = traj_height
                 context_number = find_number(
                     context_file.split('/')[-1].split('.')[0])
                 trj_number = find_number(
                     traj_file.split('/')[-1].split('.')[0])
-                # out_path = f"{task_name}_step_{step}_demo_{context_number}_traj_{trj_number}.mp4"
-                out_path = f"demo_{context_number}_traj_{trj_number}.mp4"
-                print(video_path)
-                print(out_path)
-                out = cv2.VideoWriter(os.path.join(
-                    video_path, out_path), fourcc, 30, (output_width, output_height))
+                out = None
+                if len(traj_data) > 2:
+                    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+                    output_width = 2*traj_width
+                    output_height = traj_height
+                    # out_path = f"{task_name}_step_{step}_demo_{context_number}_traj_{trj_number}.mp4"
+                    out_path = f"demo_{context_number}_traj_{trj_number}.mp4"
+                    print(video_path)
+                    print(out_path)
+                    out = cv2.VideoWriter(os.path.join(
+                        video_path, out_path), fourcc, 30, (output_width, output_height))
+                else:
+                    out_path = os.path.join(
+                        video_path, f"demo_{context_number}_traj_{trj_number}.png")
 
                 # create the string to put on each frame
                 if traj_result:
                     # res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
-                    res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                    # res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
                     # res_string = ""
+                    if predicted_bb:
+                        res_string = f"Step {step} - Task {traj_result['variation_id']}"
                 else:
                     res_string = f"Sample index {step}"
                 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -194,7 +210,8 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 thickness = 1
                 for i, traj_frame in enumerate(traj_frames):
                     if len(bb_frames) != 0 and i != 0:
-                        bb = adjust_bb(bb_frames[i-1])
+                        bb = adjust_bb(bb_frames[i-1][0])
+                        gt_bb_t = adjust_bb(gt_bb[i-1][0])
                         traj_frame = np.array(cv2.rectangle(
                             traj_frame,
                             (int(bb[0]),
@@ -202,21 +219,42 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                             (int(bb[2]),
                                 int(bb[3])),
                             (0, 0, 255), 1))
+                        traj_frame = np.array(cv2.rectangle(
+                            traj_frame,
+                            (int(gt_bb_t[0]),
+                             int(gt_bb_t[1])),
+                            (int(gt_bb_t[2]),
+                                int(gt_bb_t[3])),
+                            (0, 255, 0), 1))
+
+                        if i != len(traj_frames)-1 and len(predicted_slot) != 0:
+                            cv2.putText(traj_frame,  res_string, (0, 80), font,
+                                        font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                            cv2.putText(traj_frame,  f"Predicted slot {predicted_slot[i]}", (
+                                0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                        elif predicted_bb:
+                            cv2.putText(traj_frame,
+                                        f"Conf-Score {round(float(predicted_conf_score[i-1][0]), 2)} - IoU {round(float(iou[i-1]), 2)}", (
+                                            0, 99),
+                                        font,
+                                        font_scale,
+                                        (0, 0, 255),
+                                        thickness,
+                                        cv2.LINE_AA)
+                        else:
+                            cv2.putText(output_frame,  res_string, (0, 99), font,
+                                        font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+
                     output_frame = cv2.hconcat(
                         [new_image, traj_frame[:, :, ::-1]])
-                    if i != len(traj_frames)-1 and len(predicted_slot) != 0:
-                        cv2.putText(output_frame,  res_string, (0, 80), font,
-                                    font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                        cv2.putText(output_frame,  f"Predicted slot {predicted_slot[i]}", (
-                            0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                    else:
-                        cv2.putText(output_frame,  res_string, (0, 99), font,
-                                    font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
 
                     # cv2.imwrite("frame.png", output_frame)
-                    out.write(output_frame)
-
-                out.release()
+                    if out is not None:
+                        out.write(output_frame)
+                    else:
+                        cv2.imwrite(out_path, output_frame)
+                if out is not None:
+                    out.release()
         else:
             for traj_file in traj_files:
                 with open(traj_file, "rb") as f:
@@ -296,6 +334,7 @@ def read_results(base_path="/", task_name="pick_place"):
         picked_cnt = 0
         file_cnt = 0
         mean_iou = 0.0
+        tp_avg = 0.0
         fp_avg = 0.0
         for context_file, traj_file in zip(context_files, traj_files):
             print(context_file, traj_file)
@@ -322,7 +361,12 @@ def read_results(base_path="/", task_name="pick_place"):
 
             if 'avg_iou' in traj_result.keys():
                 mean_iou += traj_result['avg_iou']
-                fp_avg += traj_result['num_false_positive']
+                tp_avg += traj_result['avg_tp']
+
+                if traj_result['avg_iou'] < 0.10:
+                    fp_avg += traj_result['avg_fp']
+                else:
+                    tp_avg += traj_result['avg_tp']
 
             try:
                 avg_iou += traj_result['avg_iou']
