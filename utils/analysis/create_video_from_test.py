@@ -209,7 +209,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 font_scale = 0.35
                 thickness = 1
                 for i, traj_frame in enumerate(traj_frames):
-                    if len(bb_frames) != 0 and i != 0:
+                    if len(bb_frames) != 0 and i != 0 and len(bb_frames) >= i+1:
                         bb = adjust_bb(bb_frames[i-1][0])
                         gt_bb_t = adjust_bb(gt_bb[i-1][0])
                         traj_frame = np.array(cv2.rectangle(
@@ -336,12 +336,56 @@ def read_results(base_path="/", task_name="pick_place"):
         mean_iou = 0.0
         tp_avg = 0.0
         fp_avg = 0.0
+        number_frames = 0.0
+        tp = 0.0
+        fp = 0.0
+        fn = 0.0
         for context_file, traj_file in zip(context_files, traj_files):
             print(context_file, traj_file)
             with open(context_file, "rb") as f:
                 context_data = pickle.load(f)
             with open(traj_file, "rb") as f:
                 traj_data = pickle.load(f)
+
+            for t in range(len(traj_data)):
+                if t != 0:
+                    iou = traj_data.get(t)['obs']['iou']
+                    number_frames += 1
+                    if iou > 0.10:
+                        tp += 1
+                    else:
+                        if traj_data.get(
+                                t)['obs'].get('predicted_bb') is not None:
+                            fp += 1
+                            bb = adjust_bb(traj_data.get(
+                                t)['obs']['predicted_bb'][0])
+                            gt_bb_t = adjust_bb(
+                                traj_data.get(t)['obs']['gt_bb'][0])
+                            traj_frame = np.array(traj_data.get(
+                                t)['obs']['camera_front_image'][:, :, ::-1])
+                            traj_frame = np.array(cv2.rectangle(
+                                traj_frame,
+                                (int(bb[0]),
+                                 int(bb[1])),
+                                (int(bb[2]),
+                                    int(bb[3])),
+                                (0, 0, 255), 1))
+                            traj_frame = np.array(cv2.rectangle(
+                                traj_frame,
+                                (int(gt_bb_t[0]),
+                                 int(gt_bb_t[1])),
+                                (int(gt_bb_t[2]),
+                                    int(gt_bb_t[3])),
+                                (0, 255, 0), 1))
+                            cv2.imwrite(
+                                f"debug/{traj_file.split('/')[-1].split('.')[0]}_{t}.png", traj_frame)
+                        else:
+                            fn += 1
+                            traj_frame = np.array(traj_data.get(
+                                t)['obs']['camera_front_image'][:, :, ::-1])
+                            cv2.imwrite(
+                                f"debug/{traj_file.split('/')[-1].split('.')[0]}_{t}.png", traj_frame)
+
             # open json file
             traj_result = None
             try:
@@ -378,6 +422,10 @@ def read_results(base_path="/", task_name="pick_place"):
         print(f"Picked rate {picked_cnt/file_cnt}")
         print(f"MeanIoU {mean_iou/file_cnt}")
         print(f"MeanFP {fp_avg/file_cnt}")
+        print(f"Total Number frames {number_frames}")
+        print(f"Total Number tp {tp}")
+        print(f"Total Number fp {fp}")
+        print(f"Total Number fp {fn}")
 
 
 if __name__ == '__main__':
