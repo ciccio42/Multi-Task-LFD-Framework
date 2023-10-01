@@ -79,7 +79,8 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     results_folder = f"results_{task_name}"
 
     # Load config
-    config_path = os.path.join(base_path, "../../config.yaml")
+    # config_path = os.path.join(base_path, "../../config.yaml")
+    config_path = "/raid/home/frosa_Loc/checkpoint_save_folder/1Task-Pick-Place-100-180-BB-inference-Batch32/config.yaml"
     config = OmegaConf.load(config_path)
 
     # step_pattern = os.path.join(base_path, results_folder, "step-*")
@@ -351,7 +352,12 @@ def read_results(base_path="/", task_name="pick_place"):
         number_frames = 0.0
         tp = 0.0
         fp = 0.0
+        fp_pre_picking = 0.0
+        fp_post_picking = 0.0
         fn = 0.0
+        fn_pre_picking = 0.0
+        fn_post_picking = 0.0
+        OPEN_GRIPPER = np.array([-0.02, -0.25, -0.2, -0.02, -0.25, - 0.2])
         for context_file, traj_file in zip(context_files, traj_files):
             print(context_file, traj_file)
             with open(context_file, "rb") as f:
@@ -359,45 +365,62 @@ def read_results(base_path="/", task_name="pick_place"):
             with open(traj_file, "rb") as f:
                 traj_data = pickle.load(f)
 
-            # for t in range(len(traj_data)):
-            #     if t != 0:
-            #         iou = traj_data.get(t)['obs']['iou']
-            #         number_frames += 1
-            #         if iou > 0.10:
-            #             tp += 1
-            #         else:
-            #             if traj_data.get(
-            #                     t)['obs'].get('predicted_bb') is not None:
-            #                 fp += 1
-            #                 bb = adjust_bb(traj_data.get(
-            #                     t)['obs']['predicted_bb'][0])
-            #                 gt_bb_t = adjust_bb(
-            #                     traj_data.get(t)['obs']['gt_bb'][0])
-            #                 traj_frame = np.array(traj_data.get(
-            #                     t)['obs']['camera_front_image'][:, :, ::-1])
-            #                 traj_frame = np.array(cv2.rectangle(
-            #                     traj_frame,
-            #                     (int(bb[0]),
-            #                      int(bb[1])),
-            #                     (int(bb[2]),
-            #                         int(bb[3])),
-            #                     (0, 0, 255), 1))
-            #                 traj_frame = np.array(cv2.rectangle(
-            #                     traj_frame,
-            #                     (int(gt_bb_t[0]),
-            #                      int(gt_bb_t[1])),
-            #                     (int(gt_bb_t[2]),
-            #                         int(gt_bb_t[3])),
-            #                     (0, 255, 0), 1))
-            #                 cv2.imwrite(
-            #                     f"debug/{traj_file.split('/')[-1].split('.')[0]}_{t}.png", traj_frame)
-            #             else:
-            #                 fn += 1
-            #                 traj_frame = np.array(traj_data.get(
-            #                     t)['obs']['camera_front_image'][:, :, ::-1])
-            #                 cv2.imwrite(
-            #                     f"debug/{traj_file.split('/')[-1].split('.')[0]}_{t}.png", traj_frame)
+            try:
+                for t in range(len(traj_data)):
+                    if t != 0:
+                        iou = traj_data.get(t)['obs']['iou']
+                        number_frames += 1
+                        if iou > 0.10:
+                            tp += 1
+                        else:
+                            if traj_data.get(
+                                    t)['obs'].get('predicted_bb') is not None:
+                                fp += 1
+                                # check for gripper open or close
+                                gripper_state = traj_data.get(
+                                    t)['obs'].get('gripper_qpos')
+                                if np.array_equal(OPEN_GRIPPER, np.around(gripper_state, 2)):
+                                    fp_pre_picking += 1
+                                else:
+                                    fp_post_picking += 1
 
+                                bb = adjust_bb(traj_data.get(
+                                    t)['obs']['predicted_bb'][0])
+                                gt_bb_t = adjust_bb(
+                                    traj_data.get(t)['obs']['gt_bb'][0])
+                                traj_frame = np.array(traj_data.get(
+                                    t)['obs']['camera_front_image'][:, :, ::-1])
+                                traj_frame = np.array(cv2.rectangle(
+                                    traj_frame,
+                                    (int(bb[0]),
+                                     int(bb[1])),
+                                    (int(bb[2]),
+                                        int(bb[3])),
+                                    (0, 0, 255), 1))
+                                traj_frame = np.array(cv2.rectangle(
+                                    traj_frame,
+                                    (int(gt_bb_t[0]),
+                                     int(gt_bb_t[1])),
+                                    (int(gt_bb_t[2]),
+                                        int(gt_bb_t[3])),
+                                    (0, 255, 0), 1))
+                                cv2.imwrite(
+                                    f"debug/{traj_file.split('/')[-1].split('.')[0]}_{t}.png", traj_frame)
+                            else:
+                                fn += 1
+                                # check for gripper open or close
+                                gripper_state = traj_data.get(
+                                    t)['obs'].get('gripper_qpos')
+                                if np.array_equal(OPEN_GRIPPER, np.around(gripper_state, 2)):
+                                    fn_pre_picking += 1
+                                else:
+                                    fn_post_picking += 1
+                                traj_frame = np.array(traj_data.get(
+                                    t)['obs']['camera_front_image'][:, :, ::-1])
+                                cv2.imwrite(
+                                    f"debug/{traj_file.split('/')[-1].split('.')[0]}_{t}.png", traj_frame)
+            except:
+                pass
             # open json file
             traj_result = None
             try:
@@ -435,9 +458,15 @@ def read_results(base_path="/", task_name="pick_place"):
         print(f"MeanIoU {mean_iou/file_cnt}")
         print(f"MeanFP {fp_avg/file_cnt}")
         print(f"Total Number frames {number_frames}")
+        assert number_frames == (
+            tp+fp+fn), "Number of frames must be equal to tp+fp+fn"
         print(f"Total Number tp {tp}")
         print(f"Total Number fp {fp}")
-        print(f"Total Number fp {fn}")
+        print(f"Total Number fp-pre-picking {fp_pre_picking}")
+        print(f"Total Number fp-post-picking {fp_post_picking}")
+        print(f"Total Number fn {fn}")
+        print(f"Total Number fn-pre-picking {fn_pre_picking}")
+        print(f"Total Number fn-post-picking {fn_post_picking}")
 
 
 if __name__ == '__main__':
