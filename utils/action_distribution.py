@@ -82,6 +82,7 @@ if __name__ == "__main__":
     i = 0
     fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
 
+    task_name = args.task_path.split('/')[-1]
     task_paths = glob.glob(os.path.join(args.task_path, 'task_*'))
 
     task_distribution = OrderedDict()
@@ -157,19 +158,19 @@ if __name__ == "__main__":
             ax1.plot(t, trajectory[:, 0], color='b', alpha=0.5)
             ax1.set_title(f"Trajectory distribution along x axis")
             ax1.set_xlabel("Timestamp t")
-            ax1.set_ylabel("x value [m]")
+            ax1.set_ylabel("scaled x value")
 
             ax2.plot(t, trajectory[:, 1], color='b', alpha=0.5)
             ax2.set_title(f"Trajectory distribution along y axis")
             ax2.set_xlabel("Timestamp t")
-            ax2.set_ylabel("y value [m]")
+            ax2.set_ylabel("scaled y value")
 
             ax3.plot(t, trajectory[:, 2], color='b', alpha=0.5)
             ax3.set_title(f"Trajectory distribution along z axis")
             ax3.set_xlabel("Timestamp t")
-            ax3.set_ylabel("z value [m]")
+            ax3.set_ylabel("scaled z value")
 
-        plt.savefig(f"variation_{variation}.png")
+        plt.savefig(f"{task_name}_variation_{variation}.png")
 
     # An "interface" to matplotlib.axes.Axes.hist() method
     # for dim, key in enumerate(ACTION_DISTRIBUTION.keys()):

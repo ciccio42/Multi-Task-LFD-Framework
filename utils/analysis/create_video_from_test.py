@@ -15,6 +15,7 @@ from tqdm import tqdm
 from torchvision import transforms
 from torchvision.transforms.functional import resized_crop
 import multi_task_il
+from torchvision.ops import box_iou
 
 
 def find_number(name):
@@ -147,12 +148,20 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                             bb_frames.append(step["obs"]['predicted_bb'])
                         predicted_conf_score.append(
                             step["obs"]['predicted_score'])
-                        iou.append(step["obs"].get('iou', 0))
-                        if isinstance(step["obs"]['predicted_bb'], np.ndarray):
+
+                        if isinstance(step["obs"]['gt_bb'], np.ndarray):
                             gt_bb.append(
-                                step["obs"]['predicted_bb'].tolist())
+                                step["obs"]['gt_bb'].tolist())
                         else:
-                            gt_bb.append(step["obs"]['predicted_bb'])
+                            gt_bb.append(step["obs"]['gt_bb'])
+
+                        # check if iou is saved
+                        if step["obs"].get('iou') is None:
+                            # compute iou
+                            iou.append(
+                                box_iou(boxes1=torch.from_numpy(np.array(bb_frames[-1])[None]), boxes2=torch.from_numpy(np.array(gt_bb[-1]))))
+                        else:
+                            iou.append(step["obs"]['iou'])
 
                 # get predicted slot
                 predicted_slot = []
@@ -218,20 +227,13 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 font_scale = 0.35
                 thickness = 1
                 for i, traj_frame in enumerate(traj_frames):
-                    if len(bb_frames) != 0 and i != 0 and len(bb_frames) >= i+1:
+                    if len(bb_frames) != 0 and len(bb_frames) >= i+1:
                         if len(bb_frames[i-1]) == 4:
-                            bb = adjust_bb(bb_frames[i-1])
-                            gt_bb_t = adjust_bb(gt_bb[i-1])
+                            bb = adjust_bb(bb_frames[i])
+                            gt_bb_t = adjust_bb(gt_bb[i][0])
                         else:
                             bb = adjust_bb(bb_frames[i-1][0])
                             gt_bb_t = adjust_bb(gt_bb[i-1][0])
-                        traj_frame = np.array(cv2.rectangle(
-                            traj_frame,
-                            (int(bb[0]),
-                             int(bb[1])),
-                            (int(bb[2]),
-                                int(bb[3])),
-                            (0, 0, 255), 1))
                         traj_frame = np.array(cv2.rectangle(
                             traj_frame,
                             (int(gt_bb_t[0]),
@@ -239,6 +241,13 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                             (int(gt_bb_t[2]),
                                 int(gt_bb_t[3])),
                             (0, 255, 0), 1))
+                        traj_frame = np.array(cv2.rectangle(
+                            traj_frame,
+                            (int(bb[0]),
+                             int(bb[1])),
+                            (int(bb[2]),
+                                int(bb[3])),
+                            (0, 0, 255), 1))
 
                         if i != len(traj_frames)-1 and len(predicted_slot) != 0:
                             cv2.putText(traj_frame,  res_string, (0, 80), font,
@@ -260,8 +269,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
                     output_frame = cv2.hconcat(
                         [new_image, traj_frame[:, :, ::-1]])
-
-                    # cv2.imwrite("frame.png", output_frame)
+                    cv2.imwrite("frame.png", output_frame)
                     if out is not None:
                         out.write(output_frame)
                     else:
@@ -366,6 +374,7 @@ def read_results(base_path="/", task_name="pick_place"):
                 traj_data = pickle.load(f)
 
             try:
+                print(len(traj_data))
                 for t in range(len(traj_data)):
                     if t != 0:
                         iou = traj_data.get(t)['obs']['iou']
@@ -482,7 +491,7 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
     if args.debug:
-        debugpy.listen(('0.0.0.0', 5679))
+        debugpy.listen(('0.0.0.0', 5678))
         print("Waiting for debugger attach")
         debugpy.wait_for_client()
     if args.metric != "results":
