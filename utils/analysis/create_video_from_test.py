@@ -80,8 +80,8 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     results_folder = f"results_{task_name}"
 
     # Load config
-    # config_path = os.path.join(base_path, "../../config.yaml")
-    config_path = "/raid/home/frosa_Loc/checkpoint_save_folder/1Task-Pick-Place-100-180-BB-inference-Batch32/config.yaml"
+    config_path = os.path.join(base_path, "../../config.yaml")
+    # config_path = "/raid/home/frosa_Loc/checkpoint_save_folder/1Task-Pick-Place-100-180-BB-inference-Batch32/config.yaml"
     config = OmegaConf.load(config_path)
 
     # step_pattern = os.path.join(base_path, results_folder, "step-*")
@@ -147,7 +147,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                         else:
                             bb_frames.append(step["obs"]['predicted_bb'])
                         predicted_conf_score.append(
-                            step["obs"]['predicted_score'])
+                            step["obs"].get('predicted_score', -1))
 
                         if isinstance(step["obs"]['gt_bb'], np.ndarray):
                             gt_bb.append(
@@ -157,9 +157,14 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
                         # check if iou is saved
                         if step["obs"].get('iou') is None:
-                            # compute iou
-                            iou.append(
-                                box_iou(boxes1=torch.from_numpy(np.array(bb_frames[-1])[None]), boxes2=torch.from_numpy(np.array(gt_bb[-1]))))
+                            if np.array(gt_bb[-1]).shape[0] == 1:
+                                # compute iou
+                                iou.append(
+                                    box_iou(boxes1=torch.from_numpy(np.array(bb_frames[-1])[None]), boxes2=torch.from_numpy(np.array(gt_bb[-1]))))
+                            else:
+                                # compute iou
+                                iou.append(
+                                    box_iou(boxes1=torch.from_numpy(np.array(bb_frames[-1])[None]), boxes2=torch.from_numpy(np.array(gt_bb[-1])[None])))
                         else:
                             iou.append(step["obs"]['iou'])
 
@@ -200,7 +205,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 trj_number = find_number(
                     traj_file.split('/')[-1].split('.')[0])
                 out = None
-                if len(traj_data) > 2:
+                if len(traj_data) >= 3:
                     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
                     output_width = 2*traj_width
                     output_height = traj_height
@@ -216,21 +221,26 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
                 # create the string to put on each frame
                 if traj_result:
-                    # res_string = f"Step {step} - Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
+                    # res_string = f"Task {traj_result['variation_id']} - Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
                     # res_string = f"Reached {traj_result['reached']} - Picked {traj_result['picked']} - Success {traj_result['success']}"
                     # res_string = ""
-                    if predicted_bb:
-                        res_string = f"Step {step} - Task {traj_result['variation_id']}"
+                    # if predicted_bb:
+                    #     res_string = f"Step {step} - Task {traj_result['variation_id']}"
+                    res_string = None
                 else:
                     res_string = f"Sample index {step}"
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 font_scale = 0.35
                 thickness = 1
                 for i, traj_frame in enumerate(traj_frames):
-                    if len(bb_frames) != 0 and len(bb_frames) >= i+1:
+                    # and len(bb_frames) >= i+1:
+                    if len(bb_frames) != 0 and i > 0:
                         if len(bb_frames[i-1]) == 4:
                             bb = adjust_bb(bb_frames[i])
-                            gt_bb_t = adjust_bb(gt_bb[i][0])
+                            if len(gt_bb[i]) == 4:
+                                gt_bb_t = adjust_bb(gt_bb[i])
+                            else:
+                                gt_bb_t = adjust_bb(gt_bb[i][0])
                         else:
                             bb = adjust_bb(bb_frames[i-1][0])
                             gt_bb_t = adjust_bb(gt_bb[i-1][0])
@@ -256,19 +266,22 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                                 0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
                         elif predicted_bb:
                             cv2.putText(traj_frame,
-                                        f"Conf-Score {round(float(predicted_conf_score[i-1]), 2)} - IoU {round(float(iou[i-1]), 2)}", (
-                                            0, 99),
+                                        f"Conf-Score {round(float(predicted_conf_score[i-1]), 2)} - IoU {round(float(iou[i-1]), 2)}",
+                                        (100, 180),
                                         font,
                                         font_scale,
                                         (0, 0, 255),
                                         thickness,
                                         cv2.LINE_AA)
+
                         else:
                             cv2.putText(output_frame,  res_string, (0, 99), font,
                                         font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
 
                     output_frame = cv2.hconcat(
                         [new_image, traj_frame[:, :, ::-1]])
+                    cv2.putText(output_frame,  res_string, (0, 99), font,
+                                font_scale, (255, 0, 0), thickness, cv2.LINE_AA)
                     cv2.imwrite("frame.png", output_frame)
                     if out is not None:
                         out.write(output_frame)
@@ -379,7 +392,7 @@ def read_results(base_path="/", task_name="pick_place"):
                     if t != 0:
                         iou = traj_data.get(t)['obs']['iou']
                         number_frames += 1
-                        if iou > 0.10:
+                        if iou > 0.5:
                             tp += 1
                         else:
                             if traj_data.get(
