@@ -9,7 +9,7 @@ import random
 import glob
 from torchvision.transforms import ToTensor, Normalize
 from torchvision.transforms.functional import resized_crop
-
+from collections import OrderedDict
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger("Log")
 logger.setLevel(logging.INFO)
@@ -104,7 +104,7 @@ def write_frame(rgb_video_writer, depth_video_writer, camera_name, obs, str):
             cv2.putText(image_rgb, str, (0, 99), font, font_scale,
                         (0, 255, 0), thickness, cv2.LINE_AA)
     else:
-        image_rgb = np.array(obs[f"{camera_name}_image"][:, :, ::-1])
+        image_rgb = np.array(obs[f"{camera_name}_image"])  # [:, :, ::-1])
         # if camera_name == 'camera_lateral_right':
         #     cv2.imshow(f"'camera_front_image'", image_rgb)
         #     cv2.waitKey(100)
@@ -158,6 +158,7 @@ def write_frame(rgb_video_writer, depth_video_writer, camera_name, obs, str):
         depth_video_writer.write(image_depth)
 
 
+TASK_DICT = OrderedDict()
 if __name__ == "__main__":
 
     import argparse
@@ -183,152 +184,171 @@ if __name__ == "__main__":
     task_paths = glob.glob(os.path.join(args.task_path, 'task_*'))
     img_formatter = build_tvf_formatter()
 
+    average_frame = 0
+    number_task = 0
     for dir in sorted(task_paths):
         print(dir)
+        TASK_DICT[args.task_path] = OrderedDict()
         if os.path.isdir(os.path.join(args.task_path, dir)):
             # assert len(trjs) == 100, print(f"{os.path.join(args.task_path, dir)} does not have 100 trjs")
             trj_paths = glob.glob(os.path.join(dir, 'traj*.pkl'))
 
+            TASK_DICT[args.task_path][dir] = 0.0
             for j, trj in enumerate(sorted(trj_paths)):
-                if j == 10:
-                    print(trj)
-                    try:
-                        os.makedirs(os.path.join(args.task_path,
-                                                 "video",
-                                                 dir.split('/')[-1],
-                                                 trj.split("/")[-1].split(".")[0]))
-                    except:
-                        pass
-                    saving_dir = os.path.join(args.task_path,
-                                              "video",
-                                              dir.split('/')[-1],
-                                              trj.split("/")[-1].split(".")[0],
-                                              trj.split("/")[-1])
-                    print(f"Saving dir {saving_dir}")
-                    saving_dir_img = os.path.join(args.task_path,
-                                                  "img",
-                                                  dir.split('/')[-1],
-                                                  trj.split("/")[-1].split(".")[0])
-                    # logger.debug(f"Trajectory name: {dir}/{trj}")
-                    i = 0
+                with open(trj, "rb") as f:
+                    sample = pickle.load(f)
+                TASK_DICT[args.task_path][dir] += len(sample['traj'])
 
-                    with open(trj, "rb") as f:
-                        sample = pickle.load(f)
-                        logger.debug(f"Sample keys {sample.keys()}")
-                        logger.debug(sample)
-                        print(f"Sample command: {sample['command']}")
-                        if i == 0:
-                            i += 1
-                            logger.debug(sample)
-                            logger.debug(
-                                f"Observation keys: {sample['traj'][0]['obs'].keys()}")
-                            logger.debug(
-                                f"{sample['traj'][0]['obs']['ee_aa']}")
+                # if j == 1:
+                #     print(trj)
+                #     try:
+                #         os.makedirs(os.path.join(args.task_path,
+                #                                  "video",
+                #                                  dir.split('/')[-1],
+                #                                  trj.split("/")[-1].split(".")[0]))
+                #     except:
+                #         pass
+                #     saving_dir = os.path.join(args.task_path,
+                #                               "video",
+                #                               dir.split('/')[-1],
+                #                               trj.split("/")[-1].split(".")[0],
+                #                               trj.split("/")[-1])
+                #     print(f"Saving dir {saving_dir}")
+                #     saving_dir_img = os.path.join(args.task_path,
+                #                                   "img",
+                #                                   dir.split('/')[-1],
+                #                                   trj.split("/")[-1].split(".")[0])
+                #     # logger.debug(f"Trajectory name: {dir}/{trj}")
+                #     i = 0
 
-                            front_video_rgb = None
-                            right_video_rgb = None
-                            left_video_rgb = None
-                            if 'camera_front_image' in sample['traj'].get(
-                                    0)['obs'].keys():
-                                img_width = sample['traj'].get(
-                                    0)['obs']['camera_front_image'].shape[1]
-                                img_height = sample['traj'].get(
-                                    0)['obs']['camera_front_image'].shape[0]
-                                print(img_width, img_height)
-                                front_video_rgb, front_video_depth = create_video_writer(
-                                    saving_dir, "camera_front", depth=args.depth, img_width=img_width, img_height=img_height)
-                                right_video_rgb, right_video_depth = create_video_writer(
-                                    saving_dir, "camera_lateral_right", depth=args.depth, img_width=img_width, img_height=img_height)
-                                left_video_rgb, left_video_depth = create_video_writer(
-                                    saving_dir, "camera_lateral_left", depth=args.depth, img_width=img_width, img_height=img_height)
-                                eye_in_hand_rgb, eye_in_hand_depth = create_video_writer(
-                                    saving_dir, "camera_robot", depth=args.depth, img_width=img_width, img_height=img_height)
-                            else:
-                                img_width = sample['traj'].get(
-                                    0)['obs']['image'].shape[1]
-                                img_height = sample['traj'].get(
-                                    0)['obs']['image'].shape[0]
-                                print(img_width, img_height)
-                                front_video_rgb, front_video_depth = create_video_writer(
-                                    saving_dir, "image", depth=args.depth, img_width=img_width, img_height=img_height)
+                #     with open(trj, "rb") as f:
+                #         sample = pickle.load(f)
+                #         logger.debug(f"Sample keys {sample.keys()}")
+                #         logger.debug(sample)
+                #         print(f"Sample command: {sample.get('command')}")
+                #         if i == 0:
+                #             i += 1
+                #             logger.debug(sample)
+                #             logger.debug(
+                #                 f"Observation keys: {sample['traj'][0]['obs'].keys()}")
+                #             logger.debug(
+                #                 f"{sample['traj'][0]['obs']['ee_aa']}")
 
-                        # take the Trajectory obj from the trajectory
-                        trajectory_obj = sample['traj']
-                        i = 0
-                        obj_in_hand = 0
-                        start_moving = 0
-                        end_moving = 0
-                        for t in range(len(trajectory_obj)):
-                            logger.debug(f"Time-step {t}")
-                            # task description
-                            TASK_NAME = args.task_path.split('/')[-2]
-                            # sub_task =  dir.split("_")[-1]
-                            if t != 0 and 'status' in trajectory_obj.get(t)['info'].keys():
-                                status = trajectory_obj[t]['info']['status']
-                            else:
-                                status = None
-                            task_description = f"Trajectory status {status}"
-                            # get elements
-                            time_step_dict = trajectory_obj[t]
-                            obs_t = time_step_dict['obs']
-                            if 'camera_front_image' in sample['traj'].get(
-                                    0)['obs'].keys():
-                                write_frame(
-                                    front_video_rgb, front_video_depth, 'camera_front', obs_t, task_description)
-                                write_frame(right_video_rgb, right_video_depth,
-                                            "camera_lateral_right", obs_t, task_description)
-                                write_frame(
-                                    left_video_rgb, left_video_depth, "camera_lateral_left", obs_t, task_description)
-                                write_frame(
-                                    eye_in_hand_rgb, eye_in_hand_depth, "eye_in_hand", obs_t, task_description)
-                            else:
-                                pass
-                                # write_frame(
-                                #     front_video_rgb, front_video_depth, 'image', obs_t, task_description)
-                            # get action
-                            try:
-                                action_t = trajectory_obj.get(t)['action']
+                #             front_video_rgb = None
+                #             right_video_rgb = None
+                #             left_video_rgb = None
+                #             if 'camera_front_image' in sample['traj'].get(
+                #                     0)['obs'].keys():
+                #                 img_width = sample['traj'].get(
+                #                     0)['obs']['camera_front_image'].shape[1]
+                #                 img_height = sample['traj'].get(
+                #                     0)['obs']['camera_front_image'].shape[0]
+                #                 print(img_width, img_height)
+                #                 front_video_rgb, front_video_depth = create_video_writer(
+                #                     saving_dir, "camera_front", depth=args.depth, img_width=img_width, img_height=img_height)
+                #                 right_video_rgb, right_video_depth = create_video_writer(
+                #                     saving_dir, "camera_lateral_right", depth=args.depth, img_width=img_width, img_height=img_height)
+                #                 left_video_rgb, left_video_depth = create_video_writer(
+                #                     saving_dir, "camera_lateral_left", depth=args.depth, img_width=img_width, img_height=img_height)
+                #                 eye_in_hand_rgb, eye_in_hand_depth = create_video_writer(
+                #                     saving_dir, "camera_robot", depth=args.depth, img_width=img_width, img_height=img_height)
+                #             else:
+                #                 img_width = sample['traj'].get(
+                #                     0)['obs']['image'].shape[1]
+                #                 img_height = sample['traj'].get(
+                #                     0)['obs']['image'].shape[0]
+                #                 print(img_width, img_height)
+                #                 front_video_rgb, front_video_depth = create_video_writer(
+                #                     saving_dir, "image", depth=args.depth, img_width=img_width, img_height=img_height)
 
-                                # print(f"Norm action{action_t[:3]}")
-                                # print(
-                                #     f"Denorm action {denormalize_action(action_t)[:3]}")
-                            except KeyError:
-                                pass
+                #         # take the Trajectory obj from the trajectory
+                #         trajectory_obj = sample['traj']
+                #         i = 0
+                #         obj_in_hand = 0
+                #         start_moving = 0
+                #         end_moving = 0
+                #         for t in range(len(trajectory_obj)):
+                #             logger.debug(f"Time-step {t}")
+                #             # task description
+                #             TASK_NAME = args.task_path.split('/')[-2]
+                #             # sub_task =  dir.split("_")[-1]
+                #             if t != 0 and 'status' in trajectory_obj.get(t)['info'].keys():
+                #                 status = trajectory_obj[t]['info']['status']
+                #             else:
+                #                 status = None
+                #             task_description = f"Trajectory status {status}"
+                #             # get elements
+                #             time_step_dict = trajectory_obj[t]
+                #             obs_t = time_step_dict['obs']
+                #             if 'camera_front_image' in sample['traj'].get(
+                #                     0)['obs'].keys():
+                #                 write_frame(
+                #                     front_video_rgb, front_video_depth, 'camera_front', obs_t, task_description)
+                #                 write_frame(right_video_rgb, right_video_depth,
+                #                             "camera_lateral_right", obs_t, task_description)
+                #                 write_frame(
+                #                     left_video_rgb, left_video_depth, "camera_lateral_left", obs_t, task_description)
+                #                 write_frame(
+                #                     eye_in_hand_rgb, eye_in_hand_depth, "eye_in_hand", obs_t, task_description)
+                #             else:
+                #                 pass
+                #                 # write_frame(
+                #                 #     front_video_rgb, front_video_depth, 'image', obs_t, task_description)
+                #             # get action
+                #             try:
+                #                 action_t = trajectory_obj.get(t)['action']
 
-                            if t == 1:
-                                try:
-                                    os.makedirs(saving_dir_img)
-                                except:
-                                    pass
-                                obs = trajectory_obj[t]['obs']['camera_front_image'][:, :, ::-1]
-                                img_name = os.path.join(
-                                    saving_dir_img, f"{t}")
-                                img_formatter(img_name, obs)
-                            if t != 0 and 'status' in trajectory_obj.get(t)['info'].keys():
-                                if trajectory_obj.get(t)['info']['status'] == 'obj_in_hand' and obj_in_hand == 0:
-                                    obj_in_hand = 1
-                                    obs = trajectory_obj[t]['obs']['camera_front_image'][:, :, ::-1]
-                                    img_name = os.path.join(
-                                        saving_dir_img, f"{t}")
-                                    img_formatter(img_name, obs)
-                                if trajectory_obj.get(t)['info']['status'] == 'moving' and start_moving == 0:
-                                    start_moving = t
-                                elif trajectory_obj.get(t)['info']['status'] != 'moving' and start_moving != 0 and end_moving == 0:
-                                    end_moving = t
-                                    middle_moving_t = start_moving + \
-                                        int((end_moving-start_moving)/2)
-                                    obs = trajectory_obj.get(middle_moving_t)[
-                                        'obs']['camera_front_image'][:, :, ::-1]
-                                    img_name = os.path.join(
-                                        saving_dir_img, f"{middle_moving_t}")
-                                    img_formatter(img_name, obs)
-                                if t == len(trajectory_obj)-1:
-                                    obs = trajectory_obj[t]['obs']['camera_front_image'][:, :, ::-1]
-                                    img_name = os.path.join(
-                                        saving_dir_img, f"{t}")
-                                    img_formatter(img_name, obs)
-                        cv2.destroyAllWindows()
-                        front_video_rgb.release()
-                        if right_video_rgb != None:
-                            right_video_rgb.release()
-                            left_video_rgb.release()
+                #                 # print(f"Norm action{action_t[:3]}")
+                #                 # print(
+                #                 #     f"Denorm action {denormalize_action(action_t)[:3]}")
+                #             except KeyError:
+                #                 pass
+
+                #             if t == 1:
+                #                 try:
+                #                     os.makedirs(saving_dir_img)
+                #                 except:
+                #                     pass
+                #                 # [:, :, ::-1]
+                #                 obs = trajectory_obj[t]['obs']['camera_front_image']
+                #                 img_name = os.path.join(
+                #                     saving_dir_img, f"{t}")
+                #                 img_formatter(img_name, obs)
+                #             if t != 0 and 'status' in trajectory_obj.get(t)['info'].keys():
+                #                 if trajectory_obj.get(t)['info']['status'] == 'obj_in_hand' and obj_in_hand == 0:
+                #                     obj_in_hand = 1
+                #                     # [:, :, ::-1]
+                #                     obs = trajectory_obj[t]['obs']['camera_front_image']
+                #                     img_name = os.path.join(
+                #                         saving_dir_img, f"{t}")
+                #                     img_formatter(img_name, obs)
+                #                 if trajectory_obj.get(t)['info']['status'] == 'moving' and start_moving == 0:
+                #                     start_moving = t
+                #                 elif trajectory_obj.get(t)['info']['status'] != 'moving' and start_moving != 0 and end_moving == 0:
+                #                     end_moving = t
+                #                     middle_moving_t = start_moving + \
+                #                         int((end_moving-start_moving)/2)
+                #                     obs = trajectory_obj.get(middle_moving_t)[
+                #                         'obs']['camera_front_image']  # [:, :, ::-1]
+                #                     img_name = os.path.join(
+                #                         saving_dir_img, f"{middle_moving_t}")
+                #                     img_formatter(img_name, obs)
+                #                 if t == len(trajectory_obj)-1:
+                #                     # [:, :, ::-1]
+                #                     obs = trajectory_obj[t]['obs']['camera_front_image']
+                #                     img_name = os.path.join(
+                #                         saving_dir_img, f"{t}")
+                #                     img_formatter(img_name, obs)
+                #         cv2.destroyAllWindows()
+                #         front_video_rgb.release()
+                #         if right_video_rgb != None:
+                #             right_video_rgb.release()
+                #             left_video_rgb.release()
+
+            TASK_DICT[args.task_path][dir] = TASK_DICT[args.task_path][dir] / \
+                len(trj_paths)
+            average_frame += TASK_DICT[args.task_path][dir]
+            number_task += 1
+
+        print(
+            f"Task {args.task_path} - Average frame {average_frame/number_task}")

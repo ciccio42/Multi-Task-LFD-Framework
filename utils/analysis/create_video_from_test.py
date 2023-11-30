@@ -130,6 +130,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 traj_frames = []
                 bb_frames = []
                 gt_bb = []
+                activation_map = []
                 predicted_conf_score = []
                 iou = []
                 predicted_bb = False
@@ -168,6 +169,9 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                         else:
                             iou.append(step["obs"]['iou'])
 
+                    if 'activation_map' in traj_data.get(t)["obs"].keys():
+                        activation_map.append(
+                            traj_data.get(t)["obs"]['activation_map'])
                 # get predicted slot
                 predicted_slot = []
                 if 'info' in traj_data.get(0):
@@ -215,6 +219,13 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                     print(out_path)
                     out = cv2.VideoWriter(os.path.join(
                         video_path, out_path), fourcc, 30, (output_width, output_height))
+                    if len(activation_map) != 0:
+                        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+                        output_width = 2*100
+                        output_height = 180
+                        out_path = f"demo_{context_number}_traj_{trj_number}_activation_map.mp4"
+                        out_activation_map = cv2.VideoWriter(os.path.join(
+                            video_path, out_path), fourcc, 30, (output_width, output_height))
                 else:
                     out_path = os.path.join(
                         video_path, f"demo_{context_number}_traj_{trj_number}.png")
@@ -234,13 +245,13 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 thickness = 1
                 for i, traj_frame in enumerate(traj_frames):
                     # and len(bb_frames) >= i+1:
-                    if len(bb_frames) != 0 and i > 0:
+                    if len(bb_frames) != 0 and i > 0 and len(bb_frames) >= i+1:
                         if len(bb_frames[i-1]) == 4:
-                            bb = adjust_bb(bb_frames[i])
-                            if len(gt_bb[i]) == 4:
-                                gt_bb_t = adjust_bb(gt_bb[i])
+                            bb = adjust_bb(bb_frames[i-1])
+                            if len(gt_bb[i-1]) == 4:
+                                gt_bb_t = adjust_bb(gt_bb[i-1])
                             else:
-                                gt_bb_t = adjust_bb(gt_bb[i][0])
+                                gt_bb_t = adjust_bb(gt_bb[i-1][0])
                         else:
                             bb = adjust_bb(bb_frames[i-1][0])
                             gt_bb_t = adjust_bb(gt_bb[i-1][0])
@@ -258,6 +269,9 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                             (int(bb[2]),
                                 int(bb[3])),
                             (0, 0, 255), 1))
+
+                        if len(activation_map) != 0:
+                            activation_map_t = activation_map[i-1]
 
                         if i != len(traj_frames)-1 and len(predicted_slot) != 0:
                             cv2.putText(traj_frame,  res_string, (0, 80), font,
@@ -464,7 +478,7 @@ def read_results(base_path="/", task_name="pick_place"):
                 mean_iou += traj_result['avg_iou']
                 tp_avg += traj_result['avg_tp']
 
-                if traj_result['avg_iou'] < 0.10:
+                if traj_result['avg_iou'] < 0.50:
                     fp_avg += traj_result['avg_fp']
                 else:
                     tp_avg += traj_result['avg_tp']
