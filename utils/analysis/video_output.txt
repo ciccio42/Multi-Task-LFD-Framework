@@ -1,0 +1,551 @@
+---- Step 262988/ ----
+['/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context0.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context1.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context10.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context11.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context12.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context13.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context14.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context15.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context16.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context17.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context18.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context19.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context2.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context20.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context21.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context22.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context23.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context24.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context25.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context26.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context27.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context28.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context29.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context3.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context30.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context31.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context32.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context33.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context34.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context35.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context36.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context37.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context38.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context39.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context4.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context40.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context41.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context42.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context43.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context44.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context45.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context46.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context47.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context48.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context49.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context5.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context50.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context51.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context52.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context53.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context54.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context55.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context56.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context57.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context58.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context59.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context6.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context60.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context61.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context62.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context63.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context64.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context65.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context66.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context67.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context68.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context69.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context7.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context70.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context71.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context72.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context73.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context74.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context75.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context76.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context77.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context78.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context79.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context8.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context80.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context81.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context82.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context83.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context84.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context85.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context86.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context87.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context88.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context89.pkl', '/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context9.pkl']
+Creating folder /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context0.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj0.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_0_traj_0.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context1.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj1.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_1_traj_1.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context10.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj10.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_10_traj_10.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context11.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj11.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_11_traj_11.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context12.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj12.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_12_traj_12.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context13.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj13.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_13_traj_13.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context14.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj14.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_14_traj_14.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context15.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj15.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_15_traj_15.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context16.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj16.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_16_traj_16.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context17.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj17.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_17_traj_17.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context18.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj18.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_18_traj_18.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context19.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj19.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_19_traj_19.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context2.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj2.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_2_traj_2.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context20.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj20.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_20_traj_20.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context21.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj21.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_21_traj_21.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context22.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj22.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_22_traj_22.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context23.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj23.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_23_traj_23.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context24.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj24.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_24_traj_24.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context25.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj25.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_25_traj_25.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context26.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj26.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_26_traj_26.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context27.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj27.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_27_traj_27.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context28.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj28.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_28_traj_28.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context29.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj29.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_29_traj_29.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context3.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj3.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_3_traj_3.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context30.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj30.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_30_traj_30.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context31.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj31.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_31_traj_31.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context32.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj32.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_32_traj_32.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context33.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj33.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_33_traj_33.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context34.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj34.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_34_traj_34.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context35.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj35.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_35_traj_35.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context36.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj36.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_36_traj_36.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context37.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj37.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_37_traj_37.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context38.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj38.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_38_traj_38.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context39.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj39.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_39_traj_39.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context4.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj4.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_4_traj_4.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context40.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj40.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_40_traj_40.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context41.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj41.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_41_traj_41.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context42.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj42.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_42_traj_42.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context43.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj43.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_43_traj_43.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context44.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj44.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_44_traj_44.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context45.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj45.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_45_traj_45.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context46.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj46.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_46_traj_46.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context47.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj47.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_47_traj_47.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context48.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj48.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_48_traj_48.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context49.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj49.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_49_traj_49.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context5.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj5.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_5_traj_5.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context50.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj50.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_50_traj_50.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context51.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj51.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_51_traj_51.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context52.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj52.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_52_traj_52.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context53.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj53.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_53_traj_53.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context54.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj54.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_54_traj_54.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context55.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj55.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_55_traj_55.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context56.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj56.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_56_traj_56.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context57.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj57.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_57_traj_57.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context58.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj58.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_58_traj_58.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context59.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj59.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_59_traj_59.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context6.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj6.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_6_traj_6.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context60.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj60.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_60_traj_60.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context61.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj61.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_61_traj_61.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context62.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj62.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_62_traj_62.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context63.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj63.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_63_traj_63.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context64.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj64.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_64_traj_64.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context65.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj65.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_65_traj_65.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context66.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj66.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_66_traj_66.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context67.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj67.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_67_traj_67.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context68.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj68.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_68_traj_68.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context69.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj69.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_69_traj_69.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context7.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj7.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_7_traj_7.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context70.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj70.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_70_traj_70.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context71.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj71.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_71_traj_71.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context72.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj72.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_72_traj_72.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context73.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj73.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_73_traj_73.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context74.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj74.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_74_traj_74.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context75.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj75.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_75_traj_75.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context76.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj76.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_76_traj_76.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/context77.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/traj77.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_nut_assembly/run_2/step-262988/video
+demo_77_traj_77.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_146_traj_146.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context147.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj147.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_147_traj_147.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context148.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj148.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_148_traj_148.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context149.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj149.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_149_traj_149.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context15.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj15.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_15_traj_15.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context150.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj150.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_150_traj_150.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context151.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj151.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_151_traj_151.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context152.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj152.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_152_traj_152.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context153.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj153.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_153_traj_153.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context154.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj154.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_154_traj_154.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context155.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj155.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_155_traj_155.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context156.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj156.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_156_traj_156.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context157.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj157.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_157_traj_157.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context158.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj158.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_158_traj_158.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context159.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj159.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_159_traj_159.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context16.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj16.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_16_traj_16.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context17.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj17.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_17_traj_17.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context18.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj18.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_18_traj_18.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context19.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj19.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_19_traj_19.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context2.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj2.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_2_traj_2.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context20.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj20.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_20_traj_20.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context21.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj21.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_21_traj_21.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context22.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj22.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_22_traj_22.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context23.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj23.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_23_traj_23.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context24.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj24.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_24_traj_24.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context25.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj25.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_25_traj_25.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context26.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj26.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_26_traj_26.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context27.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj27.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_27_traj_27.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context28.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj28.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_28_traj_28.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context29.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj29.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_29_traj_29.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context3.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj3.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_3_traj_3.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context30.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj30.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_30_traj_30.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context31.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj31.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_31_traj_31.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context32.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj32.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_32_traj_32.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context33.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj33.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_33_traj_33.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context34.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj34.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_34_traj_34.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context35.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj35.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_35_traj_35.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context36.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj36.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_36_traj_36.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context37.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj37.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_37_traj_37.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context38.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj38.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_38_traj_38.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context39.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj39.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_39_traj_39.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context4.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj4.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_4_traj_4.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context40.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj40.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_40_traj_40.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context41.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj41.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_41_traj_41.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context42.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj42.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_42_traj_42.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context43.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj43.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_43_traj_43.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context44.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj44.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_44_traj_44.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context45.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj45.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_45_traj_45.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context46.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj46.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_46_traj_46.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context47.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj47.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_47_traj_47.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context48.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj48.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_48_traj_48.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context49.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj49.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_49_traj_49.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context5.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj5.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_5_traj_5.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context50.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj50.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_50_traj_50.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context51.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj51.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_51_traj_51.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context52.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj52.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_52_traj_52.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context53.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj53.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_53_traj_53.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context54.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj54.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_54_traj_54.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context55.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj55.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_55_traj_55.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context56.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj56.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_56_traj_56.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context57.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj57.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_57_traj_57.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context58.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj58.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_58_traj_58.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context59.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj59.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_59_traj_59.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context6.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj6.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_6_traj_6.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context60.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj60.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_60_traj_60.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context61.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj61.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_61_traj_61.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context62.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj62.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_62_traj_62.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context63.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj63.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_63_traj_63.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context64.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj64.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_64_traj_64.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context65.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj65.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_65_traj_65.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context66.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj66.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_66_traj_66.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context67.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj67.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_67_traj_67.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context68.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj68.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_68_traj_68.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context69.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj69.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_69_traj_69.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context7.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj7.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_7_traj_7.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context70.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj70.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_70_traj_70.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context71.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj71.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_71_traj_71.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context72.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj72.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_72_traj_72.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context73.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj73.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_73_traj_73.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context74.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj74.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_74_traj_74.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context75.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj75.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_75_traj_75.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context76.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj76.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_76_traj_76.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context77.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj77.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_77_traj_77.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context78.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj78.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_78_traj_78.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context79.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj79.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_79_traj_79.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context8.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj8.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_8_traj_8.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context80.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj80.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_80_traj_80.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context81.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj81.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_81_traj_81.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context82.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj82.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_82_traj_82.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context83.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj83.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_83_traj_83.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context84.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj84.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_84_traj_84.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context85.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj85.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_85_traj_85.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context86.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj86.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_86_traj_86.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context87.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj87.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_87_traj_87.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context88.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj88.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_88_traj_88.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context89.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj89.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_89_traj_89.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context9.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj9.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_9_traj_9.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context90.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj90.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_90_traj_90.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context91.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj91.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_91_traj_91.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context92.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj92.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_92_traj_92.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context93.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj93.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_93_traj_93.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context94.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj94.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_94_traj_94.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context95.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj95.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_95_traj_95.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context96.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj96.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_96_traj_96.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context97.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj97.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_97_traj_97.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context98.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj98.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_98_traj_98.mp4
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/context99.pkl /user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/traj99.pkl
+/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Nut-Assembly-Pick-Place-100-180-Batch50/results_pick_place/run_2/step-253814/video
+demo_99_traj_99.mp4

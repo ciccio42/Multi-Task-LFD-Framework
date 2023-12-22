@@ -16,62 +16,17 @@ from torchvision import transforms
 from torchvision.transforms.functional import resized_crop
 import multi_task_il
 from torchvision.ops import box_iou
+from utils import *
 
-
-def find_number(name):
-    # return int(re.search(r"\d+", name).group())
-    # regex = r'(\d+)_(\d+)'
-    regex = r'(\d+)'
-    res = re.search(regex, name)
-    return res.group()
-
-# Define a custom sorting key function
-
-
-def sort_key(file_name):
-    # Extract the number X from the file name using a regular expression
-    pkl_name = file_name.split('/')[-1].split('.')[0]
-    match = find_number(pkl_name)
-    if match:
-        return match
-    else:
-        return 0  # Return 0 if the file name doesn't contain a number
-
-
-def torch_to_numpy(tensor):
-    # tensor = Normalize([-0.485/0.229, -0.456/0.224, -0.406/0.225],
-    #                    std=[1/0.229, 1/0.224, 1/0.225])(tensor)
-    tensor = torch.mul(tensor, 255)
-    # convert the tensor to a numpy array
-    numpy_array = tensor.cpu().numpy()
-    # transpose the numpy array to [y,h,w,c]
-    numpy_array_transposed = np.transpose(
-        numpy_array, (1, 3, 4, 2, 0))[:, :, :, :, 0]
-    return numpy_array_transposed
-
-
-def adjust_bb(bb, crop_params=[20, 25, 80, 75]):
-
-    x1_old, y1_old, x2_old, y2_old = bb
-    x1_old = int(x1_old)
-    y1_old = int(y1_old)
-    x2_old = int(x2_old)
-    y2_old = int(y2_old)
-
-    top, left = crop_params[0], crop_params[2]
-    img_height, img_width = 200, 360
-    box_h, box_w = img_height - top - \
-        crop_params[1], img_width - left - crop_params[3]
-
-    # Modify bb based on computed resized-crop
-    # 1. Take into account crop and resize
-    x_scale = 180/box_w
-    y_scale = 100/box_h
-    x1 = int((x1_old/x_scale)+left)
-    x2 = int((x2_old/x_scale)+left)
-    y1 = int((y1_old/y_scale)+top)
-    y2 = int((y2_old/y_scale)+top)
-    return [x1, y1, x2, y2]
+STATISTICS_CNTRS = {'reach_correct_obj': 0,
+                    'reach_wrong_obj': 0,
+                    'pick_correct_obj': 0,
+                    'pick_wrong_obj': 0,
+                    'pick_correct_obj_correct_place': 0,
+                    'pick_correct_obj_wrong_place': 0,
+                    'pick_wrong_obj_correct_place': 0,
+                    'pick_wrong_obj_wrong_place': 0,
+                    }
 
 
 def create_video_for_each_trj(base_path="/", task_name="pick_place"):
@@ -80,7 +35,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     results_folder = f"results_{task_name}"
 
     # Load config
-    config_path = os.path.join(base_path, "../../config.yaml")
+    config_path = os.path.join(base_path, "../../../config.yaml")
     # config_path = "/raid/home/frosa_Loc/checkpoint_save_folder/1Task-Pick-Place-100-180-BB-inference-Batch32/config.yaml"
     config = OmegaConf.load(config_path)
 
@@ -95,6 +50,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
         traj_files = glob.glob(os.path.join(step_path, "traj*.pkl"))
         traj_files.sort(key=sort_key)
         print(context_files)
+
         try:
             print("Creating folder {}".format(
                 os.path.join(step_path, "video")))
@@ -104,6 +60,22 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
             pass
         if len(context_files) != 0:
             for context_file, traj_file in zip(context_files, traj_files):
+
+                # open json file
+                try:
+                    json_file = traj_file.split('.')[-2]
+                    with open(f"{json_file}.json", "rb") as f:
+                        traj_result = json.load(f)
+                except:
+                    pass
+
+                if traj_result['success'] == 1:
+                    STATISTICS_CNTRS['pick_correct_obj_correct_place'] += 1
+                if traj_result['reached'] == 1:
+                    STATISTICS_CNTRS['reach_correct_obj'] += 1
+                if traj_result['picked'] == 1:
+                    STATISTICS_CNTRS['pick_correct_obj'] += 1
+
                 print(context_file, traj_file)
                 with open(context_file, "rb") as f:
                     context_data = pickle.load(f)
@@ -135,6 +107,14 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 iou = []
                 predicted_bb = False
                 for t, step in enumerate(traj_data):
+
+                    if reach(obs=step["obs"], task_name=task_name):
+                        pass
+                    if pick(obs=step["obs"], task_name=task_name):
+                        pass
+                    if place(obs=step["obs"], task_name=task_name):
+                        pass
+
                     if 'camera_front_image' in traj_data.get(t)["obs"].keys():
                         traj_frames.append(step["obs"]['camera_front_image'])
                     else:
@@ -260,14 +240,14 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                             (int(gt_bb_t[0]),
                              int(gt_bb_t[1])),
                             (int(gt_bb_t[2]),
-                                int(gt_bb_t[3])),
+                             int(gt_bb_t[3])),
                             (0, 255, 0), 1))
                         traj_frame = np.array(cv2.rectangle(
                             traj_frame,
                             (int(bb[0]),
                              int(bb[1])),
                             (int(bb[2]),
-                                int(bb[3])),
+                             int(bb[3])),
                             (0, 0, 255), 1))
 
                         if len(activation_map) != 0:
@@ -431,14 +411,14 @@ def read_results(base_path="/", task_name="pick_place"):
                                     (int(bb[0]),
                                      int(bb[1])),
                                     (int(bb[2]),
-                                        int(bb[3])),
+                                     int(bb[3])),
                                     (0, 0, 255), 1))
                                 traj_frame = np.array(cv2.rectangle(
                                     traj_frame,
                                     (int(gt_bb_t[0]),
                                      int(gt_bb_t[1])),
                                     (int(gt_bb_t[2]),
-                                        int(gt_bb_t[3])),
+                                     int(gt_bb_t[3])),
                                     (0, 255, 0), 1))
                                 cv2.imwrite(
                                     f"debug/{traj_file.split('/')[-1].split('.')[0]}_{t}.png", traj_frame)
