@@ -35,12 +35,15 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     results_folder = f"results_{task_name}"
 
     # Load config
-    config_path = os.path.join(base_path, "../../../config.yaml")
-    # config_path = "/raid/home/frosa_Loc/checkpoint_save_folder/1Task-Pick-Place-100-180-BB-inference-Batch32/config.yaml"
-    config = OmegaConf.load(config_path)
+    # config_path = os.path.join(base_path, "../../../config.yaml")
+
+    # config_path = "/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Pick-Place-Nut-Assembly-Mosaic-100-180-Target-Obj-Detector-BB-Batch50/config.yaml"
+    # config = OmegaConf.load(config_path)
 
     # step_pattern = os.path.join(base_path, results_folder, "step-*")
     step_pattern = base_path
+    adjust = False
+    flip_channels = False
     for step_path in glob.glob(step_pattern):
 
         step = step_path.split("-")[-1]
@@ -69,11 +72,11 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 except:
                     pass
 
-                if traj_result['success'] == 1:
+                if traj_result.get('success', 0) == 1:
                     STATISTICS_CNTRS['pick_correct_obj_correct_place'] += 1
-                if traj_result['reached'] == 1:
+                if traj_result.get('reached', 0) == 1:
                     STATISTICS_CNTRS['reach_correct_obj'] += 1
-                if traj_result['picked'] == 1:
+                if traj_result.get('picked', 0) == 1:
                     STATISTICS_CNTRS['pick_correct_obj'] += 1
 
                 print(context_file, traj_file)
@@ -108,12 +111,12 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 predicted_bb = False
                 for t, step in enumerate(traj_data):
 
-                    if reach(obs=step["obs"], task_name=task_name):
-                        pass
-                    if pick(obs=step["obs"], task_name=task_name):
-                        pass
-                    if place(obs=step["obs"], task_name=task_name):
-                        pass
+                    # if reach(obs=step["obs"], task_name=task_name):
+                    #     pass
+                    # if pick(obs=step["obs"], task_name=task_name):
+                    #     pass
+                    # if place(obs=step["obs"], task_name=task_name):
+                    #     pass
 
                     if 'camera_front_image' in traj_data.get(t)["obs"].keys():
                         traj_frames.append(step["obs"]['camera_front_image'])
@@ -153,11 +156,11 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                         activation_map.append(
                             traj_data.get(t)["obs"]['activation_map'])
                 # get predicted slot
-                predicted_slot = []
-                if 'info' in traj_data.get(0):
-                    for i in range(1, len(traj_data)):
-                        predicted_slot.append(
-                            np.argmax(traj_data.get(i)['info']['target_pred']))
+                # predicted_slot = []
+                # if 'info' in traj_data.get(0):
+                #     for i in range(1, len(traj_data)):
+                #         predicted_slot.append(
+                #             np.argmax(traj_data.get(i)['info']['target_pred']))
 
                 number_of_context_frames = len(context_frames)
                 demo_height, demo_width, _ = context_frames[0].shape
@@ -226,15 +229,21 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 for i, traj_frame in enumerate(traj_frames):
                     # and len(bb_frames) >= i+1:
                     if len(bb_frames) != 0 and i > 0 and len(bb_frames) >= i+1:
+
                         if len(bb_frames[i-1]) == 4:
-                            bb = adjust_bb(bb_frames[i-1])
+                            bb = adjust_bb(
+                                bb_frames[i-1]) if adjust else bb_frames[i-1]
                             if len(gt_bb[i-1]) == 4:
-                                gt_bb_t = adjust_bb(gt_bb[i-1])
+                                gt_bb_t = adjust_bb(
+                                    gt_bb[i-1]) if adjust else gt_bb[i-1]
                             else:
-                                gt_bb_t = adjust_bb(gt_bb[i-1][0])
+                                gt_bb_t = adjust_bb(
+                                    gt_bb[i-1][0]) if adjust else gt_bb[i-1][0]
                         else:
-                            bb = adjust_bb(bb_frames[i-1][0])
-                            gt_bb_t = adjust_bb(gt_bb[i-1][0])
+                            bb = adjust_bb(
+                                bb_frames[i-1][0]) if adjust else bb_frames[i-1][0]
+                            gt_bb_t = adjust_bb(
+                                gt_bb[i-1][0]) if adjust else gt_bb[i-1][0]
                         traj_frame = np.array(cv2.rectangle(
                             traj_frame,
                             (int(gt_bb_t[0]),
@@ -253,12 +262,12 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                         if len(activation_map) != 0:
                             activation_map_t = activation_map[i-1]
 
-                        if i != len(traj_frames)-1 and len(predicted_slot) != 0:
-                            cv2.putText(traj_frame,  res_string, (0, 80), font,
-                                        font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                            cv2.putText(traj_frame,  f"Predicted slot {predicted_slot[i]}", (
-                                0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                        elif predicted_bb:
+                        # if i != len(traj_frames)-1 and len(predicted_slot) != 0:
+                        #     cv2.putText(traj_frame,  res_string, (0, 80), font,
+                        #                 font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                        #     cv2.putText(traj_frame,  f"Predicted slot {predicted_slot[i]}", (
+                        #         0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                        if predicted_bb:
                             cv2.putText(traj_frame,
                                         f"Conf-Score {round(float(predicted_conf_score[i-1]), 2)} - IoU {round(float(iou[i-1]), 2)}",
                                         (100, 180),
@@ -272,8 +281,11 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                             cv2.putText(output_frame,  res_string, (0, 99), font,
                                         font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
 
+                    if flip_channels:
+                        traj_frame = traj_frame[:, :, ::-1]
+
                     output_frame = cv2.hconcat(
-                        [new_image, traj_frame[:, :, ::-1]])
+                        [new_image, traj_frame])
                     cv2.putText(output_frame,  res_string, (0, 99), font,
                                 font_scale, (255, 0, 0), thickness, cv2.LINE_AA)
                     cv2.imwrite("frame.png", output_frame)

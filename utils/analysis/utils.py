@@ -19,15 +19,14 @@ OBJECT_DISTRIBUTION = {
     }
 }
 
-ENV_OBJECTS = {
-    'pick_place': {
-        'obj_names': ['greenbox', 'yellowbox', 'bluebox', 'redbox'],
-        # 'bin_dimension':
-    },
-    'nut_assembly': {
-        'obj_names': ['nut0', 'nut1', 'nut2'],
-    }
-}
+ENV_OBJECTS = {}
+
+
+def find_obj_names(obs, task_name):
+    ENV_OBJECTS[task_name] = dict()
+
+    for obs_name in obs.keys():
+        pass
 
 
 def find_number(name):
