@@ -35,15 +35,15 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     results_folder = f"results_{task_name}"
 
     # Load config
-    # config_path = os.path.join(base_path, "../../../config.yaml")
+    config_path = os.path.join(base_path, "../../../config.yaml")
 
     # config_path = "/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Pick-Place-Nut-Assembly-Mosaic-100-180-Target-Obj-Detector-BB-Batch50/config.yaml"
-    # config = OmegaConf.load(config_path)
+    config = OmegaConf.load(config_path)
 
     # step_pattern = os.path.join(base_path, results_folder, "step-*")
     step_pattern = base_path
-    adjust = False
-    flip_channels = False
+    adjust = False if "Real" in base_path else True
+    flip_channels = False if "Real" in base_path else True
     for step_path in glob.glob(step_pattern):
 
         step = step_path.split("-")[-1]
@@ -232,18 +232,23 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
 
                         if len(bb_frames[i-1]) == 4:
                             bb = adjust_bb(
-                                bb_frames[i-1]) if adjust else bb_frames[i-1]
+                                bb=bb_frames[i-1],
+                                crop_params=config['tasks_cfgs'][task_name]['crop']) if adjust else bb_frames[i-1]
                             if len(gt_bb[i-1]) == 4:
                                 gt_bb_t = adjust_bb(
-                                    gt_bb[i-1]) if adjust else gt_bb[i-1]
+                                    bb=gt_bb[i-1],
+                                    crop_params=config['tasks_cfgs'][task_name]['crop']) if adjust else gt_bb[i-1]
                             else:
                                 gt_bb_t = adjust_bb(
-                                    gt_bb[i-1][0]) if adjust else gt_bb[i-1][0]
+                                    bb=gt_bb[i-1][0],
+                                    crop_params=config['tasks_cfgs'][task_name]['crop']) if adjust else gt_bb[i-1][0]
                         else:
                             bb = adjust_bb(
-                                bb_frames[i-1][0]) if adjust else bb_frames[i-1][0]
+                                bb=bb_frames[i-1][0],
+                                crop_params=config['tasks_cfgs'][task_name]['crop']) if adjust else bb_frames[i-1][0]
                             gt_bb_t = adjust_bb(
-                                gt_bb[i-1][0]) if adjust else gt_bb[i-1][0]
+                                bb=gt_bb[i-1][0],
+                                crop_params=config['tasks_cfgs'][task_name]['crop']) if adjust else gt_bb[i-1][0]
                         traj_frame = np.array(cv2.rectangle(
                             traj_frame,
                             (int(gt_bb_t[0]),
@@ -412,12 +417,15 @@ def read_results(base_path="/", task_name="pick_place"):
                                 else:
                                     fp_post_picking += 1
 
-                                bb = adjust_bb(traj_data.get(
-                                    t)['obs']['predicted_bb'][0])
+                                bb = adjust_bb(
+                                    bb=traj_data.get(
+                                        t)['obs']['predicted_bb'][0],
+                                    crop_params=None)
                                 gt_bb_t = adjust_bb(
-                                    traj_data.get(t)['obs']['gt_bb'][0])
+                                    bb=traj_data.get(t)['obs']['gt_bb'][0],
+                                    crop_params=None)
                                 traj_frame = np.array(traj_data.get(
-                                    t)['obs']['camera_front_image'][:, :, ::-1])
+                                    t)['obs']['camera_front_image'])  # [:, :, ::-1])
                                 traj_frame = np.array(cv2.rectangle(
                                     traj_frame,
                                     (int(bb[0]),

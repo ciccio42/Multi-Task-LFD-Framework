@@ -38,8 +38,9 @@ ACTION_DISTRIBUTION = {
     4: [],
     5: [],
     6: [],
-    7: [],
 }
+
+max_len_trj = 0
 
 
 def normalize_action(action, n_action_bin, action_ranges, continous=False):
@@ -193,7 +194,7 @@ if __name__ == "__main__":
     else:
         for task_var, dir in enumerate(sorted(task_paths)):
 
-            if os.path.isdir(os.path.join(args.task_path, dir)):
+            if os.path.isdir(dir):  # os.path.join(args.task_path, dir)):
                 # assert len(trjs) == 100, print(f"{os.path.join(args.task_path, dir)} does not have 100 trjs")
                 trj_paths = glob.glob(os.path.join(dir, 'traj*.pkl'))
                 norm_action = []
@@ -220,6 +221,8 @@ if __name__ == "__main__":
                         obj_in_hand = 0
                         start_moving = 0
                         end_moving = 0
+                        if len(trajectory_obj) > max_len_trj:
+                            max_len_trj = len(trajectory_obj)
                         for t in range(len(trajectory_obj)):
                             if t > 0:
                                 logger.debug(f"Time-step {t}")
@@ -237,3 +240,5 @@ if __name__ == "__main__":
 
         for indx, action_dim in enumerate(ACTION_DISTRIBUTION.values()):
             print(f"Dim {indx} - Min {min(action_dim)} - Max {max(action_dim)}")
+
+        print(f"Max len trj {max_len_trj}")
