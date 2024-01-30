@@ -40,6 +40,8 @@ ACTION_DISTRIBUTION = {
     6: [],
 }
 
+TABLE_SIZE = [100, 100]  # cmxcm
+
 max_len_trj = 0
 
 
@@ -99,6 +101,7 @@ if __name__ == "__main__":
                 # assert len(trjs) == 100, print(f"{os.path.join(args.task_path, dir)} does not have 100 trjs")
                 trj_paths = glob.glob(os.path.join(dir, 'traj*.pkl'))
                 norm_action = []
+                action = []
                 for j, trj in enumerate(sorted(trj_paths)):
 
                     task_distribution[task_var][j] = list()
@@ -130,12 +133,15 @@ if __name__ == "__main__":
                                     action_t = trajectory_obj.get(t)[
                                         'action']
                                     task_distribution[task_var][j].append(
-                                        normalize_action(action=action_t,
-                                                         n_action_bin=256,
-                                                         action_ranges=NORM_RANGES))
+                                        action_t)
+                                    # task_distribution[task_var][j].append(
+                                    #     normalize_action(action=action_t,
+                                    #                      n_action_bin=256,
+                                    #                      action_ranges=NORM_RANGES))
                                     norm_action.append(normalize_action(action=action_t,
                                                                         n_action_bin=256,
                                                                         action_ranges=NORM_RANGES))
+                                    action.append(action_t)
                                     # for dim, action_label in enumerate(action_t):
                                     #     ACTION_DISTRIBUTION[dim].append(
                                     #         action_label)
@@ -146,36 +152,76 @@ if __name__ == "__main__":
                                     print("error")
         # Compute mean and std-deviation
         norm_action_matrix = np.array(norm_action).reshape(len(norm_action), 7)
+        action_matrix = np.array(action).reshape(len(action), 7)
         print(
             f"Standard deviation {np.std(np.array(norm_action_matrix), axis=0)}")
         print(f"Standard mean {np.mean(np.array(norm_action_matrix), axis=0)}")
+
+        # each px is a square 0.2x0.2 cm
+        px_resolution = 0.5
+        table_size_px = np.array(
+            np.array(TABLE_SIZE)/px_resolution, dtype=np.int32)
+        table_map = np.zeros(list(table_size_px))
+
         for variation in task_distribution.keys():
             print(variation)
-            # Plot y-axis trajectories for each variation
-            fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(
-                16, 9))
-            fig.tight_layout(pad=5.0)
+
             for trj in task_distribution[variation].keys():
+                # from m to cm, divide per pixel resolution
+                # for action_t in task_distribution[variation][trj]:
+                #     print(action_t[:2])
                 trajectory = np.array(
-                    [action_t[:3] for action_t in task_distribution[variation][trj]])
+                    [np.array(((action_t[:2]*100)/px_resolution), dtype=np.int32) for action_t in task_distribution[variation][trj]])
+                positive_flags_x = trajectory[:, 0] > 0
+                negative_flags_x = trajectory[:, 0] <= 0
+                positive_flags_y = trajectory[:, 1] > 0
+                negative_flags_y = trajectory[:, 1] <= 0
 
-                t = np.array([i for i in range(len(trajectory))])
-                ax1.plot(t, trajectory[:, 0], color='b', alpha=0.5)
-                ax1.set_title(f"Trajectory distribution along x axis")
-                ax1.set_xlabel("Timestamp t")
-                ax1.set_ylabel("scaled x value")
+                trajectory[:, 0][positive_flags_x] = int(
+                    table_map.shape[0]/2) - trajectory[:, 0][positive_flags_x]
+                trajectory[:, 0][negative_flags_x] = -trajectory[:, 0][negative_flags_x] + int(
+                    table_map.shape[0]/2)
+                trajectory[:, 1][positive_flags_y] = int(
+                    table_map.shape[0]/2) - trajectory[:, 1][positive_flags_y]
+                trajectory[:, 1][negative_flags_y] = -trajectory[:, 1][negative_flags_y] + \
+                    int(table_map.shape[0]/2)
 
-                ax2.plot(t, trajectory[:, 1], color='b', alpha=0.5)
-                ax2.set_title(f"Trajectory distribution along y axis")
-                ax2.set_xlabel("Timestamp t")
-                ax2.set_ylabel("scaled y value")
+                table_map[trajectory[:, 0], trajectory[:, 1]] += 1
 
-                ax3.plot(t, trajectory[:, 2], color='b', alpha=0.5)
-                ax3.set_title(f"Trajectory distribution along z axis")
-                ax3.set_xlabel("Timestamp t")
-                ax3.set_ylabel("scaled z value")
+        plt.title(
+            f"Heatmap of x-y plane trajectories")
+        plt.xlabel("Y table axis")
+        plt.ylabel("X table axis")
+        plt.imshow(table_map)
+        plt.savefig(f"{task_name}_heatmap.png")
 
-            plt.savefig(f"{task_name}_variation_{variation}.png")
+        # for variation in task_distribution.keys():
+        #     print(variation)
+        #     # Plot y-axis trajectories for each variation
+        #     fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(
+        #         16, 9))
+        #     fig.tight_layout(pad=5.0)
+        #     for trj in task_distribution[variation].keys():
+        #         trajectory = np.array(
+        #             [action_t[:3] for action_t in task_distribution[variation][trj]])
+
+        #         t = np.array([i for i in range(len(trajectory))])
+        #         ax1.plot(t, trajectory[:, 0], color='b', alpha=0.5)
+        #         ax1.set_title(f"Trajectory distribution along x axis")
+        #         ax1.set_xlabel("Timestamp t")
+        #         ax1.set_ylabel("scaled x value")
+
+        #         ax2.plot(t, trajectory[:, 1], color='b', alpha=0.5)
+        #         ax2.set_title(f"Trajectory distribution along y axis")
+        #         ax2.set_xlabel("Timestamp t")
+        #         ax2.set_ylabel("scaled y value")
+
+        #         ax3.plot(t, trajectory[:, 2], color='b', alpha=0.5)
+        #         ax3.set_title(f"Trajectory distribution along z axis")
+        #         ax3.set_xlabel("Timestamp t")
+        #         ax3.set_ylabel("scaled z value")
+
+        #     plt.savefig(f"{task_name}_variation_{variation}.png")
 
         # An "interface" to matplotlib.axes.Axes.hist() method
         # for dim, key in enumerate(ACTION_DISTRIBUTION.keys()):
