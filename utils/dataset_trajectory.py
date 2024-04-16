@@ -18,9 +18,10 @@ MAX_DIST = 10
 MIN_DIST = 0.01
 
 # object_to_id = {"milk": 0, "bread": 1, "cereal": 2, "can": 3}
-object_to_id = {"greenbox": 0, "yellowbox": 1, "bluebox": 2, "redbox": 3}
-# object_to_id = {"round-nut": 0, "round-nut-2": 1, "round-nut-3": 2}
-TASK_NAME = "pick_place"
+# object_to_id = {"greenbox": 0, "yellowbox": 1, "bluebox": 2, "redbox": 3}
+# object_to_id = {"milk": 0, "bread": 1, "cereal": 2, "can": 3}
+object_to_id = {"round-nut": 0, "round-nut-2": 1, "round-nut-3": 2}
+TASK_NAME = "nut_assembly"
 
 RANGES = np.array(
     [[-0.3, 0.3], [-0.3, 0.3], [0.82, 1.2], [-5, 5], [-5, 5], [-5, 5]])
@@ -55,15 +56,15 @@ def build_tvf_formatter():
 
         obs = ToTensor()(img.copy())
         cv2.imwrite(f"{img_name}.png",
-                    np.moveaxis(obs.numpy(), 0, -1)*255)
+                    np.moveaxis(obs.numpy()[:, :, ::-1], 0, -1)*255)
         obs = resized_crop(obs, top=top, left=left, height=box_h, width=box_w,
                            size=(height, width), antialias=True)
         cv2.imwrite(f"{img_name}_cropped.png",
-                    np.moveaxis(obs.numpy(), 0, -1)*255)
+                    np.moveaxis(obs.numpy()[:, :, ::-1], 0, -1)*255)
         # obs = Normalize(mean=[0.485, 0.456, 0.406],
         #                 std=[0.229, 0.224, 0.225])(obs)
         cv2.imwrite(f"{img_name}_normalized.png",
-                    np.moveaxis(obs.numpy(), 0, -1)*255)
+                    np.moveaxis(obs.numpy()[:, :, ::-1], 0, -1)*255)
 
         return obs
     return resize_crop
@@ -104,7 +105,9 @@ def write_frame(rgb_video_writer, depth_video_writer, camera_name, obs, str):
             cv2.putText(image_rgb, str, (0, 99), font, font_scale,
                         (0, 255, 0), thickness, cv2.LINE_AA)
     else:
-        image_rgb = np.array(obs[f"{camera_name}_image"])  # [:, :, ::-1])
+        cv2.imwrite("original.png", obs[f"{camera_name}_image"])
+        cv2.imwrite("original_rgb.png", obs[f"{camera_name}_image"][..., ::-1])
+        image_rgb = np.array(obs[f"{camera_name}_image"][..., ::-1]).copy()
         # if camera_name == 'camera_lateral_right':
         #     cv2.imshow(f"'camera_front_image'", image_rgb)
         #     cv2.waitKey(100)
@@ -116,22 +119,32 @@ def write_frame(rgb_video_writer, depth_video_writer, camera_name, obs, str):
         #     cv2.putText(image_rgb, str, (0, 99), font, font_scale,
         #                 (0, 255, 0), thickness, cv2.LINE_AA)
 
-    if 'target-object' in obs.keys() and (camera_name != 'eye_in_hand' and camera_name != 'image'):
-        target_obj_id = obs['target-object']
-        target_obj_bb = None
-        for object_names in object_to_id.keys():
-            if target_obj_id == object_to_id[object_names]:
+    if (camera_name != 'eye_in_hand' and camera_name != 'image'):
+
+        if TASK_NAME != "button":
+            target_obj_bb = None
+            if TASK_NAME != 'stack_block':
+                target_obj_id = obs['target-object']
+                for object_names in object_to_id.keys():
+                    if target_obj_id == object_to_id[object_names]:
+                        target_obj_bb = obs['obj_bb'][camera_name.split('_image')[
+                            0]][object_names]
+            else:
                 target_obj_bb = obs['obj_bb'][camera_name.split('_image')[
-                    0]][object_names]
+                    0]]["cubeA"]
+        else:
+            target_obj_bb = obs['target-object']
+            target_obj_bb = obs['obj_bb'][camera_name.split('_image')[
+                0]][target_obj_bb]
 
         center = target_obj_bb['center']
         upper_left_corner = target_obj_bb['upper_left_corner']
         bottom_right_corner = target_obj_bb['bottom_right_corner']
-        image_rgb = cv2.circle(
-            image_rgb, center, radius=1, color=(0, 0, 255), thickness=-1)
-        image_rgb = cv2.rectangle(
-            image_rgb, upper_left_corner,
-            bottom_right_corner, (255, 0, 0), 1)
+        # image_rgb = cv2.circle(
+        #     image_rgb, center, radius=1, color=(0, 0, 255), thickness=-1)
+        # image_rgb = cv2.rectangle(
+        #     image_rgb, upper_left_corner,
+        #     bottom_right_corner, (255, 0, 0), 1)
 
         if 'pick_place' in TASK_NAME:
             try:
@@ -140,11 +153,11 @@ def write_frame(rgb_video_writer, depth_video_writer, camera_name, obs, str):
                 center = bin_bb['center']
                 upper_left_corner = bin_bb['upper_left_corner']
                 bottom_right_corner = bin_bb['bottom_right_corner']
-                image_rgb = cv2.circle(
-                    image_rgb, center, radius=1, color=(0, 0, 255), thickness=-1)
-                image_rgb = cv2.rectangle(
-                    image_rgb, upper_left_corner,
-                    bottom_right_corner, (255, 0, 0), 1)
+                # image_rgb = cv2.circle(
+                #     image_rgb, center, radius=1, color=(0, 0, 255), thickness=-1)
+                # image_rgb = cv2.rectangle(
+                #     image_rgb, upper_left_corner,
+                #     bottom_right_corner, (255, 0, 0), 1)
             except:
                 pass
 
@@ -198,23 +211,24 @@ if __name__ == "__main__":
 
             TASK_DICT[args.task_path][dir] = 0.0
             for j, trj in enumerate(sorted(trj_paths)):
+                # if j == 0 or j == 10:
                 with open(trj, "rb") as f:
                     sample = pickle.load(f)
                 TASK_DICT[args.task_path][dir] += len(sample['traj'])
 
                 if True:
                     print(trj)
-                    try:
-                        os.makedirs(os.path.join(args.task_path,
-                                                 "video",
-                                                 dir.split('/')[-1],
-                                                 trj.split("/")[-1].split(".")[0]))
-                    except:
-                        pass
+
+                    os.makedirs(os.path.join(args.task_path,
+                                             "video",
+                                             dir.split('/')[-1],
+                                             trj.split("/")[-1].split(".")[0]), exist_ok=True)
+
                     saving_dir = os.path.join(args.task_path,
                                               "video",
                                               dir.split('/')[-1],
-                                              trj.split("/")[-1].split(".")[0],
+                                              trj.split(
+                                                  "/")[-1].split(".")[0],
                                               trj.split("/")[-1])
                     print(f"Saving dir {saving_dir}")
                     saving_dir_img = os.path.join(args.task_path,
@@ -273,7 +287,7 @@ if __name__ == "__main__":
                         for t in range(len(trajectory_obj)):
                             logger.debug(f"Time-step {t}")
                             # task description
-                            TASK_NAME = args.task_path.split('/')[-2]
+                            # TASK_NAME = args.task_path.split('/')[-2]
                             # sub_task =  dir.split("_")[-1]
                             if t != 0 and 'status' in trajectory_obj.get(t)['info'].keys():
                                 status = trajectory_obj[t]['info']['status']
@@ -312,7 +326,7 @@ if __name__ == "__main__":
                                     os.makedirs(saving_dir_img)
                                 except:
                                     pass
-                                # [:, :, ::-1]
+                                #
                                 obs = trajectory_obj[t]['obs']['camera_front_image']
                                 img_name = os.path.join(
                                     saving_dir_img, f"{t}")
@@ -320,7 +334,7 @@ if __name__ == "__main__":
                             if t != 0 and 'status' in trajectory_obj.get(t)['info'].keys():
                                 if trajectory_obj.get(t)['info']['status'] == 'obj_in_hand' and obj_in_hand == 0:
                                     obj_in_hand = 1
-                                    # [:, :, ::-1]
+                                    #
                                     obs = trajectory_obj[t]['obs']['camera_front_image']
                                     img_name = os.path.join(
                                         saving_dir_img, f"{t}")
@@ -332,17 +346,17 @@ if __name__ == "__main__":
                                     middle_moving_t = start_moving + \
                                         int((end_moving-start_moving)/2)
                                     obs = trajectory_obj.get(middle_moving_t)[
-                                        'obs']['camera_front_image']  # [:, :, ::-1]
+                                        'obs']['camera_front_image']
                                     img_name = os.path.join(
                                         saving_dir_img, f"{middle_moving_t}")
                                     img_formatter(img_name, obs)
                                 if t == len(trajectory_obj)-1:
-                                    # [:, :, ::-1]
+                                    #
                                     obs = trajectory_obj[t]['obs']['camera_front_image']
                                     img_name = os.path.join(
                                         saving_dir_img, f"{t}")
                                     img_formatter(img_name, obs)
-                        cv2.destroyAllWindows()
+                        # cv2.destroyAllWindows()
                         front_video_rgb.release()
                         if right_video_rgb != None:
                             right_video_rgb.release()

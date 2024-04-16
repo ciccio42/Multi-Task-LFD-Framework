@@ -23,13 +23,18 @@ MIN_DIST = 0.01
 object_to_id = {"greenbox": 0, "yellowbox": 1, "bluebox": 2, "redbox": 3}
 
 # x, y, z, e_x, e_y, e_z
-NORM_RANGES = np.array([[-0.35,  0.35],
-                        [-0.35,  0.35],
-                        [0.60,  1.20],
-                        [-3.14,  3.14911766],
+# NORM_RANGES = np.array([[-0.35,  0.35],
+#                         [-0.35,  0.35],
+#                         [0.60,  1.20],
+#                         [-3.14,  3.14911766],
+#                         [-3.14911766, 3.14911766],
+#                         [-3.14911766,  3.14911766]])
+NORM_RANGES = np.array([[-0.40,  0.40],
+                        [0.10,  0.90],
+                        [-0.20,  0.20],
+                        [-3.14911766,  3.14911766],
                         [-3.14911766, 3.14911766],
                         [-3.14911766,  3.14911766]])
-
 ACTION_DISTRIBUTION = {
     0: [],
     1: [],
@@ -138,6 +143,12 @@ if __name__ == "__main__":
                                     #     normalize_action(action=action_t,
                                     #                      n_action_bin=256,
                                     #                      action_ranges=NORM_RANGES))
+                                    rot_quat = quat2axisangle(action_t[3:7])
+                                    action_list = list()
+                                    action_list.extend(action_t[:3])
+                                    action_list.extend(rot_quat)
+                                    action_list.extend([action_t[-1]])
+                                    action_t = np.array(action_list)
                                     norm_action.append(normalize_action(action=action_t,
                                                                         n_action_bin=256,
                                                                         action_ranges=NORM_RANGES))
@@ -195,48 +206,48 @@ if __name__ == "__main__":
         plt.imshow(table_map)
         plt.savefig(f"{task_name}_heatmap.png")
 
-        # for variation in task_distribution.keys():
-        #     print(variation)
-        #     # Plot y-axis trajectories for each variation
-        #     fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(
-        #         16, 9))
-        #     fig.tight_layout(pad=5.0)
-        #     for trj in task_distribution[variation].keys():
-        #         trajectory = np.array(
-        #             [action_t[:3] for action_t in task_distribution[variation][trj]])
+        for variation in task_distribution.keys():
+            print(variation)
+            # Plot y-axis trajectories for each variation
+            fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(
+                16, 9))
+            fig.tight_layout(pad=5.0)
+            for trj in task_distribution[variation].keys():
+                trajectory = np.array(
+                    [action_t[:3] for action_t in task_distribution[variation][trj]])
 
-        #         t = np.array([i for i in range(len(trajectory))])
-        #         ax1.plot(t, trajectory[:, 0], color='b', alpha=0.5)
-        #         ax1.set_title(f"Trajectory distribution along x axis")
-        #         ax1.set_xlabel("Timestamp t")
-        #         ax1.set_ylabel("scaled x value")
+                t = np.array([i for i in range(len(trajectory))])
+                ax1.plot(t, trajectory[:, 0], color='b', alpha=0.5)
+                ax1.set_title(f"Trajectory distribution along x axis")
+                ax1.set_xlabel("Timestamp t")
+                ax1.set_ylabel("scaled x value")
 
-        #         ax2.plot(t, trajectory[:, 1], color='b', alpha=0.5)
-        #         ax2.set_title(f"Trajectory distribution along y axis")
-        #         ax2.set_xlabel("Timestamp t")
-        #         ax2.set_ylabel("scaled y value")
+                ax2.plot(t, trajectory[:, 1], color='b', alpha=0.5)
+                ax2.set_title(f"Trajectory distribution along y axis")
+                ax2.set_xlabel("Timestamp t")
+                ax2.set_ylabel("scaled y value")
 
-        #         ax3.plot(t, trajectory[:, 2], color='b', alpha=0.5)
-        #         ax3.set_title(f"Trajectory distribution along z axis")
-        #         ax3.set_xlabel("Timestamp t")
-        #         ax3.set_ylabel("scaled z value")
+                ax3.plot(t, trajectory[:, 2], color='b', alpha=0.5)
+                ax3.set_title(f"Trajectory distribution along z axis")
+                ax3.set_xlabel("Timestamp t")
+                ax3.set_ylabel("scaled z value")
 
-        #     plt.savefig(f"{task_name}_variation_{variation}.png")
+            plt.savefig(f"{task_name}_variation_{variation}.png")
 
         # An "interface" to matplotlib.axes.Axes.hist() method
-        # for dim, key in enumerate(ACTION_DISTRIBUTION.keys()):
-        #     n, bins, patches = plt.hist(x=ACTION_DISTRIBUTION[key], bins=256, color='#0504aa',
-        #                                 alpha=0.7, rwidth=0.85)
-        #     plt.grid(axis='y', alpha=0.75)
-        #     plt.xlabel('Value')
-        #     plt.ylabel('Frequency')
-        #     plt.title('Action Distribution')
-        #     maxfreq = n.max()
-        #     # Set a clean upper y-axis limit.
-        #     plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq %
-        #              10 else maxfreq + 10)
-        #     plt.savefig(f"dim_{dim}.png")
-        #     plt.clf()
+        for dim, key in enumerate(ACTION_DISTRIBUTION.keys()):
+            n, bins, patches = plt.hist(x=ACTION_DISTRIBUTION[key], bins=256, color='#0504aa',
+                                        alpha=0.7, rwidth=0.85)
+            plt.grid(axis='y', alpha=0.75)
+            plt.xlabel('Value')
+            plt.ylabel('Frequency')
+            plt.title('Action Distribution')
+            maxfreq = n.max()
+            # Set a clean upper y-axis limit.
+            plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq %
+                     10 else maxfreq + 10)
+            plt.savefig(f"dim_{dim}.png")
+            plt.clf()
     else:
         for task_var, dir in enumerate(sorted(task_paths)):
 
@@ -275,12 +286,16 @@ if __name__ == "__main__":
                                 # try:
                                 action_t = trajectory_obj.get(t)[
                                     'action']
-                                rot_quat = quat2axisangle(action_t[3:7])
-                                action = np.concatenate(
-                                    (action_t[:3], rot_quat, [action_t[7]]))
-                                for dim, action_label in enumerate(action):
-                                    ACTION_DISTRIBUTION[dim].append(
-                                        action_label)
+                                next_action_t = trajectory_obj.get(t+5)[
+                                    'action']
+                                print(
+                                    f"Position {action_t[:3] - next_action_t[:3]}\n{next_action_t[7]}")
+                                # rot_quat = quat2axisangle(action_t[3:7])
+                                # action = np.concatenate(
+                                #     (action_t[:3], rot_quat, [action_t[7]]))
+                                # for dim, action_label in enumerate(action):
+                                #     ACTION_DISTRIBUTION[dim].append(
+                                #         action_label)
                                 # except KeyError:
                                 #     print("error")
 
