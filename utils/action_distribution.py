@@ -11,7 +11,7 @@ from torchvision.transforms import ToTensor, Normalize
 from torchvision.transforms.functional import resized_crop
 import matplotlib.pyplot as plt
 from collections import OrderedDict
-from robosuite.utils.transform_utils import quat2axisangle
+from robosuite.utils.transform_utils import quat2axisangle, axisangle2quat, quat2mat, mat2quat 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger("Log")
 logger.setLevel(logging.INFO)
@@ -19,6 +19,13 @@ logger.setLevel(logging.INFO)
 MAX_DIST = 10
 MIN_DIST = 0.01
 
+T_bl_sim_to_w_sim = np.array([[0, -1, 0, 0], 
+                              [1, 0, 0, 0.612],
+                              [0, 0, 1, -0.860],
+                              [0, 0, 0, 1]])
+R_g_sim_to_g_robot = np.array([[0, -1, 0], 
+                              [1, 0, 0],
+                              [0, 0, 1]])
 # object_to_id = {"milk": 0, "bread": 1, "cereal": 2, "can": 3}
 object_to_id = {"greenbox": 0, "yellowbox": 1, "bluebox": 2, "redbox": 3}
 
@@ -49,6 +56,37 @@ TABLE_SIZE = [100, 100]  # cmxcm
 
 max_len_trj = 0
 
+def trasform_from_world_to_bl(action):
+    aa_gripper = action[3:-1]
+    # convert axes-angle into rotation matrix
+    R_w_sim_to_gripper_sim = quat2mat(axisangle2quat(aa_gripper))
+    
+    gripper_pos = action[0:3]
+    
+    T_w_sim_gripper_sim = np.zeros((4,4))
+    T_w_sim_gripper_sim[3,3] = 1
+    
+    # position
+    T_w_sim_gripper_sim[0,3] = gripper_pos[0]
+    T_w_sim_gripper_sim[1,3] = gripper_pos[1]
+    T_w_sim_gripper_sim[2,3] = gripper_pos[2]
+    # orientation
+    T_w_sim_gripper_sim[0:3, 0:3] = R_w_sim_to_gripper_sim
+    
+    T_bl_sim_gripper_sim = T_bl_sim_to_w_sim @ T_w_sim_gripper_sim
+    
+    # print(f"Transformation from world to bl:\n{T_bl_sim_gripper_sim}")
+    
+    R_bl_to_gripper_sim = T_bl_sim_gripper_sim[0:3, 0:3]
+    
+    R_bl_to_gripper_real = R_bl_to_gripper_sim @ R_g_sim_to_g_robot
+    
+    action_bl = np.zeros((7))
+    action_bl[0:3] = T_bl_sim_gripper_sim[0:3, 3]
+    action_bl[3:6] = quat2axisangle(mat2quat(R_bl_to_gripper_real))
+    action_bl[6] = action[-1]
+    
+    return action_bl
 
 def normalize_action(action, n_action_bin, action_ranges, continous=False):
     half_action_bin = int(n_action_bin/2)
@@ -78,7 +116,9 @@ if __name__ == "__main__":
     parser.add_argument("--depth", action='store_true',
                         help="whether or not render depth")
     parser.add_argument("--min_max", action='store_true',
-                        help="whether or not render depth")
+                        help="whether compute min_max")
+    parser.add_argument("--real", action='store_true',
+                        help="whether the dataset is real")
     args = parser.parse_args()
 
     camera_name = "image"
@@ -143,16 +183,20 @@ if __name__ == "__main__":
                                     #     normalize_action(action=action_t,
                                     #                      n_action_bin=256,
                                     #                      action_ranges=NORM_RANGES))
-                                    rot_quat = quat2axisangle(action_t[3:7])
-                                    action_list = list()
-                                    action_list.extend(action_t[:3])
-                                    action_list.extend(rot_quat)
-                                    action_list.extend([action_t[-1]])
-                                    action_t = np.array(action_list)
-                                    norm_action.append(normalize_action(action=action_t,
-                                                                        n_action_bin=256,
-                                                                        action_ranges=NORM_RANGES))
-                                    action.append(action_t)
+                                    if  args.real:
+                                        rot_quat = quat2axisangle(action_t[3:7])
+                                        action_list = list()
+                                        action_list.extend(action_t[:3])
+                                        action_list.extend(rot_quat)
+                                        action_list.extend([action_t[-1]])
+                                        action_t = np.array(action_list)
+                                        norm_action.append(normalize_action(action=action_t,
+                                                                            n_action_bin=256,
+                                                                            action_ranges=NORM_RANGES))
+                                        action.append(action_t)
+                                    else:
+                                        # transform the action from the world to the baselink
+                                        action_bl = trasform_from_world_to_bl(action)
                                     # for dim, action_label in enumerate(action_t):
                                     #     ACTION_DISTRIBUTION[dim].append(
                                     #         action_label)
@@ -250,54 +294,72 @@ if __name__ == "__main__":
             plt.clf()
     else:
         for task_var, dir in enumerate(sorted(task_paths)):
+            if task_var == 0:
+                if os.path.isdir(dir):  # os.path.join(args.task_path, dir)):
+                    # assert len(trjs) == 100, print(f"{os.path.join(args.task_path, dir)} does not have 100 trjs")
+                    trj_paths = glob.glob(os.path.join(dir, 'traj*.pkl'))
+                    norm_action = []
+                    for j, trj in enumerate(sorted(trj_paths)):
 
-            if os.path.isdir(dir):  # os.path.join(args.task_path, dir)):
-                # assert len(trjs) == 100, print(f"{os.path.join(args.task_path, dir)} does not have 100 trjs")
-                trj_paths = glob.glob(os.path.join(dir, 'traj*.pkl'))
-                norm_action = []
-                for j, trj in enumerate(sorted(trj_paths)):
+                        print(trj)
 
-                    print(trj)
-
-                    with open(trj, "rb") as f:
-                        sample = pickle.load(f)
-                        logger.debug(f"Sample keys {sample.keys()}")
-                        logger.debug(sample)
-                        # print(f"Sample command: {sample['command']}")
-                        if i == 0:
-                            i += 1
+                        with open(trj, "rb") as f:
+                            sample = pickle.load(f)
+                            logger.debug(f"Sample keys {sample.keys()}")
                             logger.debug(sample)
-                            logger.debug(
-                                f"Observation keys: {sample['traj'][0]['obs'].keys()}")
-                            logger.debug(
-                                f"{sample['traj'][0]['obs']['ee_aa']}")
+                            # print(f"Sample command: {sample['command']}")
+                            if i == 0:
+                                i += 1
+                                logger.debug(sample)
+                                logger.debug(
+                                    f"Observation keys: {sample['traj'][0]['obs'].keys()}")
+                                logger.debug(
+                                    f"{sample['traj'][0]['obs']['ee_aa']}")
 
-                        # take the Trajectory obj from the trajectory
-                        trajectory_obj = sample['traj']
-                        i = 0
-                        obj_in_hand = 0
-                        start_moving = 0
-                        end_moving = 0
-                        if len(trajectory_obj) > max_len_trj:
-                            max_len_trj = len(trajectory_obj)
-                        for t in range(len(trajectory_obj)):
-                            if t > 0:
-                                logger.debug(f"Time-step {t}")
-                                # try:
-                                action_t = trajectory_obj.get(t)[
-                                    'action']
-                                next_action_t = trajectory_obj.get(t+5)[
-                                    'action']
-                                print(
-                                    f"Position {action_t[:3] - next_action_t[:3]}\n{next_action_t[7]}")
-                                # rot_quat = quat2axisangle(action_t[3:7])
-                                # action = np.concatenate(
-                                #     (action_t[:3], rot_quat, [action_t[7]]))
-                                # for dim, action_label in enumerate(action):
-                                #     ACTION_DISTRIBUTION[dim].append(
-                                #         action_label)
-                                # except KeyError:
-                                #     print("error")
+                            # take the Trajectory obj from the trajectory
+                            trajectory_obj = sample['traj']
+                            i = 0
+                            obj_in_hand = 0
+                            start_moving = 0
+                            end_moving = 0
+                            if len(trajectory_obj) > max_len_trj:
+                                max_len_trj = len(trajectory_obj)
+                            for t in range(len(trajectory_obj)):
+                                if t > 0:
+                                    logger.debug(f"Time-step {t}")
+                                    # try:
+                                    action_t = trajectory_obj.get(t)[
+                                        'action']
+                                    
+                                    if  args.real:
+                                        rot_quat = quat2axisangle(action_t[3:7])
+                                        action_list = list()
+                                        action_list.extend(action_t[:3])
+                                        action_list.extend(rot_quat)
+                                        action_list.extend([action_t[-1]])
+                                        action_t = np.array(action_list)
+                                        norm_action.append(normalize_action(action=action_t,
+                                                                            n_action_bin=256,
+                                                                            action_ranges=NORM_RANGES))
+                                    else:
+                                        # transform the action from the world to the baselink
+                                        img = trajectory_obj.get(t)['obs']['camera_front_image'][:,:,::-1]
+                                        cv2.imwrite("img.png", img)
+                                        action_bl = trasform_from_world_to_bl(action_t)
+                                        action_t = action_bl
+                                    # next_action_t = trajectory_obj.get(t+5)[
+                                    #     'action']
+                                    # print(
+                                    #     f"Position {action_t[:3] - next_action_t[:3]}\n{next_action_t[7]}")
+                                    # rot_quat = quat2axisangle(action_t[3:7])
+                                    # action = np.concatenate(
+                                    #     (action_t[:3], rot_quat, [action_t[7]]))
+                                    try:
+                                        for dim, action_label in enumerate(action_t):
+                                            ACTION_DISTRIBUTION[dim].append(
+                                                action_label)
+                                    except KeyError:
+                                        print("error")
 
         for indx, action_dim in enumerate(ACTION_DISTRIBUTION.values()):
             print(f"Dim {indx} - Min {min(action_dim)} - Max {max(action_dim)}")

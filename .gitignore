@@ -18,3 +18,5 @@ trajectory/*
 *.png
 gdrive/*
 *.pyc
+*.out
+bashes/*.out

@@ -92,6 +92,8 @@ conda install libgcc -y
 conda install patchelf -y
 conda install -c anaconda mesa-libegl-cos6-x86_64 -y
 conda install -c conda-forge gcc==12.1.0
+conda install -c conda-forge gxx_linux-64
+
 
 # 3 Install requirements
 pip install -r requirements.txt
