@@ -15,6 +15,9 @@ from robosuite.utils.transform_utils import quat2axisangle, axisangle2quat, quat
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger("Log")
 logger.setLevel(logging.INFO)
+import matplotlib.colors as mcolors
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import re
 
 MAX_DIST = 10
 MIN_DIST = 0.01
@@ -23,6 +26,13 @@ T_bl_sim_to_w_sim = np.array([[0, -1, 0, 0],
                               [1, 0, 0, 0.612],
                               [0, 0, 1, -0.860],
                               [0, 0, 0, 1]])
+T_world_to_bl = np.array([
+                        [0, 1, 0, -0.612], 
+                        [-1, 0, 0, 0],
+                        [0, 0, 1, 0.860],
+                        [0, 0, 0, 1]])
+
+
 R_g_sim_to_g_robot = np.array([[0, -1, 0], 
                               [1, 0, 0],
                               [0, 0, 1]])
@@ -56,6 +66,14 @@ TABLE_SIZE = [100, 100]  # cmxcm
 
 max_len_trj = 0
 
+# Function to extract the numerical part from the file name
+def extract_number(file_path):
+    match = re.search(r'traj(\d+)\.pkl', file_path)
+    if match:
+        return int(match.group(1))
+    return -1  # In case the file name doesn't match the pattern
+
+
 def trasform_from_world_to_bl(action):
     aa_gripper = action[3:-1]
     # convert axes-angle into rotation matrix
@@ -87,6 +105,146 @@ def trasform_from_world_to_bl(action):
     action_bl[6] = action[-1]
     
     return action_bl
+
+def trasform_bl_to_world(action):
+    aa_gripper = action[3:-1]
+    # convert axes-angle into rotation matrix
+    R_bl_to_gripper = quat2mat(axisangle2quat(aa_gripper))
+    
+    gripper_pos = action[0:3]
+    
+    T_bl_to_gripper = np.zeros((4,4))
+    T_bl_to_gripper[3,3] = 1
+    
+    # position
+    T_bl_to_gripper[0,3] = gripper_pos[0]
+    T_bl_to_gripper[1,3] = gripper_pos[1]
+    T_bl_to_gripper[2,3] = gripper_pos[2]
+    # orientation
+    T_bl_to_gripper[0:3, 0:3] = R_bl_to_gripper
+    
+    T_world_to_gripper = T_world_to_bl @ T_bl_to_gripper
+    
+    # print(f"Transformation from world to bl:\n{T_bl_sim_gripper_sim}")
+    
+    R_world_to_gripper = T_world_to_gripper[0:3, 0:3]
+
+    
+    action_world = np.zeros((7))
+    action_world[0:3] = T_world_to_gripper[0:3, 3]
+    action_world[3:6] = quat2axisangle(mat2quat(R_world_to_gripper))
+    action_world[6] = action[-1]
+    
+    return action_world
+
+
+def heat_map(task_distribution, task_path, task_name):
+    # Each px represents 0.5x0.5 cm
+    px_resolution = 0.5
+
+    # Compute table size in pixels
+    table_size_px = np.array(
+        np.array(TABLE_SIZE) / px_resolution, dtype=np.int32)
+
+    # Initialize the table map (heatmap matrix) with zeros
+    table_map = np.zeros((table_size_px[0], table_size_px[1]))
+
+    # Loop through task variations and their respective trajectories
+    for variation in task_distribution.keys():
+        print(f"Processing variation: {variation}")
+
+        for trj in task_distribution[variation].keys():
+            # Convert the x, y positions from meters to pixel resolution (action_t[0] -> vertical, action_t[1] -> horizontal)
+            trajectory = np.array(
+                [(action_t[:2] * 100) / px_resolution for action_t in task_distribution[variation][trj]],
+                dtype=np.int32
+            )
+
+            # Adjust the coordinates for heatmap plotting
+            # Positive x-values (action_t[0]) go down, so flip the sign for positive values
+            positive_flags_x = trajectory[:, 0] > 0
+            negative_flags_x = trajectory[:, 0] <= 0
+            positive_flags_y = trajectory[:, 1] > 0
+            negative_flags_y = trajectory[:, 1] <= 0
+
+            # Map x-coordinates (action_t[0] -> vertical axis)
+            trajectory[:, 0][positive_flags_x] = int(table_map.shape[0] / 2) + trajectory[:, 0][positive_flags_x]
+            trajectory[:, 0][negative_flags_x] = int(table_map.shape[0] / 2) - (-trajectory[:, 0][negative_flags_x])
+
+            # Map y-coordinates (action_t[1] -> horizontal axis)
+            trajectory[:, 1][positive_flags_y] = int(table_map.shape[1] / 2) + trajectory[:, 1][positive_flags_y]
+            trajectory[:, 1][negative_flags_y] = int(table_map.shape[1] / 2) - (-trajectory[:, 1][negative_flags_y])
+
+            # Update the heatmap with the trajectory points
+            for x, y in trajectory:
+                table_map[x, y] += 1  # Increment the density at that (x, y) point
+
+    if 'pick_place' in task_name:
+        y_min, y_max = -30, 30
+        x_min, x_max = -35, 35
+        task = "Pick-Place"
+    elif 'nut_assembly' in task_name:
+        y_min, y_max = -30, 30
+        x_min, x_max = -35, 35
+        task = "Nut-Assembly"
+    elif 'stack_block' in task_name:
+        y_min, y_max = -30, 30
+        x_min, x_max = -35, 35
+        task = "Stack-Block"
+    else:
+        y_min, y_max = -30, 30
+        x_min, x_max = -35, 35
+        task = "Press-Button"
+
+
+    # Convert to pixel indices based on px_resolution
+    y_min_px = int((y_min + TABLE_SIZE[0] / 2) / px_resolution)
+    y_max_px = int((y_max + TABLE_SIZE[0] / 2) / px_resolution)
+    x_min_px = int((x_min + TABLE_SIZE[1] / 2) / px_resolution)
+    x_max_px = int((x_max + TABLE_SIZE[1] / 2) / px_resolution)
+
+    # Crop the table_map matrix
+    cropped_table_map = table_map[y_min_px:y_max_px, x_min_px:x_max_px]
+    
+    # Plot the cropped heatmap
+    fig, ax = plt.subplots(figsize=(10, 10))
+    plt.title(f"{task}: heatmap of x-y plane trajectories")
+
+    # Set axis labels to centimeters
+    plt.xlabel("Y table axis (cm)")
+    plt.ylabel("X table axis (cm)")
+
+    # Use logarithmic normalization to make low values more visible
+    norm = mcolors.LogNorm(vmin=1, vmax=np.max(cropped_table_map))
+
+    # Display the cropped heatmap with adjusted color scale and flip the y-axis
+    im = ax.imshow(cropped_table_map, cmap='plasma', origin='upper', norm=norm)
+
+    # Adjust the ticks to reflect the cropped region in centimeters
+    ticks_x = np.arange(0, cropped_table_map.shape[1], step=int(10 / px_resolution))  # Every 10 cm
+    ticks_y = np.arange(0, cropped_table_map.shape[0], step=int(10 / px_resolution))  # Every 10 cm
+
+    # Set the tick labels corresponding to the cropped region
+    tick_labels_x = np.arange(x_min, x_max, step=10)  # Corresponding labels in cm
+    tick_labels_y = np.arange(y_min, y_max, step=10)  # Corresponding labels in cm
+
+    plt.xticks(ticks_x, tick_labels_x)
+    plt.yticks(ticks_y, tick_labels_y)
+
+    # Create a colorbar axis and adjust its size
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+
+    # Add the color bar with adjusted height
+    cbar = plt.colorbar(im, cax=cax)
+    cbar.set_label("Number of Trajectories (log scale)")
+
+    # Save the heatmap to the specified file path
+    plt.savefig(os.path.join(task_path, f"{task_name}_heatmap_limited.png"))
+
+    # Optionally, show the plot (useful for interactive environments)
+    # plt.show()
+
 
 def normalize_action(action, n_action_bin, action_ranges, continous=False):
     half_action_bin = int(n_action_bin/2)
@@ -134,7 +292,15 @@ if __name__ == "__main__":
 
     task_name = args.task_path.split('/')[-1]
     task_paths = glob.glob(os.path.join(args.task_path, 'task_*'))
-
+    
+    task_paths_limited = []
+    for task_path in task_paths:
+        if 'task_00' in task_path or 'task_01' in task_path or 'task_04' in task_path or'task_05' in task_path or 'task_08' in task_path or 'task_09' in task_path:
+            task_paths_limited.append(task_path)
+    
+    task_paths = task_paths_limited
+    global_trajectory_lengths = [] 
+    
     if not args.min_max:
         task_distribution = OrderedDict()
         for task_var, dir in enumerate(sorted(task_paths)):
@@ -147,11 +313,13 @@ if __name__ == "__main__":
                 trj_paths = glob.glob(os.path.join(dir, 'traj*.pkl'))
                 norm_action = []
                 action = []
+                trj_paths = sorted(trj_paths, key=extract_number)
+                trj_paths = trj_paths[:40]
                 for j, trj in enumerate(sorted(trj_paths)):
 
                     task_distribution[task_var][j] = list()
                     print(trj)
-
+                    
                     with open(trj, "rb") as f:
                         sample = pickle.load(f)
                         logger.debug(f"Sample keys {sample.keys()}")
@@ -167,6 +335,7 @@ if __name__ == "__main__":
 
                         # take the Trajectory obj from the trajectory
                         trajectory_obj = sample['traj']
+                        global_trajectory_lengths.append(len(trajectory_obj))
                         i = 0
                         obj_in_hand = 0
                         start_moving = 0
@@ -177,8 +346,7 @@ if __name__ == "__main__":
                                 try:
                                     action_t = trajectory_obj.get(t)[
                                         'action']
-                                    task_distribution[task_var][j].append(
-                                        action_t)
+                                    
                                     # task_distribution[task_var][j].append(
                                     #     normalize_action(action=action_t,
                                     #                      n_action_bin=256,
@@ -195,8 +363,17 @@ if __name__ == "__main__":
                                                                             action_ranges=NORM_RANGES))
                                         action.append(action_t)
                                     else:
+                                        action.append(action_t)
+                                        norm_action.append(normalize_action(action=action_t,
+                                                                            n_action_bin=256,
+                                                                            action_ranges=NORM_RANGES))
+                                    
+                                    if args.real:
+                                        task_distribution[task_var][j].append(trasform_bl_to_world(action_t))
+                                    else:
+                                        task_distribution[task_var][j].append(action_t)
                                         # transform the action from the world to the baselink
-                                        action_bl = trasform_from_world_to_bl(action)
+                                        # action_bl = trasform_from_world_to_bl(action)
                                     # for dim, action_label in enumerate(action_t):
                                     #     ACTION_DISTRIBUTION[dim].append(
                                     #         action_label)
@@ -212,44 +389,15 @@ if __name__ == "__main__":
             f"Standard deviation {np.std(np.array(norm_action_matrix), axis=0)}")
         print(f"Standard mean {np.mean(np.array(norm_action_matrix), axis=0)}")
 
-        # each px is a square 0.2x0.2 cm
-        px_resolution = 0.5
-        table_size_px = np.array(
-            np.array(TABLE_SIZE)/px_resolution, dtype=np.int32)
-        table_map = np.zeros(list(table_size_px))
 
-        for variation in task_distribution.keys():
-            print(variation)
-
-            for trj in task_distribution[variation].keys():
-                # from m to cm, divide per pixel resolution
-                # for action_t in task_distribution[variation][trj]:
-                #     print(action_t[:2])
-                trajectory = np.array(
-                    [np.array(((action_t[:2]*100)/px_resolution), dtype=np.int32) for action_t in task_distribution[variation][trj]])
-                positive_flags_x = trajectory[:, 0] > 0
-                negative_flags_x = trajectory[:, 0] <= 0
-                positive_flags_y = trajectory[:, 1] > 0
-                negative_flags_y = trajectory[:, 1] <= 0
-
-                trajectory[:, 0][positive_flags_x] = int(
-                    table_map.shape[0]/2) - trajectory[:, 0][positive_flags_x]
-                trajectory[:, 0][negative_flags_x] = -trajectory[:, 0][negative_flags_x] + int(
-                    table_map.shape[0]/2)
-                trajectory[:, 1][positive_flags_y] = int(
-                    table_map.shape[0]/2) - trajectory[:, 1][positive_flags_y]
-                trajectory[:, 1][negative_flags_y] = -trajectory[:, 1][negative_flags_y] + \
-                    int(table_map.shape[0]/2)
-
-                table_map[trajectory[:, 0], trajectory[:, 1]] += 1
-
-        plt.title(
-            f"Heatmap of x-y plane trajectories")
-        plt.xlabel("Y table axis")
-        plt.ylabel("X table axis")
-        plt.imshow(table_map)
-        plt.savefig(f"{task_name}_heatmap.png")
-
+        heat_map(task_distribution=task_distribution,
+                 task_name=task_name,
+                 task_path=args.task_path)
+        
+        mean_trajectory_len = np.mean(global_trajectory_lengths)
+        std_trajectory_len = np.std(global_trajectory_lengths)
+        print(f"Mean trajectory lenght {mean_trajectory_len} - Std trajectory len {std_trajectory_len}")
+        
         for variation in task_distribution.keys():
             print(variation)
             # Plot y-axis trajectories for each variation
@@ -276,7 +424,7 @@ if __name__ == "__main__":
                 ax3.set_xlabel("Timestamp t")
                 ax3.set_ylabel("scaled z value")
 
-            plt.savefig(f"{task_name}_variation_{variation}.png")
+            plt.savefig(os.path.join(args.task_path, f"{task_name}_variation_{variation}.png"))
 
         # An "interface" to matplotlib.axes.Axes.hist() method
         for dim, key in enumerate(ACTION_DISTRIBUTION.keys()):
@@ -290,7 +438,7 @@ if __name__ == "__main__":
             # Set a clean upper y-axis limit.
             plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq %
                      10 else maxfreq + 10)
-            plt.savefig(f"dim_{dim}.png")
+            plt.savefig(os.path.joint(args.task_path, f"dim_{dim}.png"))
             plt.clf()
     else:
         for task_var, dir in enumerate(sorted(task_paths)):

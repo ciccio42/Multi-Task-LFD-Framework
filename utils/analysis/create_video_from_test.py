@@ -46,6 +46,7 @@ def pre_process(obs, crop_params, height, width):
     return obs_np.astype(np.uint8)
 
 
+
 def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     from omegaconf import DictConfig, OmegaConf
 
@@ -55,17 +56,21 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     if "gt_bb" in base_path:
         config_path = os.path.join(base_path, "../../../../config.yaml")
     else:
-        config_path = os.path.join(base_path, "../../../config.yaml")
+        config_path = os.path.join(base_path, "config.yaml") #../../
 
     # config_path = "/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Pick-Place-Nut-Assembly-Mosaic-100-180-Target-Obj-Detector-BB-Batch50/config.yaml"
     config = OmegaConf.load(config_path)
 
     # step_pattern = os.path.join(base_path, results_folder, "step-*")
     step_pattern = base_path
-    adjust = False if ("Real" in base_path) or ("REAL" in base_path) else True
+    adjust = True #False if ("Real" in base_path) or ("REAL" in base_path) else True
     flip_channels = False if ("Real" in base_path) or (
         "REAL" in base_path) else True
-    for step_path in glob.glob(step_pattern):
+    
+    task_paths = glob.glob(os.path.join(args.base_path, 'task_*'))
+        
+    
+    for step_path in task_paths:
 
         step = step_path.split("-")[-1]
         print(f"---- Step {step} ----")
@@ -142,15 +147,21 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                     #     traj_frames.append(step["obs"]['camera_front_image'])
                     if "REAL" not in base_path and "Real" not in base_path:
                         if step["obs"].get('image', None) is None:
-                            traj_frames.append(pre_process(
-                                obs=step["obs"]['camera_front_image'],
-                                crop_params=config['tasks'][0]['crop'],
-                                height=100,
-                                width=180))
+                            # traj_frames.append(pre_process(
+                            #     obs=step["obs"]['camera_front_image'],
+                            #     crop_params=config['tasks'][0]['crop'],
+                            #     height=100,
+                            #     width=180))
+                            if step["obs"].get('camera_front_image_full_size', None) is not None:
+                                traj_frames.append(cv2.imdecode(
+                                    step["obs"]['camera_front_image_full_size'],
+                                    cv2.IMREAD_COLOR))    
+                            else:
+                                traj_frames.append(step["obs"]['camera_front_image'])
                         else:
                             traj_frames.append(step["obs"]['image'])
                     else:
-                        traj_frames.append(step["obs"]['formatted_img'])
+                        traj_frames.append(step["obs"]['camera_front_image'])
 
                     if 'predicted_bb' in traj_data.get(t)["obs"].keys():
                         predicted_bb = True
@@ -158,28 +169,32 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                             bb_frames.append(
                                 step["obs"]['predicted_bb'].tolist())
                         else:
-                            bb_frames.append(step["obs"]['predicted_bb'])
+                            bb_frames.append(step["obs"]['predicted_bb']['camera_front'])
+                            
                         predicted_conf_score.append(
                             step["obs"].get('predicted_score', -1))
 
-                        if isinstance(step["obs"]['gt_bb'], np.ndarray):
-                            gt_bb.append(
-                                step["obs"]['gt_bb'].tolist())
-                        else:
-                            gt_bb.append(step["obs"]['gt_bb'])
-
-                        # check if iou is saved
-                        if step["obs"].get('iou') is None:
-                            if np.array(gt_bb[-1]).shape[0] == 1:
-                                # compute iou
-                                iou.append(
-                                    box_iou(boxes1=torch.from_numpy(np.array(bb_frames[-1])[None]), boxes2=torch.from_numpy(np.array(gt_bb[-1]))))
+                        if 'gt_bb' in step["obs"].keys():
+                            if isinstance(step["obs"]['gt_bb'], np.ndarray):
+                                gt_bb.append(
+                                    step["obs"]['gt_bb'].tolist())
                             else:
-                                # compute iou
-                                iou.append(
-                                    box_iou(boxes1=torch.from_numpy(np.array(bb_frames[-1])[None]), boxes2=torch.from_numpy(np.array(gt_bb[-1])[None])))
-                        else:
-                            iou.append(step["obs"]['iou'])
+                                gt_bb.append(step["obs"]['gt_bb'])
+                        # else:  
+                        #     bbs = step["obs"]['obj_bb']['camera_front']
+                            
+                        # check if iou is saved
+                        # if step["obs"].get('iou') is None:
+                        #     if np.array(gt_bb[-1]).shape[0] == 1:
+                        #         # compute iou
+                        #         iou.append(
+                        #             box_iou(boxes1=torch.from_numpy(np.array(bb_frames[-1])[None]), boxes2=torch.from_numpy(np.array(gt_bb[-1]))))
+                        #     else:
+                        #         # compute iou
+                        #         iou.append(
+                        #             box_iou(boxes1=torch.from_numpy(np.array(bb_frames[-1])[None]), boxes2=torch.from_numpy(np.array(gt_bb[-1])[None])))
+                        # else:
+                        #     iou.append(step["obs"]['iou'])
 
                     if 'activation_map' in traj_data.get(t)["obs"].keys():
                         activation_map.append(
@@ -229,15 +244,19 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                     out_path = f"demo_{context_number}_traj_{trj_number}.mp4"
                     print(video_path)
                     print(out_path)
+                    if "Real" in traj_file or "REAL" in traj_file:
+                        frame_rate = 10
+                    else:
+                        frame_rate = 30
                     out = cv2.VideoWriter(os.path.join(
-                        video_path, out_path), fourcc, 30, (output_width, output_height))
+                        video_path, out_path), fourcc, frame_rate, (output_width, output_height))
                     if len(activation_map) != 0:
                         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
                         output_width = 2*100
                         output_height = 180
                         out_path = f"demo_{context_number}_traj_{trj_number}_activation_map.mp4"
                         out_activation_map = cv2.VideoWriter(os.path.join(
-                            video_path, out_path), fourcc, 30, (output_width, output_height))
+                            video_path, out_path), fourcc, frame_rate, (output_width, output_height))
                 else:
                     out_path = os.path.join(
                         video_path, f"demo_{context_number}_traj_{trj_number}.png")
@@ -255,42 +274,50 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 font_scale = 0.35
                 thickness = 1
+                crop = config['tasks_cfgs'][task_name]['crop'] if config['tasks_cfgs'][task_name].get('crop', None) is not None else  config['tasks_cfgs'][task_name]['agent_crop']
                 for i, traj_frame in enumerate(traj_frames):
+                    if "Real" in traj_file or "REAL" in traj_file:
+                        indx_t = i
+                    else:
+                        indx_t = i -1
                     # and len(bb_frames) >= i+1:
                     if len(bb_frames) != 0 and i > 0 and len(bb_frames) >= i+1:
-                        if len(bb_frames[i-1][0]) == 4:
-                            for indx, _ in enumerate(bb_frames[i-1]):
-                                pass
-                                # bb = adjust_bb(
-                                #     bb=bb_frames[i-1][indx],
-                                #     crop_params=config['tasks_cfgs'][task_name]['crop']) if adjust else bb_frames[i-1][indx]
-                                # bb = bb_frames[i-1][indx]
-                                # traj_frame = np.array(cv2.rectangle(
-                                #     traj_frame.copy(),
-                                #     (int(bb[0]),
-                                #      int(bb[1])),
-                                #     (int(bb[2]),
-                                #      int(bb[3])),
-                                #     (0, 0, 255), 1))
+                        if len(bb_frames[indx_t][0]) == 4:
+                            for indx, _ in enumerate(bb_frames[indx_t]):
+                                bb = adjust_bb(
+                                    bb=bb_frames[indx_t][indx],
+                                    crop_params=crop,
+                                    img_size=(traj_height, traj_width)) if adjust else bb_frames[indx_t][indx]
+                                # bb = bb_frames[indx_t][indx]
+                                traj_frame = np.array(cv2.rectangle(
+                                    traj_frame.copy(),
+                                    (int(bb[0]),
+                                     int(bb[1])),
+                                    (int(bb[2]),
+                                     int(bb[3])),
+                                    (255, 0, 0), 1))
                         else:
                             bb = adjust_bb(
-                                bb=bb_frames[i-1][0],
-                                crop_params=config['tasks_cfgs'][task_name]['crop']) if adjust else bb_frames[i-1][0]
+                                bb=bb_frames[indx_t][0],
+                                crop_params=crop,
+                                img_size=(traj_height, traj_width)) if adjust else bb_frames[indx_t][0]
                             gt_bb_t = adjust_bb(
-                                bb=gt_bb[i-1][0],
-                                crop_params=config['tasks_cfgs'][task_name]['crop']) if adjust else gt_bb[i-1][0]
+                                bb=gt_bb[indx_t][0],
+                                crop_params=crop,
+                                img_size=(traj_height, traj_width)) if adjust else gt_bb[indx_t][0]
                     
                     if len(gt_bb) != 0 and i > 0 and len(gt_bb) >= i+1:
-                        if len(gt_bb[i-1][0]) == 4:
-                            for indx, _ in enumerate(gt_bb[i-1]):
-                                # gt_bb_t = adjust_bb(
-                                #     bb=gt_bb[i-1][indx],
-                                #     crop_params=config['tasks_cfgs'][task_name]['crop']) if adjust else gt_bb[i-1][indx]
-                                gt_bb_t = gt_bb[i-1][indx]
+                        if len(gt_bb[indx_t][0]) == 4:
+                            for indx, _ in enumerate(gt_bb[indx_t]):
+                                gt_bb_t = adjust_bb(
+                                    bb=gt_bb[indx_t][indx],
+                                    crop_params=crop,
+                                    img_size=(traj_height, traj_width)) if adjust else gt_bb[indx_t][indx]
+                                # gt_bb_t = gt_bb[indx_t][indx]
                                 if indx == 0:
                                     color = (0, 255, 0)
                                 elif indx == 1:
-                                    color == (0, 0, 255)
+                                    color = (0, 255, 0)
                                 traj_frame = np.array(cv2.rectangle(
                                     traj_frame.copy(),
                                     (int(gt_bb_t[0]),
@@ -299,12 +326,12 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                                      int(gt_bb_t[3])),
                                     color, 1))
                         else:
-                            for indx, _ in enumerate(gt_bb[i-1]):
-                                gt_bb_t = gt_bb[i-1][indx][0]
-                                # adjust_bb(
-                                #     bb=gt_bb[i-1][indx][0],
-                                #     crop_params=config['tasks_cfgs'][task_name]['crop']) if adjust else gt_bb[i-1][indx][0]
-                                gt_bb_t = gt_bb[i-1][indx]
+                            for indx, _ in enumerate(gt_bb[indx_t]):
+                                # = gt_bb[indx_t][indx][0]
+                                # gt_bb_t = adjust_bb(
+                                #     bb=gt_bb[indx_t][indx][0],
+                                #     crop_params=crop) if adjust else gt_bb[indx_t][indx][0]
+                                gt_bb_t = gt_bb[indx_t][indx][0]
                                 if indx == 0:
                                     color = (0, 255, 0)
                                 elif indx == 1:
@@ -317,30 +344,30 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                                      int(gt_bb_t[3])),
                                     color, 1))
 
-                        if len(activation_map) != 0:
-                            activation_map_t = activation_map[i-1]
+                    #     if len(activation_map) != 0:
+                    #         activation_map_t = activation_map[i-1]
 
-                        # if i != len(traj_frames)-1 and len(predicted_slot) != 0:
-                        #     cv2.putText(traj_frame,  res_string, (0, 80), font,
-                        #                 font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                        #     cv2.putText(traj_frame,  f"Predicted slot {predicted_slot[i]}", (
-                        #         0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
-                        # if predicted_bb:
-                        #     cv2.putText(traj_frame,
-                        #                 f"Conf-Score {round(float(predicted_conf_score[i-1]), 2)} - IoU {round(float(iou[i-1]), 2)}",
-                        #                 (100, 180),
-                        #                 font,
-                        #                 font_scale,
-                        #                 (0, 0, 255),
-                        #                 thickness,
-                        #                 cv2.LINE_AA)
+                    #     # if i != len(traj_frames)-1 and len(predicted_slot) != 0:
+                    #     #     cv2.putText(traj_frame,  res_string, (0, 80), font,
+                    #     #                 font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                    #     #     cv2.putText(traj_frame,  f"Predicted slot {predicted_slot[i]}", (
+                    #     #         0, 99), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                    #     # if predicted_bb:
+                    #     #     cv2.putText(traj_frame,
+                    #     #                 f"Conf-Score {round(float(predicted_conf_score[i-1]), 2)} - IoU {round(float(iou[i-1]), 2)}",
+                    #     #                 (100, 180),
+                    #     #                 font,
+                    #     #                 font_scale,
+                    #     #                 (0, 0, 255),
+                    #     #                 thickness,
+                    #     #                 cv2.LINE_AA)
 
-                        # else:
-                        #     cv2.putText(output_frame,  res_string, (0, 99), font,
-                        #                 font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+                    #     # else:
+                    #     #     cv2.putText(output_frame,  res_string, (0, 99), font,
+                    #     #                 font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
 
                     if flip_channels:
-                        traj_frame = traj_frame[:, :, ::-1]
+                        traj_frame = traj_frame #[:, :, ::-1]
 
                     output_frame = cv2.hconcat(
                         [new_image, traj_frame])
@@ -397,7 +424,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                     predicted_slot = []
                     for i, traj_frame in enumerate(traj_frames):
 
-                        output_frame = np.array(traj_frame[:, :, ::-1])
+                        output_frame = np.array(traj_frame) #[:, :, ::-1]
 
                         cv2.imwrite("frame.png", output_frame)
                         out.write(output_frame)

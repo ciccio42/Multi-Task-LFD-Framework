@@ -61,7 +61,7 @@ def torch_to_numpy(tensor):
     return numpy_array_transposed
 
 
-def adjust_bb(bb, crop_params=[20, 25, 80, 75]):
+def adjust_bb(bb, crop_params=[20, 25, 80, 75], img_size=(200, 360)):
 
     x1_old, y1_old, x2_old, y2_old = bb
     x1_old = int(x1_old)
@@ -70,7 +70,7 @@ def adjust_bb(bb, crop_params=[20, 25, 80, 75]):
     y2_old = int(y2_old)
 
     top, left = crop_params[0], crop_params[2]
-    img_height, img_width = 200, 360
+    img_height, img_width = img_size[0], img_size[1]
     box_h, box_w = img_height - top - \
         crop_params[1], img_width - left - crop_params[3]
 
