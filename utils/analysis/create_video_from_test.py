@@ -56,7 +56,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     if "gt_bb" in base_path:
         config_path = os.path.join(base_path, "../../../../config.yaml")
     else:
-        config_path = os.path.join(base_path, "config.yaml") #../../
+        config_path = os.path.join(base_path, "./../../config.yaml") #../../
 
     # config_path = "/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Pick-Place-Nut-Assembly-Mosaic-100-180-Target-Obj-Detector-BB-Batch50/config.yaml"
     config = OmegaConf.load(config_path)
@@ -68,7 +68,9 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
         "REAL" in base_path) else True
     
     task_paths = glob.glob(os.path.join(args.base_path, 'task_*'))
-        
+    
+    if len(task_paths) == 0:
+        task_paths =  [base_path]
     
     for step_path in task_paths:
 
@@ -289,13 +291,17 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                                     crop_params=crop,
                                     img_size=(traj_height, traj_width)) if adjust else bb_frames[indx_t][indx]
                                 # bb = bb_frames[indx_t][indx]
+                                if indx == 0: 
+                                    color = (255, 0, 0)
+                                # else:
+                                #     color = (0, 0, 255)
                                 traj_frame = np.array(cv2.rectangle(
                                     traj_frame.copy(),
                                     (int(bb[0]),
                                      int(bb[1])),
                                     (int(bb[2]),
                                      int(bb[3])),
-                                    (255, 0, 0), 1))
+                                   color, 1))
                         else:
                             bb = adjust_bb(
                                 bb=bb_frames[indx_t][0],
@@ -367,7 +373,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
                     #     #                 font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
 
                     if flip_channels:
-                        traj_frame = traj_frame #[:, :, ::-1]
+                        traj_frame = traj_frame[:, :, ::-1]
 
                     output_frame = cv2.hconcat(
                         [new_image, traj_frame])
@@ -504,7 +510,7 @@ def read_results(base_path="/", task_name="pick_place", place=True):
                                 # check for gripper open or close
                                 gripper_state = traj_data.get(
                                     t)['obs'].get('gripper_qpos')
-                                if np.array_equal(OPEN_GRIPPER, np.around(gripper_state, 2)):
+                                if np.array_equal(OPEN_GRIPPER, np.around(gripper_state, 2)) or ("Real" in base_path and gripper_state < 100):
                                     fp_pre_picking[indx] += 1
                                 else:
                                     fp_post_picking[indx] += 1
@@ -574,7 +580,7 @@ def read_results(base_path="/", task_name="pick_place", place=True):
             try:
                 avg_iou += traj_result['avg_iou']
             except:
-                pass
+               raise Exception("Trajectory avg_iou not present")
         
         print(f"Success rate {success_cnt/file_cnt}")
         print(f"Reached rate {reached_cnt/file_cnt}")
