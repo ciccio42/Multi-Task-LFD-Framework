@@ -56,7 +56,7 @@ def create_video_for_each_trj(base_path="/", task_name="pick_place"):
     if "gt_bb" in base_path:
         config_path = os.path.join(base_path, "../../../../config.yaml")
     else:
-        config_path = os.path.join(base_path, "./../../config.yaml") #../../
+        config_path = os.path.join(base_path, "./../../../config.yaml") #../../
 
     # config_path = "/user/frosa/multi_task_lfd/checkpoint_save_folder/2Task-Pick-Place-Nut-Assembly-Mosaic-100-180-Target-Obj-Detector-BB-Batch50/config.yaml"
     config = OmegaConf.load(config_path)
